@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Unit individual modules
+  soft-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0'
+
+      - name: Install python dependencies 
+        run: |
+          pip install pythonnet
+
+      - name: Install mono compiler 
+        run: |
+          echo "csc temporarily unavailable"
+          # Ubuntu 20.04 install
+          #          sudo apt install ca-certificates gnupg
+          #          sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          #          echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          #          sudo apt update
+          # Ubuntu 18 install
+          #sudo apt install ca-certificates gnupg
+          #sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          #echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          #sudo apt update
+          #sudo apt install mono-complete
+
+      - name: Setup bin env
+        run : |
+          mkdir -p bin/
+
+      - name: CSC compile
+        run: |
+          echo "csc temporarily unavailable"
+          #csc /target:library /out:bin/module.dll Assets/_Sources/BackEnd/Utils/Validator.cs
+      
+      - name: Run python tester
+        run: |
+          python3 Tests/main.py
+  
+  # Functionally test project functionalities
+  hard-test:
+    runs-on: ubuntu-latest
+
+    needs: soft-test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+

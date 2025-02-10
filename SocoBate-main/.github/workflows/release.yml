@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Environment setup
+      - name: Set up Git
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Compile
+      - name: Compile & build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows
+          buildName: SocoBate
+
+      # Release
+      - name: Zip build
+        run: |
+          cd build/
+          sudo mv StandaloneWindows/ SocoBate/
+          sudo zip -r SocoBate.zip SocoBate/
+          cd ..
+          mkdir -p tmp/
+          sudo mv build/SocoBate.zip tmp/SocoBate.zip
+
+      - name: Set Release Date
+        id: release_date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYY-MM-DD_HH.mm.ss"
+
+      - name: Release to SocoBateDEPLOY
+        run: |
+          git config --global user.email "AintNoWayGames@gmail.com"
+          git config --global user.name "ANW-AUTOMATION"
+
+          git clone https://github.com/ANWGames/SocoBateDEPLOY.git
+          cd SocoBateDEPLOY
+          
+          release_name="v${{ steps.release_date.outputs.time }}"
+          gh release create "$release_name" -t "$release_name" --notes "Automatic release at ${{ steps.release_date.outputs.time }} by automatic release job.
+            Last commit message: ${{ github.event.head_commit.message }}"
+          gh release upload "$release_name" ../tmp/SocoBate.zip
+        env:
+          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+

@@ -1,0 +1,70 @@
+name: Create Card
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name'
+        required: true
+      rarity:
+        description: 'Rarity'
+        required: true
+
+jobs:
+  createcard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Generate meta GUID
+        id: guid-meta
+        run: echo "::set-output name=guid::$(uuidgen | tr '[:upper:]' '[:lower:]')"
+
+      - name: "Create .asset"
+        run: |
+          asset_file="./Assets/_Sources/FrontEnd/GachaSystem/GachaUnits/${{ inputs.name }}.asset"
+          #asset_file="./Assets/_Sources/FrontEnd/GachaSystem/${{ inputs.name }}.asset"
+          echo "%YAML 1.1" > $asset_file
+          echo "%TAG !u! tag:unity3d.com,2011:" >> $asset_file
+          echo "--- !u!114 &11400000" >>  $asset_file
+          echo "MonoBehaviour:" >>  $asset_file
+          echo "  m_ObjectHideFlags: 0" >> $asset_file
+          echo "  m_CorrespondingSourceObject: {fileID: 0}" >> $asset_file
+          echo "  m_PrefabInstance: {fileID: 0}" >> $asset_file
+          echo "  m_PrefabAsset: {fileID: 0}" >> $asset_file
+          echo "  m_GameObject: {fileID: 0}" >> $asset_file
+          echo "  m_Enabled: 1" >> $asset_file
+          echo "  m_EditorHideFlags: 0" >> $asset_file
+          echo "  m_Script: {fileID: 11500000, guid: 60c2885a3b785574091d815b56fba857, type: 3}" >> $asset_file
+          echo "  m_Name: ${{ inputs.name }}" >> $asset_file
+          echo "  m_EditorClassIdentifier:" >> $asset_file
+          echo "  image: {fileID: 0}" >> $asset_file
+          echo "  custom_name: ${{ inputs.name }}" >> $asset_file
+          echo "  rarity: ${{ inputs.rarity }}" >> $asset_file
+
+#      - name: "Create .asset.meta"
+#        run: |
+#          meta_file="./Assets/_Sources/FrontEnd/GachaSystem/${{ inputs.name }}.asset.meta"
+#          echo "fileFormatVersion: 2" > $meta_file
+#          echo "guid: ${{ steps.guid-meta.outputs.guid }}" >> $meta_file
+#          echo "NativeFormatImporter:" >> $meta_file
+#          echo "  externalObjects: {}" >> $meta_file
+#          echo "  mainObjectFileID: 11400000" >> $meta_file
+#          echo "  userData:" >> $meta_file
+#          echo "  assetBundleName:" >> $meta_file
+#          echo "  assetBundleVariant:" >> $meta_file
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "AintNoWayGames@gmail.com"
+          git config --global user.name "anw-automation"
+          git add .
+          git commit -m "[AUTOMATION] Create card asset ${{ inputs.name }}"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
