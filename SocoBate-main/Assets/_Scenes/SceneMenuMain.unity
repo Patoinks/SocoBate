@@ -4967,7 +4967,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2113435305}
-        m_TargetAssemblyTypeName: FriendListManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: ButtonsScripts, Assembly-CSharp
         m_MethodName: OnClickTeamButton
         m_Mode: 1
         m_Arguments:

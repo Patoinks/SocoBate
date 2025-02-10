@@ -55,22 +55,7 @@ public class ButtonsScripts : MonoBehaviour
     }
     public void OnClickTeamButton()
     {
-        // Find the "Tudo" GameObject in the scene hierarchy
-        GameObject tudoObject = GameObject.Find("Canvas");
-
-        // Check if the "Tudo" GameObject was found
-        if (tudoObject != null)
-        {
-            // Get the transform of the "Tudo" GameObject
-            Transform tudoTransform = tudoObject.transform;
-
-            // Instantiate the AmigosMenu prefab under the "Tudo" GameObject's transform
-            Instantiate(teamSetupPrefab, tudoTransform);
-        }
-        else
-        {
-            Debug.LogError("Could not find 'Tudo' GameObject in the scene hierarchy.");
-        }
+        SceneManager.LoadScene("TeamSetup");
     }
 
 

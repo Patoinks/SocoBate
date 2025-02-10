@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/SceneGame.unity
     guid: afbd4bc4fc39fd347b2017b62726a95b
+  - enabled: 1
+    path: Assets/_Scenes/TeamSetup.unity
+    guid: 96b58e3f511f35c40ae7aa9caba3a0cb
   m_configObjects: {}
