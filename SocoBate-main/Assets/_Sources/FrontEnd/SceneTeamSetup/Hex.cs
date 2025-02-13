@@ -1,24 +1,52 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Hex : MonoBehaviour
+public class HexButton : MonoBehaviour
 {
-    public GameObject currentUnit = null;  // A referência ao sprite da unidade (se houver uma sobre o hex)
+    public GameObject hex;  // Reference to the actual hex GameObject
+    private TeamManager teamManager;  // Reference to TeamManager
+    private Button button;
 
-    // Função para verificar se o hexágono está ocupado
-    public bool IsOccupied()
+    void Start()
     {
-        return currentUnit != null;  // Se o sprite da unidade estiver presente, o hex está ocupado
+        // Find the TeamManager in the scene
+        teamManager = FindObjectOfType<TeamManager>();
+
+        // Get the Button component and add listener for when the hex is clicked
+        button = GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener(OnHexClicked);
+            SetButtonInteractable(false);  // Disable hex button initially
+        }
     }
 
-    // Função para colocar a unidade no hexágono
-    public void PlaceUnit(GameObject unit)
+
+
+    // Called when the hex button is clicked (left-click for spawning unit or removing)
+    void OnHexClicked()
     {
-        currentUnit = unit;  // Coloca a unidade no hex e marca o hex como ocupado
+        if (teamManager != null && hex != null)
+        {
+            // If hex already contains a unit, remove it
+            if (hex.transform.childCount > 0)
+            {
+                teamManager.RemoveUnitFromHex(hex);  // Remove the unit
+            }
+            else
+            {
+                // If no unit is present, spawn a new unit
+                teamManager.SpawnUnitOnHex(hex);  // Spawn a unit on this hex
+            }
+
+            // Disable the button after action is done (if desired, otherwise enable later)
+            SetButtonInteractable(false);
+        }
     }
 
-    // Função para remover a unidade
-    public void RemoveUnit()
+    // Call this method to enable or disable hex interaction (button)
+    public void SetButtonInteractable(bool interactable)
     {
-        currentUnit = null;  // Remove a unidade e marca o hex como desocupado
+        button.interactable = interactable;  // Enable or disable the button
     }
 }

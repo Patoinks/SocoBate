@@ -74,6 +74,8 @@ public class MenuPrincipalManager : MonoBehaviour
             {
                 Debug.Log("[LOGIN] Login successful. User ID: " + userId);
                 await FriendshipController.LoadFriends(userId);
+                Context.UnitContext.LoadAllUnitsFromSerializedData();
+                await UnitController.GetOwnedUnits(userId);
                 // Proceed to next menu or do other actions upon successful login
                 int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
                 SceneManager.LoadScene(currentSceneIndex + 1);

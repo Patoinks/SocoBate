@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Models;
+using Unity.VisualScripting;
 
 namespace Context
 {
@@ -10,8 +11,8 @@ namespace Context
         // In-memory list of all units (BaseUnit ScriptableObjects)
         public static List<BaseUnit> allUnits = new List<BaseUnit>();
 
-        // In-memory list of owned units (BaseUnit ScriptableObjects)
-        public static List<BaseUnit> ownedUnits = new List<BaseUnit>();
+        // In-memory list of owned units (OwnedUnit model containing ownership info)
+        public static List<OwnedUnits> ownedUnits = new List<OwnedUnits>();
 
         // Method to load all BaseUnit data from the Resources folder (Units/UnitData)
         public static void LoadAllUnitsFromSerializedData()
@@ -38,14 +39,21 @@ namespace Context
             return allUnits.Find(unit => unit != null && unit.unitName == unitName);
         }
 
-        // Method to add a unit to the ownedUnits list
-        public static void AddUnitToOwnedUnits(BaseUnit unit)
+        // Method to add an owned unit to the list (takes unitId and accountId as input)
+        public static void AddUnitToOwnedUnits(string unitId, Guid accountId)
         {
-            if (unit != null && !ownedUnits.Contains(unit))
+            if (unitId != null && !ownedUnits.Exists(u => u.unitId == unitId && u.accountId == accountId))
             {
-                ownedUnits.Add(unit);
-                Debug.Log($"Unit {unit.unitName} added to owned units.");
+                OwnedUnits ownedUnit = new OwnedUnits(unitId, accountId);
+                ownedUnits.Add(ownedUnit);
+                Debug.Log($"Unit with ID {unitId} added to account {accountId}.");
             }
+        }
+
+        // Method to get all owned units for a specific account
+        public static List<OwnedUnits> GetOwnedUnitsByAccount(Guid accountId)
+        {
+            return ownedUnits.FindAll(u => u.accountId == accountId);
         }
     }
 }
