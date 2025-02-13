@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6deebea15a234cb40bd98a84921b3297, type: 3}
   m_Name: Chico
   m_EditorClassIdentifier: 
-  unitName: Francisco2
+  unitName: Coutinho
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
   baseHp: 100

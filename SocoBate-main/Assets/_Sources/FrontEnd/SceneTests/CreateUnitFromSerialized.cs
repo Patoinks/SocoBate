@@ -9,7 +9,7 @@ public class CreateUnitFromSerialized : MonoBehaviour
     // Start is called before the first frame update
     async Task Start()
     {
-        await Database.UnitController.InsertUnitWithAllData(chico);
+        await Database.UnitCreator.InsertUnitWithAllData(chico);
     }
 
 }
