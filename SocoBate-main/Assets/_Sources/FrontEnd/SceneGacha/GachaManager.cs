@@ -1,95 +1,103 @@
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
 using System.Linq;
+using Context;
+using Database;
+using System;
+using Models;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gacha
 {
     public class GachaManagerCS : MonoBehaviour
     {
-        public TextMeshProUGUI resultText;    // For displaying the result (Hero name)
-        public GameObject heroSpritePrefab;   // The prefab for displaying the hero sprite (if needed)
-        public Transform spawnPoint;          // Point where the hero sprite will spawn
+        public TextMeshProUGUI resultText;    // For displaying the result (Unit name)
+        public GameObject heroSpritePrefab;   // The prefab for displaying the unit sprite (if needed)
+        public Transform spawnPoint;          // Point where the unit sprite will spawn
 
-        private List<Hero> heroPool = new List<Hero>();   // Pool of all possible heroes for the gacha
-
-        // Example Rarities
-        private Dictionary<string, int> rarityChances = new Dictionary<string, int>
+        private Dictionary<int, int> rarityChances = new Dictionary<int, int>
         {
-            { "Common", 50 },   // 50% chance
-            { "Rare", 30 },     // 30% chance
-            { "Epic", 15 },     // 15% chance
-            { "Legendary", 5 }  // 5% chance
+            { 1, 50 },   // 50% chance for Rarity 1 (Common)
+            { 2, 20 },   // 20% chance for Rarity 2 (Uncommon)
+            { 3, 10 },   // 10% chance for Rarity 3 (Rare)
+            { 4, 10 },   // 10% chance for Rarity 4 (Epic)
+            { 5, 7 },    // 7% chance for Rarity 5 (Legendary)
+            { 6, 3 }     // 3% chance for Rarity 6 (Mythic)
         };
 
-        // Example: Fill hero pool (this can be expanded with more heroes)
         private void Start()
         {
-            heroPool.Add(new Hero(1, "Fire Knight", "Sprite_1", "Common"));
-            heroPool.Add(new Hero(2, "Water Mage", "Sprite_2", "Rare"));
-            heroPool.Add(new Hero(3, "Earth Titan", "Sprite_3", "Epic"));
-            heroPool.Add(new Hero(4, "Wind Assassin", "Sprite_4", "Legendary"));
-            // Add more heroes as needed
+            UnitContext.LoadAllUnitsFromSerializedData(); // Load all units from the SerializedObjects
         }
 
-        // Simulate pulling from the gacha
-        public void PullGacha()
+        public async void PullGacha()
         {
+            // Get the pulled unit based on rarity chances
+            BaseUnit pulledUnit = GetRandomUnitFromPool();
 
-            // Get the pulled hero
-            Hero pulledHero = GetRandomHeroFromPool();
+            // Display results and send unit data to the player's account
+            ShowResult(pulledUnit);
 
-            // Display results
-            ShowResult(pulledHero);
+            // Add the unit to the account and database
+            await AddUnitToAccount(pulledUnit);
         }
 
-        // Get a random hero based on the rarity chances
-        private Hero GetRandomHeroFromPool()
+        // Get a random unit based on rarity chances
+        private BaseUnit GetRandomUnitFromPool()
         {
-            // Get total chance
-            int totalChance = rarityChances.Values.Sum();
-
-            // Generate random number to pick a hero based on chance distribution
-            int randomValue = UnityEngine.Random.Range(0, totalChance);
+            int totalChance = rarityChances.Values.Sum();  // Sum up all the rarity chances
+            int randomValue = UnityEngine.Random.Range(0, totalChance);  // Get a random value in the total chance range
             int cumulativeChance = 0;
 
-            // Find hero based on the chance
-            foreach (var hero in heroPool)
+            // Loop through all units in the UnitContext's allUnits list and check their rarity
+            foreach (var unit in UnitContext.allUnits)
             {
-                cumulativeChance += GetHeroRarityChance(hero.rarity);
+                int unitRarity = unit.rarity;  // Get the rarity of the unit
+                cumulativeChance += GetUnitRarityChance(unitRarity);  // Add the chance for that rarity
 
+                // If the random value is within the cumulative range, we have our unit
                 if (randomValue < cumulativeChance)
                 {
-                    return hero;
+                    return unit;
                 }
             }
 
-            return null; // Fallback, shouldn't reach here
+            return null;  // Fallback if something goes wrong (should not reach here)
         }
 
-        // Get the chance value for a given rarity
-        private int GetHeroRarityChance(string rarity)
+        // Get the chance for a given rarity
+        private int GetUnitRarityChance(int rarity)
         {
             return rarityChances.ContainsKey(rarity) ? rarityChances[rarity] : 0;
         }
 
-        // Display the result
-        private void ShowResult(Hero hero)
+        private void ShowResult(BaseUnit unit)
         {
-            if (hero != null)
+            if (unit != null)
             {
-                // Display the hero name
-                resultText.text = $"You pulled: {hero.name} ({hero.rarity})";
-                
-                // Optionally, instantiate the hero sprite prefab at a certain position
-                GameObject heroSprite = Instantiate(heroSpritePrefab, spawnPoint.position, Quaternion.identity);
-                // Assuming you have a sprite setup for each hero sprite reference
-                heroSprite.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(hero.spriteId);
+                // Display the unit name and rarity
+                resultText.text = $"You pulled: {unit.unitName} (Rarity: {unit.rarity})";
+
+                // Optionally, instantiate the unit sprite prefab at a certain position
+                GameObject unitSprite = Instantiate(heroSpritePrefab, spawnPoint.position, Quaternion.identity);
+                unitSprite.GetComponent<SpriteRenderer>().sprite = unit.unitSprite;
             }
             else
             {
-                resultText.text = "No hero pulled!";
+                resultText.text = "No unit pulled!";
+            }
+        }
+
+        private async Task AddUnitToAccount(BaseUnit unit)
+        {
+            if (unit != null)
+            {
+                Guid accountId = UserContext.account.AccountId;  // Get the logged-in account ID
+                Debug.Log($"Unit drawn: {unit.unitName} | Account ID: {accountId} | Rarity: {unit.rarity}");
+
+                // Insert the new hero into the account and the database
+                await UnitController.NewHeroUnlocked(accountId, unit.unitName);  // Pass the unit name (string) to match the DB schema
             }
         }
     }

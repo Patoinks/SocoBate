@@ -499,7 +499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resultText: {fileID: 335282951}
   heroSpritePrefab: {fileID: 1919940938988584275, guid: ca0e3a4387474284ba4cf3f63d39d08a, type: 3}
-  spawnPoint: {fileID: 0}
+  spawnPoint: {fileID: 283785657}
 --- !u!4 &751586111
 Transform:
   m_ObjectHideFlags: 0

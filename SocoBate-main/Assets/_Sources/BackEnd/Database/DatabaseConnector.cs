@@ -13,7 +13,7 @@ namespace Database
         public static string ipv4 = "13.39.219.186";
         public static string database = "AuraGacha";
         public static string username = "martim123";
-        public static string password = "#Martim123"; // encrypt?
+        public static string password = "#Timtocas2003"; // encrypt?
         public static bool ExtensionOfNativeClass = true;
 
         public static string connectionString

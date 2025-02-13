@@ -25,6 +25,11 @@ namespace Context
             friends.Clear(); // Also clear friends list when logging out
         }
 
+        public static void ClearFriends()
+        {
+            friends.Clear(); // Also clear friends list when logging out
+        }
+
         // Method to set the list of friends
         public static void SetFriends(List<Account> friendList)
         {

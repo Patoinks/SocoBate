@@ -6,6 +6,7 @@ using System;
 using Database;
 using Models;
 using TMPro;
+using System.Threading.Tasks;
 
 public class FriendList : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class FriendList : MonoBehaviour
 
     void Start()
     {
+        PopulateRow();
+    }
+
+    public async void OnClickRefreshButton()
+    {
+        await Database.FriendshipController.GetFriends(Context.UserContext.account.AccountId);
         PopulateRow();
     }
 
