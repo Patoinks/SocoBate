@@ -22,7 +22,7 @@ MonoBehaviour:
   baseInt: 100
   baseEvasion: 0
   baseLuck: 0
-  rarity: 1
+  rarity: 5
   normalAttackEffectType: Damage
   normalAttackTargetedStat: Hp
   normalAttackScalingAttribute: Int

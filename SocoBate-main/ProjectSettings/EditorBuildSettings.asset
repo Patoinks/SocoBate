@@ -9,24 +9,24 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/_Scenes/SceneLogin.unity
+    path: Assets/_Scenes/LoginScene.unity
     guid: c6750eb595f67fb4a9b6efa2126d548c
   - enabled: 1
-    path: Assets/_Scenes/SceneMenuMain.unity
+    path: Assets/_Scenes/MainMenuScene.unity
     guid: a7a306d8b9123f546854729ce16aaf81
   - enabled: 1
-    path: Assets/_Scenes/SceneTests.unity
+    path: Assets/_Scenes/TestsScene.unity
     guid: 4406f6612488ac94ba32de777fe1bbca
   - enabled: 0
     path: Assets/Scenes/GachaScene.unity
     guid: 1d75c8fc82edded419e5f73e05bc2c3e
   - enabled: 1
-    path: Assets/_Scenes/SceneGacha.unity
+    path: Assets/_Scenes/GachaScene.unity
     guid: 33727a0ce17fd62439b3668dde0ad5cc
   - enabled: 1
-    path: Assets/_Scenes/SceneGame.unity
+    path: Assets/_Scenes/FightScene.unity
     guid: afbd4bc4fc39fd347b2017b62726a95b
   - enabled: 1
-    path: Assets/_Scenes/TeamSetup.unity
+    path: Assets/_Scenes/TeamScene.unity
     guid: 96b58e3f511f35c40ae7aa9caba3a0cb
   m_configObjects: {}

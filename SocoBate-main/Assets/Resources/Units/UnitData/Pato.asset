@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pato
   m_EditorClassIdentifier: 
   unitName: Pato
-  unitSprite: {fileID: 21300000, guid: 1507f54c4cf29624db879c2df33e663a, type: 3}
+  unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
   baseHp: 0
   baseDef: 0
@@ -22,7 +22,7 @@ MonoBehaviour:
   baseInt: 0
   baseEvasion: 0
   baseLuck: 0
-  rarity: 3
+  rarity: 4
   normalAttackEffectType: 
   normalAttackTargetedStat: 
   normalAttackScalingAttribute: 

@@ -7,50 +7,95 @@ namespace Context
     public static class TeamContext
     {
         // Store the current team setup for the logged-in account
-        public static List<TeamSetup> teamSetup { get; set; } = new List<TeamSetup>();
+        public static List<TeamSetup> PlayerTeam { get; set; } = new List<TeamSetup>();
+        public static List<TeamSetup> EnemyTeam { get; set; } = new List<TeamSetup>();
 
-        // Method to set the team setup (store in TeamContext)
-        public static void SetTeam(List<TeamSetup> team)
+        // Method to set the player team setup
+        public static void SetPlayerTeam(List<TeamSetup> team)
         {
-            teamSetup = team;
+            PlayerTeam = team;
         }
 
-        // Method to clear the current team setup (e.g., when logging out or resetting)
-        public static void ClearTeam()
+        // Method to set the enemy team setup
+        public static void SetEnemyTeam(List<TeamSetup> team)
         {
-            teamSetup.Clear(); // Clear the team setup when logging out or resetting
+            EnemyTeam = team;
         }
 
-        // Method to retrieve the current team setup
-        public static List<TeamSetup> GetTeam()
+        // Method to clear the player team setup
+        public static void ClearPlayerTeam()
         {
-            return teamSetup;
+            PlayerTeam.Clear();
         }
 
-        // Method to retrieve the unit name for a specific hex (position)
-        public static string GetUnitByHex(int hexId)
+        // Method to clear the enemy team setup
+        public static void ClearEnemyTeam()
         {
-            // Find the unit in the teamSetup based on the HexId
-            var unit = teamSetup.Find(t => t.HexId == hexId);
-            return unit?.UnitName; // Return null if not found
+            EnemyTeam.Clear();
         }
 
-        // Method to update a unit in a specific hex position
-        public static void SetUnitInHex(int hexId, string unitName)
+        // Method to clear both teams
+        public static void ClearAllTeams()
         {
-            // Check if the unit already exists in the team setup
-            var index = teamSetup.FindIndex(t => t.HexId == hexId);
+            PlayerTeam.Clear();
+            EnemyTeam.Clear();
+        }
+
+        // Method to retrieve the current player team setup
+        public static List<TeamSetup> GetPlayerTeam()
+        {
+            return PlayerTeam;
+        }
+
+        // Method to retrieve the current enemy team setup
+        public static List<TeamSetup> GetEnemyTeam()
+        {
+            return EnemyTeam;
+        }
+
+        // Method to retrieve the unit name for a specific hex in the player's team
+        public static string GetPlayerUnitByHex(int hexId)
+        {
+            var unit = PlayerTeam.Find(t => t.HexId == hexId);
+            return unit?.UnitName;
+        }
+
+        // Method to retrieve the unit name for a specific hex in the enemy's team
+        public static string GetEnemyUnitByHex(int hexId)
+        {
+            var unit = EnemyTeam.Find(t => t.HexId == hexId);
+            return unit?.UnitName;
+        }
+
+        // Method to update a unit in a specific hex position for the player's team
+        public static void SetPlayerUnitInHex(int hexId, string unitName)
+        {
+            var index = PlayerTeam.FindIndex(t => t.HexId == hexId);
 
             if (index >= 0)
             {
-                // Update the existing unit in that hex
-                teamSetup[index].UnitName = unitName;
+                PlayerTeam[index].UnitName = unitName;
             }
             else
             {
-                // Add a new unit to that hex if it doesn't exist
-                teamSetup.Add(new TeamSetup(Guid.Empty, hexId, unitName)); // Assuming Guid.Empty for now, update this as needed
+                PlayerTeam.Add(new TeamSetup(Guid.Empty, hexId, unitName));
+            }
+        }
+
+        // Method to update a unit in a specific hex position for the enemy's team
+        public static void SetEnemyUnitInHex(int hexId, string unitName)
+        {
+            var index = EnemyTeam.FindIndex(t => t.HexId == hexId);
+
+            if (index >= 0)
+            {
+                EnemyTeam[index].UnitName = unitName;
+            }
+            else
+            {
+                EnemyTeam.Add(new TeamSetup(Guid.Empty, hexId, unitName));
             }
         }
     }
 }
+ 
