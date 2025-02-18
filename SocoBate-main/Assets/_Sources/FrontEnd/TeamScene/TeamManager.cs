@@ -29,12 +29,11 @@ public class TeamManager : MonoBehaviour
             Debug.Log("No units available in the ownedUnits list.");
         }
     }
-
     public void GenerateUnitRows()
     {
         Debug.Log("Generating unit rows: Owned Units vs. Team Setup...");
 
-        // Clear existing UI
+        // Clear existing UI rows before generating new ones
         foreach (Transform child in scrollViewContent)
         {
             Destroy(child.gameObject);
@@ -44,71 +43,52 @@ public class TeamManager : MonoBehaviour
         List<OwnedUnits> ownedUnits = UnitContext.ownedUnits; // Player's owned units
         List<TeamSetup> teamUnits = TeamContext.GetPlayerTeam(); // Units currently placed
 
-        if (ownedUnits.Count == 0)
+        if (ownedUnits == null || ownedUnits.Count == 0)
         {
             Debug.Log("No units owned by the player.");
             return;
         }
 
+        Debug.Log($"Total owned units: {ownedUnits.Count}");
+
         foreach (OwnedUnits unit in ownedUnits)
         {
-            Debug.Log($"Displaying owned unit: {unit.unitId}");
+            GameObject row = Instantiate(ownedUnitRowPrefab, scrollViewContent);
 
-            // Instantiate unit row in the UI
-            GameObject ownedUnitRow = Instantiate(ownedUnitRowPrefab, scrollViewContent);
-            TextMeshProUGUI unitNameText = ownedUnitRow.transform.Find("Nome").GetComponent<TextMeshProUGUI>();
+            if (row == null)
+            {
+                Debug.LogError("Failed to instantiate ownedUnitRowPrefab!");
+                continue;
+            }
 
+            // Find UI elements within the row
+            TMP_Text unitNameText = row.transform.Find("Nome")?.GetComponent<TMP_Text>();
+            Button selectButton = row.transform.Find("SelectUnit")?.GetComponent<Button>();
+
+            // Set data
             if (unitNameText != null)
             {
                 unitNameText.text = unit.unitId;
             }
             else
             {
-                Debug.LogError("Unit name text not found!");
+                Debug.LogError("Unit name text not found in prefab!");
             }
 
-            // Button setup
-            Button selectButton = ownedUnitRow.GetComponentInChildren<Button>();
             if (selectButton != null)
             {
-                selectButton.onClick.AddListener(() => OnRowButtonClicked(unit.unitId, ownedUnitRow));
-            }
-        }
-
-        // Spawn units that are already in the team setup
-        foreach (TeamSetup teamUnit in teamUnits)
-        {
-            Debug.Log($"Placing team unit {teamUnit.UnitName} on hex {teamUnit.HexId}");
-
-            if (teamUnit.HexId >= 1 && teamUnit.HexId <= hexes.Count)
-            {
-                GameObject selectedHex = hexes[teamUnit.HexId - 1]; // Adjust index
-                if (selectedHex.transform.childCount == 0)
-                {
-                    Vector3 spawnPosition = selectedHex.transform.position + new Vector3(0, 50.0f, 0);
-                    GameObject spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
-                    spawnedUnit.transform.SetParent(selectedHex.transform, true);
-                    spawnedUnit.transform.localScale = Vector3.one;
-                    spawnedUnit.name = teamUnit.UnitName;
-
-                    // Attach remove functionality
-                    Button unitButton = spawnedUnit.GetComponent<Button>() ?? spawnedUnit.AddComponent<Button>();
-                    unitButton.onClick.RemoveAllListeners();
-                    unitButton.onClick.AddListener(() => RemoveUnitFromHex(spawnedUnit));
-
-                    Debug.Log($"Spawned {teamUnit.UnitName} in hex {teamUnit.HexId}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Hex {teamUnit.HexId} already contains a unit, skipping spawn.");
-                }
+                selectButton.onClick.RemoveAllListeners(); // Avoid duplicate listeners
+                selectButton.onClick.AddListener(() => OnRowButtonClicked(unit.unitId, row));
             }
             else
             {
-                Debug.LogError($"Invalid HexId {teamUnit.HexId} for unit {teamUnit.UnitName}.");
+                Debug.LogError($"Select button not found for unit {unit.unitId}.");
             }
         }
+
+        Debug.Log("Finished generating all unit rows.");
     }
+
 
     public void OnRowButtonClicked(string unitId, GameObject row)
     {
