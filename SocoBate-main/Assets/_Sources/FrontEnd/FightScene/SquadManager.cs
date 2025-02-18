@@ -9,10 +9,6 @@ public class SquadManager : MonoBehaviour
     public GameObject[] playerHexes;  // Assign player hexes in Unity (Hex1 -> Hex9)
     public GameObject[] enemyHexes;   // Assign enemy hexes in Unity (Hex1 -> Hex9)
 
-    // Unit prefabs for Player and Enemy
-    public GameObject[] unitPrefabs;  // Player unit prefabs (Indexed)
-    public GameObject[] enemyUnitPrefabs; // Enemy unit prefabs (Indexed)
-
     private Dictionary<int, Transform> playerHexPositions = new Dictionary<int, Transform>();
     private Dictionary<int, Transform> enemyHexPositions = new Dictionary<int, Transform>();
 
@@ -35,32 +31,30 @@ public class SquadManager : MonoBehaviour
         Dictionary<string, int> enemySquad = ConvertTeamToDictionary(TeamContext.GetEnemyTeam());
 
         // Spawn both player and enemy squads
-        SpawnSquad(playerSquad, unitPrefabs, playerHexPositions, false);
-        SpawnSquad(enemySquad, enemyUnitPrefabs, enemyHexPositions, true);
+        SpawnSquad(playerSquad, playerHexPositions, false);
+        SpawnSquad(enemySquad, enemyHexPositions, true);
     }
 
     // Convert List<TeamSetup> to Dictionary<string, int> (UnitName -> HexID)
-Dictionary<string, int> ConvertTeamToDictionary(List<TeamSetup> teamList)
-{
-    Dictionary<string, int> squad = new Dictionary<string, int>();
-    foreach (var unit in teamList)
+    Dictionary<string, int> ConvertTeamToDictionary(List<TeamSetup> teamList)
     {
-        if (!string.IsNullOrEmpty(unit.UnitName))
+        Dictionary<string, int> squad = new Dictionary<string, int>();
+        foreach (var unit in teamList)
         {
-            squad[unit.UnitName] = unit.HexId; // Directly using UnitName as a key
+            if (!string.IsNullOrEmpty(unit.UnitName))
+            {
+                squad[unit.UnitName] = unit.HexId; // Directly using UnitName as a key
+            }
+            else
+            {
+                Debug.LogError("UnitName is null or empty in TeamSetup");
+            }
         }
-        else
-        {
-            Debug.LogError("UnitName is null or empty in TeamSetup");
-        }
+        return squad;
     }
-    return squad;
-}
-
-
 
     // Function to spawn squad units
-    void SpawnSquad(Dictionary<string, int> squadData, GameObject[] unitPrefabs, Dictionary<int, Transform> hexPositions, bool isEnemy)
+    void SpawnSquad(Dictionary<string, int> squadData, Dictionary<int, Transform> hexPositions, bool isEnemy)
     {
         foreach (var entry in squadData)
         {
@@ -73,8 +67,8 @@ Dictionary<string, int> ConvertTeamToDictionary(List<TeamSetup> teamList)
                 continue;
             }
 
-            // Find unit prefab based on name (Assuming unitPrefabs are named accordingly)
-            GameObject unitPrefab = FindUnitPrefab(unitPrefabs, unitName);
+            // Find unit prefab by name (now only loading from Resources)
+            GameObject unitPrefab = FindUnitPrefab(unitName);
 
             if (unitPrefab == null)
             {
@@ -100,16 +94,19 @@ Dictionary<string, int> ConvertTeamToDictionary(List<TeamSetup> teamList)
         }
     }
 
-    // Function to find unit prefab by name
-    GameObject FindUnitPrefab(GameObject[] unitPrefabs, string unitName)
+    // Function to find unit prefab by name, only loading from Resources/Units/Prefabs/
+    GameObject FindUnitPrefab(string unitName)
     {
-        foreach (var prefab in unitPrefabs)
+        string cleanedName = unitName.Replace(".prefab", ""); // Ensure no .prefab extension
+
+        // Load prefab from Resources/Units/Prefabs/
+        GameObject loadedPrefab = Resources.Load<GameObject>($"UnitsPrefabs/{cleanedName}");
+
+        if (loadedPrefab == null)
         {
-            if (prefab.name == unitName)
-            {
-                return prefab;
-            }
+            Debug.LogError($"Prefab '{cleanedName}' not found in Resources/UnitsPrefabs/.");
         }
-        return null;
+
+        return loadedPrefab;
     }
 }

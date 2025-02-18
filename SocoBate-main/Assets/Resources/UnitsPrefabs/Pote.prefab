@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8947110810087924051}
   - component: {fileID: 7116458384753247152}
   m_Layer: 5
-  m_Name: Chico
+  m_Name: Pote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: ed706545171f1f74e8679ee43181a7d7, type: 3}
+  m_Texture: {fileID: 2800000, guid: 1de003e295a7ed74aa24c3ed3366650a, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
