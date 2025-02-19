@@ -14,6 +14,18 @@ public class SquadManager : MonoBehaviour
 
     void Start()
     {
+        if (playerHexes == null || playerHexes.Length == 0)
+        {
+            Debug.LogError("Player hexes are not assigned in the inspector.");
+            return;
+        }
+
+        if (enemyHexes == null || enemyHexes.Length == 0)
+        {
+            Debug.LogError("Enemy hexes are not assigned in the inspector.");
+            return;
+        }
+
         // Store player hex positions
         for (int i = 0; i < playerHexes.Length; i++)
         {
@@ -27,8 +39,23 @@ public class SquadManager : MonoBehaviour
         }
 
         // Retrieve teams from TeamContext
-        Dictionary<string, int> playerSquad = ConvertTeamToDictionary(TeamContext.GetPlayerTeam());
-        Dictionary<string, int> enemySquad = ConvertTeamToDictionary(TeamContext.GetEnemyTeam());
+        List<TeamSetup> playerTeam = TeamContext.GetPlayerTeam();
+        List<TeamSetup> enemyTeam = TeamContext.GetEnemyTeam();
+
+        if (playerTeam == null || playerTeam.Count == 0)
+        {
+            Debug.LogError("Player team is empty or null.");
+            return;
+        }
+
+        if (enemyTeam == null || enemyTeam.Count == 0)
+        {
+            Debug.LogError("Enemy team is empty or null.");
+            return;
+        }
+
+        Dictionary<string, int> playerSquad = ConvertTeamToDictionary(playerTeam);
+        Dictionary<string, int> enemySquad = ConvertTeamToDictionary(enemyTeam);
 
         // Spawn both player and enemy squads
         SpawnSquad(playerSquad, playerHexPositions, false);
@@ -43,7 +70,7 @@ public class SquadManager : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(unit.UnitName))
             {
-                squad[unit.UnitName] = unit.HexId; // Directly using UnitName as a key
+                squad[unit.UnitName] = unit.HexId;
             }
             else
             {
@@ -56,6 +83,12 @@ public class SquadManager : MonoBehaviour
     // Function to spawn squad units
     void SpawnSquad(Dictionary<string, int> squadData, Dictionary<int, Transform> hexPositions, bool isEnemy)
     {
+        if (squadData.Count == 0)
+        {
+            Debug.LogError($"{(isEnemy ? "Enemy" : "Player")} squad is empty, nothing to spawn.");
+            return;
+        }
+
         foreach (var entry in squadData)
         {
             string unitName = entry.Key;
@@ -87,7 +120,7 @@ public class SquadManager : MonoBehaviour
             // Rotate enemy units
             if (isEnemy)
             {
-                unit.transform.rotation = Quaternion.Euler(0f, -180f, 0f);
+                unit.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             }
 
             Debug.Log($"Spawned {(isEnemy ? "Enemy" : "Player")} Unit {unitName} at Hex {hexID}");
@@ -97,7 +130,7 @@ public class SquadManager : MonoBehaviour
     // Function to find unit prefab by name, only loading from Resources/Units/Prefabs/
     GameObject FindUnitPrefab(string unitName)
     {
-        string cleanedName = unitName.Replace(".prefab", ""); // Ensure no .prefab extension
+        string cleanedName = unitName.Replace(".prefab", "");
 
         // Load prefab from Resources/Units/Prefabs/
         GameObject loadedPrefab = Resources.Load<GameObject>($"UnitsPrefabs/{cleanedName}");

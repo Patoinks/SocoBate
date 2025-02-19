@@ -37,19 +37,46 @@ public class MenuPrincipalManager : MonoBehaviour
         string username = nomeUsuarioInput.text;
         string password = senhaInput.text;
 
-        try
+ try
         {
-            // Call the Login function from AuthController
+            // Call the Login function from AccountController
             Guid userId = await AccountController.Login(username, password);
 
             if (userId != Guid.Empty)
             {
                 Debug.Log("[LOGIN] Login successful. User ID: " + userId);
-                Context.UserContext.account.AccountId = userId;
-                // Proceed to next menu or do other actions upon successful login
+
+                // Load Friends
+                await FriendshipController.LoadFriends(userId);
+
+                // Load Units
+                Context.UnitContext.LoadAllUnitsFromSerializedData();
+                await UnitController.GetOwnedUnits(userId);
+
+                // Load Team from Database and Store in Context
+                List<(int HexId, string UnitName)> teamSetup = await TeamController.LoadTeam(userId);
+                if (teamSetup.Count > 0)
+                {
+                    Debug.Log($"[LOGIN] Loaded {teamSetup.Count} team units.");
+
+                    // Convert to TeamSetup objects
+                    List<TeamSetup> teamList = new List<TeamSetup>();
+                    foreach (var (hexId, unitName) in teamSetup)
+                    {
+                        Debug.Log($"[LOGIN] Storing {unitName} at Hex {hexId}");
+                        teamList.Add(new TeamSetup(userId, hexId, unitName));
+                    }
+
+                    TeamContext.SetPlayerTeam(teamList);
+                }
+                else
+                {
+                    Debug.Log("[LOGIN] No team found for this user.");
+                }
+
+                // Switch Scene
                 int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
                 SceneManager.LoadScene(currentSceneIndex + 1);
-
             }
             else
             {

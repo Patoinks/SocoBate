@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6deebea15a234cb40bd98a84921b3297, type: 3}
+  m_Name: Juro
+  m_EditorClassIdentifier: 
+  unitName: Chico
+  unitSprite: {fileID: 0}
+  splashImage: {fileID: 0}
+  baseHp: 100
+  baseDef: 100
+  baseSpeed: 100
+  baseStr: 100
+  baseInt: 100
+  baseEvasion: 0
+  baseLuck: 0
+  rarity: 5
+  normalAttack:
+    effects:
+    - effectType: 0
+      targetType: 4
+      targetedStat: HP
+      scalingAttribute: INT
+      scalingPercent: 10
+      baseValue: 100
+      isPercentage: 0
+      statusEffect:
+        ccType: 6
+        duration: 3
+        tickDamage: 5
+        scalingAttribute: INT
+        scalingPercent: 5
+        isPercentage: 1
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: AOE Damage as Rats
+    turnsToSpecial: 0
+  passiveAbility:
+    effects:
+    - effectType: 3
+      targetType: 4
+      targetedStat: P.DEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    - effectType: 3
+      targetType: 4
+      targetedStat: M.DEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Rots enemies Armor
+    turnsToSpecial: 0
+  specialAttack:
+    effects: []
+    description: Summons a Rat as a Unit in frontline
+    turnsToSpecial: 6

@@ -32,7 +32,7 @@ public class ConfirmButton : MonoBehaviour
             if (successful)
             {
                 // Load the main menu scene after successful nickname change
-                SceneManager.LoadScene("SceneMenuMain");
+                SceneManager.LoadScene("MainMenuScene");
             }
             else
             {
