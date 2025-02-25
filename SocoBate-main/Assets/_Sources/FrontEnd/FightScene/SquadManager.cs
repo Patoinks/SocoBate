@@ -15,6 +15,7 @@ public class SquadManager : MonoBehaviour
     public List<BaseUnit> playerUnits = new List<BaseUnit>(); // Add this to hold player units for the battle
     public List<BaseUnit> enemyUnits = new List<BaseUnit>();  // Add this to hold enemy units for the battle
 
+    public HealthBar healthBar;
     private Dictionary<BaseUnit, GameObject> unitPrefabs = new Dictionary<BaseUnit, GameObject>(); // Store unit prefabs
 
     void Start()
@@ -83,11 +84,13 @@ public class SquadManager : MonoBehaviour
             {
                 if (isEnemy)
                 {
+                    healthBar.Initialize(clonedUnit.baseHp, spawnedUnit.transform);
                     enemyUnits.Add(clonedUnit);
                     Debug.Log($"Added enemy unit: {clonedUnit.name}");
                 }
                 else
                 {
+                    healthBar.Initialize(clonedUnit.baseHp, spawnedUnit.transform);
                     playerUnits.Add(clonedUnit);
                     Debug.Log($"Added player unit: {clonedUnit.name}");
                 }
@@ -97,6 +100,9 @@ public class SquadManager : MonoBehaviour
         // Log the unit counts after spawning
         Debug.Log("Player Units Count: " + playerUnits.Count);
         Debug.Log("Enemy Units Count: " + enemyUnits.Count);
+
+        
+
     }
 
     private GameObject FindUnitPrefab(string unitName)

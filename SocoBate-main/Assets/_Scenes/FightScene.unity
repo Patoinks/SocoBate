@@ -2090,6 +2090,8 @@ GameObject:
   - component: {fileID: 1734219104}
   - component: {fileID: 1734219105}
   - component: {fileID: 1734219106}
+  - component: {fileID: 1734219108}
+  - component: {fileID: 1734219107}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -2126,6 +2128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerUnits: []
   enemyUnits: []
+  healthBar: {fileID: 1734219107}
   squadManager: {fileID: 1734219105}
   uiFight: {fileID: 1734219106}
 --- !u!114 &1734219105
@@ -2162,6 +2165,7 @@ MonoBehaviour:
   - {fileID: 305718849}
   playerUnits: []
   enemyUnits: []
+  healthBar: {fileID: 1734219107}
 --- !u!114 &1734219106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2174,6 +2178,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bf258efc681da9439a6c844ecab7f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1734219107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734219102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b17377d93b5437747b6b916116a2949d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthSlider: {fileID: 3835994278282972481, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
+  healthFill: {fileID: 3511211640808256581, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
+  healthBarPrefab: {fileID: 2773581845477676462, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
+--- !u!114 &1734219108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734219102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d236990c3e5db46b8c77b0ae3966d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectTextPrefab: {fileID: 8354019989141877516, guid: c3b5abfc62f2eaa448de9e618521c070, type: 3}
+  uiCanvas: {fileID: 1847682392}
 --- !u!1 &1795333022
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ public class DuelScript : MonoBehaviour
     public List<BaseUnit> enemyUnits;
     private List<BaseUnit> allUnits;
 
+    public HealthBar healthBar; 
     public SquadManager squadManager;
     public UIFight uiFight;
 
@@ -248,6 +249,7 @@ public class DuelScript : MonoBehaviour
 
             finalDamage = Mathf.Max(finalDamage, 0); // Ensure damage cannot go below 0
             target.baseHp -= finalDamage; // Apply the damage to the target's HP
+            healthBar.UpdateHealth(target.baseHp);  
             Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {target.baseHp}");
         }
         else if (effect.effectType == BaseUnit.EffectType.Heal)

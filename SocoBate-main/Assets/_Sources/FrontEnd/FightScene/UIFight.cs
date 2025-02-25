@@ -53,7 +53,7 @@ public class UIFight : MonoBehaviour
         unit.transform.position = end;
     }
 
-    private GameObject FindUnitInHexContainer(string unitName, BaseUnit unit)
+    public GameObject FindUnitInHexContainer(string unitName, BaseUnit unit)
     {
         // Iterate through hexes by name (e.g., Hex1, Hex2, ..., Hex9, Hex1J2, Hex2J2, ..., Hex9J2)
         for (int i = 1; i <= 9; i++)
