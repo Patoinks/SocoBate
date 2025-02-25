@@ -14,12 +14,13 @@ namespace Database
         {
             string query = @"
             INSERT INTO Units 
-                (name, base_hp, base_def, base_speed, base_str, base_int, base_evasion, base_luck, rarity)
+                (name, base_hp, m_def, p_def, base_speed, base_str, base_int, base_evasion, base_luck, rarity)
             VALUES 
-                (@name, @hp, @def, @speed, @str, @int, @evasion, @luck, @rarity)
+                (@name, @hp, @mDef, @pDef, @speed, @str, @int, @evasion, @luck, @rarity)
             ON DUPLICATE KEY UPDATE 
                 base_hp = COALESCE(@hp, base_hp),
-                base_def = COALESCE(@def, base_def),
+                m_def = COALESCE(@mDef, m_def),
+                p_def = COALESCE(@pDef, p_def),
                 base_speed = COALESCE(@speed, base_speed),
                 base_str = COALESCE(@str, base_str),
                 base_int = COALESCE(@int, base_int),
@@ -31,7 +32,8 @@ namespace Database
             {
                 { "@name", unit.unitName },
                 { "@hp", unit.baseHp },
-                { "@def", unit.baseDef },
+                { "@mDef", unit.mDef }, // Changed baseDef to mDef
+                { "@pDef", unit.pDef }, // Changed baseDef to pDef
                 { "@speed", unit.baseSpeed },
                 { "@str", unit.baseStr },
                 { "@int", unit.baseInt },

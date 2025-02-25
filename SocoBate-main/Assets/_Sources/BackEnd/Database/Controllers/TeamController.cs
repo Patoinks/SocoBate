@@ -22,7 +22,7 @@ namespace Database
             Debug.Log($"[SaveTeam] AccountId: {accountId}, Units to save: {teamSetup.Count}");
 
             // Remove old team setup
-            string deleteQuery = "DELETE FROM TeamSetup WHERE AccountId = @accountId";
+            string deleteQuery = "DELETE FROM TeamSetup WHERE account_id = @accountId";  // Corrected here
             var deleteParams = new Dictionary<string, object> { { "@accountId", accountId } };
 
             Debug.Log($"[SaveTeam] Deleting previous team setup for AccountId: {accountId}");
@@ -32,7 +32,7 @@ namespace Database
             // Insert new team setup
             string insertQuery = @"
             INSERT INTO TeamSetup (account_id, hex_id, unit_name)
-            VALUES (@accountId, @hexId, @unitName)";
+            VALUES (@accountId, @hexId, @unitName)";  // Corrected here
 
             foreach (var (hexId, unitName) in teamSetup)
             {
@@ -82,15 +82,17 @@ namespace Database
         }
 
         // Retrieve an enemy squad from the database by AccountId
-        public async static Task<List<(int HexId, string UnitName)>> GetSquadByAccountId(Guid enemyAccountId)
+        public async static Task GetSquadByNickname(string enemyNickname)
         {
-            Debug.Log($"[GetSquadByAccountId] Retrieving squad for AccountId: {enemyAccountId}");
+            Debug.Log($"[GetSquadByNickname] Retrieving squad for Nickname: {enemyNickname}");
 
-            string query = "SELECT hex_id, unit_name FROM TeamSetup WHERE account_id = @enemyAccountId";
-            var parameters = new Dictionary<string, object> { { "@enemyAccountId", enemyAccountId } };
+            // Query using the nickname instead of AccountId
+            string query = "SELECT hex_id, unit_name FROM TeamSetup WHERE account_id = (SELECT account_id FROM Account WHERE nickname = @enemyNickname)";
+            var parameters = new Dictionary<string, object> { { "@enemyNickname", enemyNickname } };
 
+            // Fetch squad data from the database
             List<object[]> result = await DatabaseConnector.QueryDatabaseAsync(query, parameters);
-            List<(int HexId, string UnitName)> enemySquad = new List<(int, string)>();
+            List<TeamSetup> enemySquad = new List<TeamSetup>();
 
             if (result != null)
             {
@@ -98,12 +100,42 @@ namespace Database
                 {
                     int hexId = Convert.ToInt32(row[0]);
                     string unitName = Convert.ToString(row[1]);
-                    enemySquad.Add((hexId, unitName));
+
+                    // Create a TeamSetup object from the tuple values and add it to the enemySquad list
+                    enemySquad.Add(new TeamSetup(Guid.Empty, hexId, unitName));
                 }
             }
 
-            Debug.Log($"[GetSquadByAccountId] Retrieved {enemySquad.Count} units for enemy squad.");
-            return enemySquad;
+            // Log the result for debugging
+            Debug.Log($"[GetSquadByNickname] Retrieved {enemySquad.Count} units for enemy squad.");
+
+            // Add the squad to the context (assuming enemy squad is stored in TeamContext)
+            TeamContext.EnemyTeam = enemySquad;
+
+            // Optionally log the added squad data
+            Debug.Log("[GetSquadByNickname] Enemy squad added to context.");
+        }
+
+
+
+        // Delete the team setup for the given accountId
+        public async static Task<bool> DeleteTeam(Guid accountId)
+        {
+            try
+            {
+                string deleteQuery = "DELETE FROM TeamSetup WHERE account_id = @accountId";  // Corrected here
+                var parameters = new Dictionary<string, object> { { "@accountId", accountId } };
+
+                // Execute the delete query
+                await DatabaseConnector.QueryDatabaseAsync(deleteQuery, parameters);
+                Debug.Log("[DeleteTeam] Existing team setup deleted successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[DeleteTeam] Failed to delete team: {ex.Message}");
+                return false;
+            }
         }
     }
 }

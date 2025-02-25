@@ -2339,8 +2339,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2113435305}
-        m_TargetAssemblyTypeName: FriendListManager, Assembly-CSharp
-        m_MethodName: OnClickTeamButton
+        m_TargetAssemblyTypeName: ButtonsScripts, Assembly-CSharp
+        m_MethodName: OnClickMailBox
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3995,7 +3995,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -672.7148, y: 385.5}
+  m_AnchoredPosition: {x: -672.72, y: 394.3}
   m_SizeDelta: {x: 156.571, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1362146660
@@ -5218,9 +5218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5f393e7d0bce341abb19e372db04aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amigosMenuPrefab: {fileID: 5017421811860725404, guid: 0cab68016d35a2948b568355eda8e334, type: 3}
+  amigosMenuPrefab: {fileID: 5017421811860725404, guid: ad79b896df2433642a03915553bfde8b, type: 3}
   teamSetupPrefab: {fileID: 6371503801653937809, guid: 1cf96554e195c0243a3a08cf700ba11b, type: 3}
   heroListprefab: {fileID: 5017421811860725404, guid: 2592c06bb99ac5548ac6c893def8fc98, type: 3}
+  mailBoxprefab: {fileID: 5017421811860725404, guid: 85dc95e23d2b7094c82e16cb732ac164, type: 3}
 --- !u!4 &2113435306
 Transform:
   m_ObjectHideFlags: 0

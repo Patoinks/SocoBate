@@ -15,42 +15,75 @@ MonoBehaviour:
   unitName: Pote
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  baseHp: 100
-  baseDef: 100
-  baseSpeed: 100
-  baseStr: 100
-  baseInt: 100
-  baseEvasion: 10
-  baseLuck: 10
+  baseHp: 150
+  mDef: 50
+  pDef: 50
+  baseSpeed: 110
+  baseStr: 20
+  baseInt: 20
+  baseEvasion: 0
+  baseLuck: 0
   rarity: 4
-  normalAttackEffectType: Stun
-  normalAttackTargetedStat: 
-  normalAttackScalingAttribute: 0
-  normalAttackScalingPercent: 0
-  normalAttackValue: 20
-  isNormalAttackAoE: 1
-  isNormalAttackPercentage: 1
-  isNormalAttackCC: 1
-  normalAttackCCDuration: 0
-  normalAttackDescription: Bro shocked everyone when he turned out gay.
-  passiveEffectType: Damage Reduction
-  passiveTargetedStat: Damage
-  passiveScalingAttribute: Int
-  passiveScalingPercent: 0
-  passiveValue: 20
-  isPassiveAoE: 1
-  isPassivePercentage: 0
-  isPassiveCC: 0
-  passiveCCDuration: 1
-  passiveDescription: Bro started singing taunting everyone, nerf team
-  specialEffectType: HP
-  specialTargetedStat: HP
-  specialScalingAttribute: 
-  specialScalingPercent: 100
-  specialValue: 0
-  isSpecialAttackAoE: 1
-  isSpecialAttackPercentage: 0
-  isSpecialAttackCC: 0
-  specialAttackCCDuration: 0
-  turnsToSpecial: 5
-  specialDescription: Bro says "ca-ca-carro3" 10% suicide rate for any fielded unit
+  normalAttack:
+    effects:
+    - effectType: 0
+      targetType: 3
+      targetedStat: HP
+      scalingAttribute: HP
+      scalingPercent: 10
+      baseValue: 10
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: ADHD Maxxing
+    turnsToSpecial: 0
+  passiveAbility:
+    effects:
+    - effectType: 1
+      targetType: 0
+      targetedStat: HP
+      scalingAttribute: HP
+      scalingPercent: 5
+      baseValue: 10
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Yawn
+    turnsToSpecial: 0
+  specialAttack:
+    effects:
+    - effectType: 2
+      targetType: 4
+      targetedStat: 
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 0
+      isPercentage: 0
+      statusEffect:
+        ccType: 8
+        duration: 2
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Blud starts singing taunting enemies
+    turnsToSpecial: 5

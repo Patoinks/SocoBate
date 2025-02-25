@@ -10,6 +10,8 @@ public class ButtonsScripts : MonoBehaviour
     public GameObject teamSetupPrefab; // Reference to the TeamSetupPrefab prefab
     public GameObject heroListprefab; // Reference to the TeamSetupPrefab prefab
 
+    public GameObject mailBoxprefab; // Reference to the TeamSetupPrefab prefab
+
     void Start()
     {
 
@@ -53,6 +55,28 @@ public class ButtonsScripts : MonoBehaviour
             Debug.LogError("Could not find 'Tudo' GameObject in the scene hierarchy.");
         }
     }
+
+    public void OnClickMailBox()
+    {
+        Debug.Log("Clicado");
+        // Find the "Tudo" GameObject in the scene hierarchy
+        GameObject tudoObject = GameObject.Find("Canvas");
+
+        // Check if the "Tudo" GameObject was found
+        if (tudoObject != null)
+        {
+            // Get the transform of the "Tudo" GameObject
+            Transform tudoTransform = tudoObject.transform;
+
+            // Instantiate the AmigosMenu prefab under the "Tudo" GameObject's transform
+            Instantiate(mailBoxprefab, tudoTransform);
+        }
+        else
+        {
+            Debug.LogError("Could not find 'Tudo' GameObject in the scene hierarchy.");
+        }
+    }
+
     public void OnClickTeamButton()
     {
         SceneManager.LoadScene("TeamScene");

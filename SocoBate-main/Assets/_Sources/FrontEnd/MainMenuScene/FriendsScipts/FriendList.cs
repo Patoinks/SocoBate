@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 public class FriendList : MonoBehaviour
 {
-    public GameObject Prefab; 
+    public GameObject Prefab;
     public GameObject amigos; // This is your row panel prefab
     public Transform painelamigos; // This is the parent transform where the rows will be instantiated
     public int bufferSize = 10; // Number of rows to keep in memory above and below visible area
@@ -18,6 +18,7 @@ public class FriendList : MonoBehaviour
     void Start()
     {
         PopulateRow();
+        Debug.Log("FriendList script started");
     }
 
     public async void OnClickRefreshButton()
@@ -55,14 +56,19 @@ public class FriendList : MonoBehaviour
         }
     }
 
-    void onClickDuelButton(Account account)
+    async void onClickDuelButton(Account account)
     {
-
         Debug.Log("Duel button clicked");
         Debug.Log("Duel against: " + account.Nickname);
-        Context.DuelData.OpponentId = account.AccountId;
+
+        // Start loading the enemy team asynchronously without waiting
+       await TeamController.GetSquadByNickname(account.Nickname);  // No need to await, just call it asynchronously
+
+        // Immediately load the FightScene
         SceneManager.LoadScene("FightScene");
     }
+
+
 
     void Update()
     {

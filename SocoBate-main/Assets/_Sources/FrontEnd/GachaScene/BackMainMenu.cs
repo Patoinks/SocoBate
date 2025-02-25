@@ -8,6 +8,6 @@ public class BackMainMenu : MonoBehaviour
     // Start is called before the first frame update
     public void OnClickClose()
     {
-        SceneManager.LoadScene("SceneMenuMain");
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

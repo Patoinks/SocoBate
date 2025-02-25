@@ -1,145 +1,131 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using Context;
+using System.Collections.Generic;
 using Models;
 
 public class SquadManager : MonoBehaviour
 {
-    // Hexes for Player and Enemy
-    public GameObject[] playerHexes;  // Assign player hexes in Unity (Hex1 -> Hex9)
-    public GameObject[] enemyHexes;   // Assign enemy hexes in Unity (Hex1 -> Hex9)
+    public GameObject[] playerHexes;  // Assign in Unity Editor
+    public GameObject[] enemyHexes;   // Assign in Unity Editor
 
     private Dictionary<int, Transform> playerHexPositions = new Dictionary<int, Transform>();
     private Dictionary<int, Transform> enemyHexPositions = new Dictionary<int, Transform>();
 
+    public List<BaseUnit> playerUnits = new List<BaseUnit>(); // Add this to hold player units for the battle
+    public List<BaseUnit> enemyUnits = new List<BaseUnit>();  // Add this to hold enemy units for the battle
+
+    private Dictionary<BaseUnit, GameObject> unitPrefabs = new Dictionary<BaseUnit, GameObject>(); // Store unit prefabs
+
     void Start()
     {
-        if (playerHexes == null || playerHexes.Length == 0)
-        {
-            Debug.LogError("Player hexes are not assigned in the inspector.");
-            return;
-        }
+        InitializeHexPositions();
+        SpawnSquad(TeamContext.GetPlayerTeam(), playerHexPositions, false);
+        SpawnSquad(TeamContext.GetEnemyTeam(), enemyHexPositions, true);
 
-        if (enemyHexes == null || enemyHexes.Length == 0)
+        // Link the player and enemy units to the DuelScript (assuming the DuelScript is on a GameObject)
+        var duelScript = FindObjectOfType<DuelScript>();
+        if (duelScript != null)
         {
-            Debug.LogError("Enemy hexes are not assigned in the inspector.");
-            return;
+            duelScript.playerUnits = playerUnits;
+            duelScript.enemyUnits = enemyUnits;
         }
+        else
+        {
+            Debug.LogError("DuelScript not found in the scene.");
+        }
+    }
 
-        // Store player hex positions
+    private void InitializeHexPositions()
+    {
         for (int i = 0; i < playerHexes.Length; i++)
         {
             playerHexPositions[i + 1] = playerHexes[i].transform;
         }
-
-        // Store enemy hex positions
         for (int i = 0; i < enemyHexes.Length; i++)
         {
             enemyHexPositions[i + 1] = enemyHexes[i].transform;
         }
-
-        // Retrieve teams from TeamContext
-        List<TeamSetup> playerTeam = TeamContext.GetPlayerTeam();
-        List<TeamSetup> enemyTeam = TeamContext.GetEnemyTeam();
-
-        if (playerTeam == null || playerTeam.Count == 0)
-        {
-            Debug.LogError("Player team is empty or null.");
-            return;
-        }
-
-        if (enemyTeam == null || enemyTeam.Count == 0)
-        {
-            Debug.LogError("Enemy team is empty or null.");
-            return;
-        }
-
-        Dictionary<string, int> playerSquad = ConvertTeamToDictionary(playerTeam);
-        Dictionary<string, int> enemySquad = ConvertTeamToDictionary(enemyTeam);
-
-        // Spawn both player and enemy squads
-        SpawnSquad(playerSquad, playerHexPositions, false);
-        SpawnSquad(enemySquad, enemyHexPositions, true);
     }
 
-    // Convert List<TeamSetup> to Dictionary<string, int> (UnitName -> HexID)
-    Dictionary<string, int> ConvertTeamToDictionary(List<TeamSetup> teamList)
+    private void SpawnSquad(List<TeamSetup> team, Dictionary<int, Transform> hexPositions, bool isEnemy)
     {
-        Dictionary<string, int> squad = new Dictionary<string, int>();
-        foreach (var unit in teamList)
+        foreach (var unit in team)
         {
-            if (!string.IsNullOrEmpty(unit.UnitName))
+            if (!hexPositions.ContainsKey(unit.HexId))
             {
-                squad[unit.UnitName] = unit.HexId;
-            }
-            else
-            {
-                Debug.LogError("UnitName is null or empty in TeamSetup");
-            }
-        }
-        return squad;
-    }
-
-    // Function to spawn squad units
-    void SpawnSquad(Dictionary<string, int> squadData, Dictionary<int, Transform> hexPositions, bool isEnemy)
-    {
-        if (squadData.Count == 0)
-        {
-            Debug.LogError($"{(isEnemy ? "Enemy" : "Player")} squad is empty, nothing to spawn.");
-            return;
-        }
-
-        foreach (var entry in squadData)
-        {
-            string unitName = entry.Key;
-            int hexID = entry.Value;
-
-            if (!hexPositions.ContainsKey(hexID))
-            {
-                Debug.LogError($"Invalid HexID {hexID} for unit {unitName}");
+                Debug.LogError($"Invalid HexID {unit.HexId} for unit {unit.UnitName}");
                 continue;
             }
 
-            // Find unit prefab by name (now only loading from Resources)
-            GameObject unitPrefab = FindUnitPrefab(unitName);
-
+            GameObject unitPrefab = FindUnitPrefab(unit.UnitName);
             if (unitPrefab == null)
             {
-                Debug.LogError($"No prefab found for unit {unitName}");
+                Debug.LogError($"No prefab found for unit {unit.UnitName}");
                 continue;
             }
 
-            Transform hexTransform = hexPositions[hexID];
+            Transform hexTransform = hexPositions[unit.HexId];
+            GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position, Quaternion.identity, hexTransform);
 
-            // Instantiate unit at the hex position
-            GameObject unit = Instantiate(unitPrefab, hexTransform.position, Quaternion.identity, hexTransform);
-
-            // Adjust the position of the unit (e.g., for height or shift)
-            unit.transform.localPosition += new Vector3(-5f, 58f, 0f);
+            // Store the prefab in the dictionary for later use
+            unitPrefabs[LoadBaseUnit(unit.UnitName)] = spawnedUnit;
 
             // Rotate enemy units
             if (isEnemy)
             {
-                unit.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                spawnedUnit.transform.rotation = Quaternion.Euler(0f, -180f, 0f);
             }
 
-            Debug.Log($"Spawned {(isEnemy ? "Enemy" : "Player")} Unit {unitName} at Hex {hexID}");
+            // Clone a fresh instance of the unit for this battle
+            BaseUnit clonedUnit = LoadBaseUnit(unit.UnitName);
+            if (clonedUnit != null)
+            {
+                if (isEnemy)
+                {
+                    enemyUnits.Add(clonedUnit);
+                    Debug.Log($"Added enemy unit: {clonedUnit.name}");
+                }
+                else
+                {
+                    playerUnits.Add(clonedUnit);
+                    Debug.Log($"Added player unit: {clonedUnit.name}");
+                }
+            }
         }
+
+        // Log the unit counts after spawning
+        Debug.Log("Player Units Count: " + playerUnits.Count);
+        Debug.Log("Enemy Units Count: " + enemyUnits.Count);
     }
 
-    // Function to find unit prefab by name, only loading from Resources/Units/Prefabs/
-    GameObject FindUnitPrefab(string unitName)
+    private GameObject FindUnitPrefab(string unitName)
     {
-        string cleanedName = unitName.Replace(".prefab", "");
-
-        // Load prefab from Resources/Units/Prefabs/
-        GameObject loadedPrefab = Resources.Load<GameObject>($"UnitsPrefabs/{cleanedName}");
+        // Load prefab from Resources/UnitsPrefabs/
+        GameObject loadedPrefab = Resources.Load<GameObject>($"UnitsPrefabs/{unitName}");
 
         if (loadedPrefab == null)
         {
-            Debug.LogError($"Prefab '{cleanedName}' not found in Resources/UnitsPrefabs/.");
+            Debug.LogError($"Prefab '{unitName}' not found in Resources/UnitsPrefabs/.");
         }
 
         return loadedPrefab;
+    }
+
+    private BaseUnit LoadBaseUnit(string unitName)
+    {
+        // Load the original BaseUnit from Resources
+        BaseUnit originalUnit = Resources.Load<BaseUnit>($"Units/UnitData/{unitName}");
+
+        if (originalUnit == null)
+        {
+            Debug.LogError($"BaseUnit '{unitName}' not found in Resources/Units/UnitData/.");
+            return null;
+        }
+
+        // Clone to ensure it's a fresh instance
+        BaseUnit clonedUnit = Instantiate(originalUnit);
+
+        return clonedUnit;
     }
 }

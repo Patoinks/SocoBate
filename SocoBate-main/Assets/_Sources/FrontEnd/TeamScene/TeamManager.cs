@@ -11,10 +11,10 @@ public class TeamManager : MonoBehaviour
     public GameObject ownedUnitRowPrefab;
     public Transform scrollViewContent;
     public List<GameObject> hexes;
-    public GameObject unitPrefab;
 
     private bool isRowSelected = false;
-    private HashSet<string> selectedUnitIds = new HashSet<string>();
+    private List<string> selectedUnitIds = new List<string>();
+    private int unitsPlaced = 0; // Track the number of units placed
 
     void Start()
     {
@@ -28,20 +28,25 @@ public class TeamManager : MonoBehaviour
         {
             Debug.Log("No units available in the ownedUnits list.");
         }
+
+        Debug.Log("Hexes in the scene:");
+        foreach (GameObject hex in hexes)
+        {
+            Debug.Log(hex.name);
+        }
     }
+
     public void GenerateUnitRows()
     {
         Debug.Log("Generating unit rows: Owned Units vs. Team Setup...");
 
-        // Clear existing UI rows before generating new ones
         foreach (Transform child in scrollViewContent)
         {
             Destroy(child.gameObject);
         }
 
-        // Get lists
-        List<OwnedUnits> ownedUnits = UnitContext.ownedUnits; // Player's owned units
-        List<TeamSetup> teamUnits = TeamContext.GetPlayerTeam(); // Units currently placed
+        List<OwnedUnits> ownedUnits = UnitContext.ownedUnits;
+        List<TeamSetup> teamUnits = TeamContext.GetPlayerTeam();
 
         if (ownedUnits == null || ownedUnits.Count == 0)
         {
@@ -61,11 +66,9 @@ public class TeamManager : MonoBehaviour
                 continue;
             }
 
-            // Find UI elements within the row
             TMP_Text unitNameText = row.transform.Find("Nome")?.GetComponent<TMP_Text>();
             Button selectButton = row.transform.Find("SelectUnit")?.GetComponent<Button>();
 
-            // Set data
             if (unitNameText != null)
             {
                 unitNameText.text = unit.unitId;
@@ -77,7 +80,7 @@ public class TeamManager : MonoBehaviour
 
             if (selectButton != null)
             {
-                selectButton.onClick.RemoveAllListeners(); // Avoid duplicate listeners
+                selectButton.onClick.RemoveAllListeners();
                 selectButton.onClick.AddListener(() => OnRowButtonClicked(unit.unitId, row));
             }
             else
@@ -89,17 +92,34 @@ public class TeamManager : MonoBehaviour
         Debug.Log("Finished generating all unit rows.");
     }
 
-
     public void OnRowButtonClicked(string unitId, GameObject row)
     {
-        // Check if the unit is already selected
+        Debug.Log($"Row button clicked for unit: {unitId}");
+
+        string prefabName = unitId.EndsWith(".asset") ? unitId.Substring(0, unitId.Length - 6) : unitId;
+
+        GameObject unitPrefab = Resources.Load<GameObject>("UnitsPrefabs/" + prefabName);
+
+        if (unitPrefab == null)
+        {
+            Debug.LogError($"Prefab for unit {unitId} not found in Resources/UnitsPrefabs/");
+            return;
+        }
+
+        Debug.Log($"Prefab for unit {unitId} loaded successfully.");
+
         if (selectedUnitIds.Contains(unitId))
         {
             Debug.Log("Unit already selected. Cannot select again.");
             return;
         }
 
-        // Check if the unit is already placed in any hex
+        if (unitsPlaced >= 5)
+        {
+            Debug.Log("Maximum of 5 units already placed. Cannot place more units.");
+            return;
+        }
+
         foreach (GameObject hex in hexes)
         {
             if (hex.transform.childCount > 0)
@@ -115,23 +135,22 @@ public class TeamManager : MonoBehaviour
             }
         }
 
-        // Mark the unit as selected
         selectedUnitIds.Add(unitId);
-        Debug.Log($"Row button clicked. Now selecting hex for unit: {unitId}");
-        isRowSelected = true;  // Activate hex selection
+        Debug.Log($"Now selecting hex for unit: {unitId}");
+        isRowSelected = true;
         ActivateHexesForSelection();
 
-        // Disable button to prevent further selections
         Button selectButton = row.GetComponentInChildren<Button>();
         if (selectButton != null)
         {
             selectButton.interactable = false;
+            Debug.Log($"Select button for {unitId} disabled.");
         }
     }
 
-
     public void ActivateHexesForSelection()
     {
+        Debug.Log("Activating hexes for selection...");
         foreach (GameObject hex in hexes)
         {
             HexButton hexButton = hex.GetComponentInChildren<HexButton>();
@@ -150,54 +169,74 @@ public class TeamManager : MonoBehaviour
             return;
         }
 
+        string unitId = selectedUnitIds[selectedUnitIds.Count - 1];
+        string prefabName = unitId.EndsWith(".asset") ? unitId.Substring(0, unitId.Length - 6) : unitId;
+
+        GameObject unitPrefab = Resources.Load<GameObject>("UnitsPrefabs/" + prefabName);
+
         if (unitPrefab == null)
         {
-            Debug.LogError("Unit prefab not assigned in TeamManager.");
+            Debug.LogError($"Prefab for unit {unitId} not found in Resources/Units/");
             return;
         }
 
-        // Check if the hex already contains a unit
         if (selectedHex.transform.childCount > 0)
         {
-            Debug.LogError("Hex already contains a unit.");
+            Debug.LogError($"Hex {selectedHex.name} already contains a unit. Cannot place {unitId}.");
             return;
         }
 
-        // Spawn the unit slightly above the hex
         Vector3 spawnPosition = selectedHex.transform.position + new Vector3(0, 50.0f, 0);
         GameObject spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity, selectedHex.transform);
 
-        // Reset local position & scale to avoid unexpected offsets
         spawnedUnit.transform.localPosition = Vector3.zero;
         spawnedUnit.transform.localScale = Vector3.one;
 
-        Debug.Log($"Unit spawned on hex: {selectedHex.name}");
+        Debug.Log($"Unit {unitId} spawned on hex: {selectedHex.name}");
 
-        isRowSelected = false; // Reset row selection
+        unitsPlaced++; // Increment the count of units placed
+        isRowSelected = false;
 
-        // Ensure the unit has a Button component and a click event
-        Button unitButton = spawnedUnit.GetComponent<Button>();
-        if (unitButton == null)
+        // Add listener for the remove button
+        Button removeButton = spawnedUnit.GetComponentInChildren<Button>();
+        if (removeButton != null)
         {
-            unitButton = spawnedUnit.AddComponent<Button>();
+            removeButton.onClick.RemoveAllListeners();
+            removeButton.onClick.AddListener(() => RemoveUnitFromHex(selectedHex));
         }
-
-        // Ensure the button triggers removal
-        unitButton.onClick.RemoveAllListeners(); // Remove existing listeners to prevent duplicates
-        unitButton.onClick.AddListener(() => RemoveUnitFromHex(spawnedUnit));
+        else
+        {
+            Debug.LogError("Remove button not found in the unit prefab.");
+        }
     }
 
-
-    public void RemoveUnitFromHex(GameObject unit)
+    public void RemoveUnitFromHex(GameObject hex)
     {
-        if (unit == null)
+        if (hex == null)
         {
-            Debug.LogError("No unit to remove.");
+            Debug.LogError("Hex is null, cannot remove unit.");
             return;
         }
 
-        // Get the unit name without the "(Clone)" suffix
+        if (hex.transform.childCount == 0)
+        {
+            Debug.Log("No unit found on this hex.");
+            return;
+        }
+
+        // Get the unit GameObject (assumes unit is the first child of the hex)
+        GameObject unit = hex.transform.GetChild(0).gameObject;
+        if (unit == null)
+        {
+            Debug.LogError("Unit GameObject is null.");
+            return;
+        }
+
+        // Get the unit name without "(Clone)"
         string unitName = unit.name.Replace("(Clone)", "").Trim();
+
+        // Log for debugging
+        Debug.Log($"Removing unit {unitName} from hex {hex.name}");
 
         // Remove from selected list
         if (selectedUnitIds.Contains(unitName))
@@ -208,71 +247,28 @@ public class TeamManager : MonoBehaviour
         // Enable the corresponding row button
         EnableRowButton(unitName);
 
-        // Destroy the unit
+        // Destroy the unit object
         Destroy(unit);
-        Debug.Log($"Unit {unitName} removed from hex.");
+        Debug.Log($"Unit {unitName} removed from hex {hex.name}.");
+        
+        unitsPlaced--; // Decrease the count when a unit is removed
     }
 
     private void EnableRowButton(string unitId)
     {
         foreach (Transform child in scrollViewContent)
         {
-            TextMeshProUGUI unitNameText = child.Find("Nome").GetComponent<TextMeshProUGUI>();
+            TMP_Text unitNameText = child.Find("Nome").GetComponent<TMP_Text>();
             if (unitNameText != null && unitNameText.text == unitId)
             {
                 Button selectButton = child.GetComponentInChildren<Button>();
                 if (selectButton != null)
                 {
-                    selectButton.interactable = true; // Reactivate button
+                    selectButton.interactable = true;
                     Debug.Log($"Selection button for {unitId} re-enabled.");
                 }
                 return;
             }
-        }
-    }
-
-
-
-    public async void OnSaveClicked()
-    {
-        Debug.Log("OnSaveClicked called.");
-
-        List<(int HexId, string UnitName)> teamSetup = new List<(int, string)>();
-
-        for (int i = 0; i < hexes.Count; i++)
-        {
-            GameObject hex = hexes[i];
-            Debug.Log($"Checking hex {i} with {hex.transform.childCount} children.");
-
-            if (hex.transform.childCount > 0)
-            {
-                Transform child = hex.transform.GetChild(0);
-                Debug.Log($"Found child in hex {i}: {child.name}");
-
-                string unitName = child.name.Replace("(Clone)", "").Trim();
-                Debug.Log($"Processed unit name: {unitName}");
-
-                teamSetup.Add((i + 1, unitName));
-            }
-        }
-
-        if (teamSetup.Count == 0)
-        {
-            Debug.LogError("No units placed on hexes. Nothing to save.");
-            return;
-        }
-
-        Debug.Log("Saving team to database...");
-
-        bool success = await TeamController.SaveTeam(Context.UserContext.account.AccountId, teamSetup);
-
-        if (success)
-        {
-            Debug.Log("Team layout successfully saved!");
-        }
-        else
-        {
-            Debug.LogError("Failed to save team layout.");
         }
     }
 }

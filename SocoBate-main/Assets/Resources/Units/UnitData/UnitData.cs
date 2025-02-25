@@ -9,7 +9,8 @@ public class BaseUnit : ScriptableObject
     public Sprite splashImage;
 
     public int baseHp;
-    public int baseDef;
+    public int mDef;  // Magical Defense
+    public int pDef;  // Physical Defense
     public int baseSpeed;
     public int baseStr;
     public int baseInt;
@@ -74,7 +75,8 @@ public class BaseUnit : ScriptableObject
         Blind,  // Reduces accuracy
         Slow,   // Reduces movement speed
         Poison, // Deals damage over time
-        Burn    // Deals damage over time
+        Burn,    // Deals damage over time
+        Taunt
     }
 
     // Target Types (For Different Attack/Effect Applications)

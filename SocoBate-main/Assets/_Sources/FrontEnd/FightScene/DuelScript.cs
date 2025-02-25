@@ -4,24 +4,24 @@ using UnityEngine;
 
 public class DuelScript : MonoBehaviour
 {
-    public List<BaseUnit> playerUnits; // Player's team
-    public List<BaseUnit> enemyUnits; // Enemy's team
-    private List<BaseUnit> allUnits; // Combined list for turn order
+    public List<BaseUnit> playerUnits;
+    public List<BaseUnit> enemyUnits;
+    private List<BaseUnit> allUnits;
+
+    public SquadManager squadManager;
+    public UIFight uiFight;
 
     void Start()
     {
-        InitializeBattle();
+        playerUnits.Clear();
+        enemyUnits.Clear();
+        Invoke("InitializeBattleDelayed", 1f);
     }
 
-    void InitializeBattle()
+    void InitializeBattleDelayed()
     {
-        // Load units into battle from serialized data
         allUnits = new List<BaseUnit>(playerUnits);
         allUnits.AddRange(enemyUnits);
-        
-        // Sort by speed for turn order
-        allUnits.Sort((a, b) => b.baseSpeed.CompareTo(a.baseSpeed));
-
         StartCoroutine(BattleLoop());
     }
 
@@ -29,96 +29,321 @@ public class DuelScript : MonoBehaviour
     {
         while (playerUnits.Count > 0 && enemyUnits.Count > 0)
         {
-            foreach (BaseUnit unit in allUnits)
+            List<BaseUnit> aliveUnits = new List<BaseUnit>(allUnits);
+
+            // Sort the units by speed (higher speed first)
+            aliveUnits.Sort((unit1, unit2) => unit2.baseSpeed.CompareTo(unit1.baseSpeed));
+
+            foreach (BaseUnit unit in aliveUnits)
             {
                 if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
-                    continue; // Skip dead units
+                    continue;
 
-                ExecuteTurn(unit);
-                yield return new WaitForSeconds(1f); // Delay for turn simulation
+                Debug.Log($"Unit {unit.unitName} taking turn.");
+
+                yield return StartCoroutine(ExecuteTurn(unit));
+
+                yield return new WaitForSeconds(0.5f);
             }
         }
 
         EndBattle();
     }
 
-    void ExecuteTurn(BaseUnit unit)
+
+    IEnumerator ExecuteTurn(BaseUnit unit)
     {
         ApplyPassiveEffects(unit);
-        
+
         if (unit.specialAttack.turnsToSpecial == 0)
-            ExecuteAttack(unit, unit.specialAttack);
+            yield return StartCoroutine(ExecuteAttack(unit, unit.specialAttack));
         else
-            ExecuteAttack(unit, unit.normalAttack);
+            yield return StartCoroutine(ExecuteAttack(unit, unit.normalAttack));
+
+        Debug.Log($"Unit {unit.unitName} has completed its turn.");
     }
 
     void ApplyPassiveEffects(BaseUnit unit)
     {
-        foreach (var effect in unit.passiveAbility.effects)
+        // Check if unit has passive abilities
+        if (unit.passiveAbility != null)
         {
-            ApplyEffect(unit, effect);
+            Debug.Log($"Applying passive effects for {unit.unitName}.");
+
+            foreach (var effect in unit.passiveAbility.effects)
+            {
+                Debug.Log($"Effect found: {effect.effectType} for {unit.unitName}");
+
+                // Apply the debuff effect if it targets all enemies
+                if (effect.effectType == BaseUnit.EffectType.Debuff)
+                {
+                    if (effect.targetType == BaseUnit.TargetType.AllEnemies)
+                    {
+                        Debug.Log($"Debuff effect targeting all enemies: {effect.targetedStat}");
+
+                        // Get all enemy units based on the unit's allegiance
+                        List<BaseUnit> targets = GetEnemyUnits(unit);
+
+                        // Apply debuff to each enemy unit
+                        foreach (var target in targets)
+                        {
+                            // Debugging output to track which units are being targeted
+                            Debug.Log($"Applying debuff {effect.effectType} to {target.unitName}");
+
+                            if (target != unit)  // Exclude the caster
+                            {
+                                ApplyEffect(target, effect);  // Apply the debuff
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"{unit.unitName} does not have any passive abilities.");
         }
     }
 
-    void ExecuteAttack(BaseUnit attacker, BaseUnit.AttackData attackData)
+
+    List<BaseUnit> GetEnemyUnits(BaseUnit unit)
     {
+        List<BaseUnit> enemyUnits = new List<BaseUnit>();
+        if (playerUnits.Contains(unit))
+        {
+            // If the unit is a player unit, target all enemy units
+            enemyUnits.AddRange(enemyUnits);
+        }
+        else
+        {
+            // If the unit is an enemy, target all player units
+            enemyUnits.AddRange(playerUnits);
+        }
+
+        return enemyUnits;
+    }
+
+
+
+    IEnumerator ExecuteAttack(BaseUnit attacker, BaseUnit.AttackData attackData)
+    {
+        Debug.Log($"{attacker.unitName} is attacking with: {attackData.description}");
+
         foreach (var effect in attackData.effects)
         {
-            BaseUnit target = SelectTarget(attacker, effect.targetType);
-            if (target != null)
+            List<BaseUnit> targets = SelectTargets(attacker, effect.targetType);
+
+            foreach (BaseUnit target in targets)
             {
-                ApplyEffect(target, effect);
+                if (target != null)
+                {
+                    Debug.Log($"Applying effect {effect.effectType} to {target.unitName}");
+                    ApplyEffect(target, effect);
+
+                    if (effect.effectType == BaseUnit.EffectType.Damage)
+                    {
+                        if (uiFight != null)
+                        {
+                            yield return StartCoroutine(uiFight.MoveUnitCloser(target, attacker));
+                        }
+                        else
+                        {
+                            Debug.LogError("UIFight is not assigned!");
+                        }
+                    }
+                }
             }
         }
     }
 
-    BaseUnit SelectTarget(BaseUnit attacker, BaseUnit.TargetType targetType)
+    List<BaseUnit> SelectTargets(BaseUnit attacker, BaseUnit.TargetType targetType)
     {
-        if (targetType == BaseUnit.TargetType.Self) return attacker;
-        if (targetType == BaseUnit.TargetType.SingleAlly) return GetRandomUnit(playerUnits);
-        if (targetType == BaseUnit.TargetType.AllAllies) return GetRandomUnit(playerUnits); // Modify for AOE logic
-        if (targetType == BaseUnit.TargetType.SingleEnemy) return GetRandomUnit(enemyUnits);
-        if (targetType == BaseUnit.TargetType.AllEnemies) return GetRandomUnit(enemyUnits); // Modify for AOE logic
-        return null;
+        List<BaseUnit> targets = new List<BaseUnit>();
+
+        if (targetType == BaseUnit.TargetType.Self)
+        {
+            targets.Add(attacker);
+        }
+        else if (targetType == BaseUnit.TargetType.SingleAlly)
+        {
+            if (playerUnits.Contains(attacker))
+                targets.Add(GetRandomUnit(playerUnits));
+            else
+                targets.Add(GetRandomUnit(enemyUnits));
+        }
+        else if (targetType == BaseUnit.TargetType.AllAllies)
+        {
+            if (playerUnits.Contains(attacker))
+                targets.AddRange(playerUnits);
+            else
+                targets.AddRange(enemyUnits);
+        }
+        else if (targetType == BaseUnit.TargetType.SingleEnemy)
+        {
+            if (playerUnits.Contains(attacker))
+                targets.Add(GetRandomUnit(enemyUnits));  // Player attacks enemy
+            else
+                targets.Add(GetRandomUnit(playerUnits)); // Enemy attacks player
+        }
+        else if (targetType == BaseUnit.TargetType.AllEnemies)
+        {
+            if (playerUnits.Contains(attacker))
+                targets.AddRange(enemyUnits);
+            else
+                targets.AddRange(playerUnits);
+        }
+
+        // Ensure that the caster is not included as the target for debuffs
+        if (attacker != null)
+        {
+            targets.Remove(attacker); // Remove the attacker from the list of targets if it's included
+        }
+
+        return targets;
     }
+
+
 
     void ApplyEffect(BaseUnit target, BaseUnit.Effect effect)
     {
-        int calculatedValue = (effect.baseValue + (effect.scalingPercent * GetStat(target, effect.scalingAttribute) / 100));
+        Debug.Log($"{target.unitName} is affected by {effect.effectType} with {effect.baseValue} {effect.targetedStat}.");
+
+        int calculatedValue = effect.baseValue;
+
+        // Check if the effect is a percentage-based calculation
+        if (effect.isPercentage)
+        {
+            // Apply scaling percentage for intelligence
+            if (effect.scalingAttribute.Equals("Intelligence", System.StringComparison.OrdinalIgnoreCase))
+            {
+                int scalingStatValue = target.baseInt; // Get the intelligence value of the target
+                calculatedValue += (int)(scalingStatValue * (effect.scalingPercent / 100.0f)); // 20% of intelligence + base value
+            }
+            else
+            {
+                // If not Intelligence, use the existing logic for other stats (like Strength)
+                int scalingStatValue = GetStat(target, effect.scalingAttribute);
+                calculatedValue += (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
+            }
+        }
+        else
+        {
+            // If not percentage-based, use the existing baseValue calculation logic
+            int scalingStatValue = GetStat(target, effect.scalingAttribute);
+            calculatedValue += (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
+        }
+
+        // Apply the damage calculation
         if (effect.effectType == BaseUnit.EffectType.Damage)
-            target.baseHp -= calculatedValue;
+        {
+            int finalDamage = calculatedValue;
+            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                finalDamage -= target.pDef;
+            }
+            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                finalDamage -= target.mDef;
+            }
+
+            finalDamage = Mathf.Max(finalDamage, 0); // Ensure damage cannot go below 0
+            target.baseHp -= finalDamage; // Apply the damage to the target's HP
+            Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {target.baseHp}");
+        }
         else if (effect.effectType == BaseUnit.EffectType.Heal)
+        {
             target.baseHp += calculatedValue;
+            Debug.Log($"{target.unitName} heals {calculatedValue}. New HP: {target.baseHp}");
+        }
+        else if (effect.effectType == BaseUnit.EffectType.Buff)
+        {
+            // Apply Buff effects based on targeted stat (defense, speed, etc.)
+            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.pDef += calculatedValue;
+            }
+            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.mDef += calculatedValue;
+            }
+            else if (effect.targetedStat.Equals("Speed", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.baseSpeed += calculatedValue;
+            }
+        }
+        else if (effect.effectType == BaseUnit.EffectType.Debuff)
+        {
+            // Apply Debuff effects based on targeted stat (defense, speed, etc.)
+            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.pDef -= calculatedValue;
+            }
+            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.mDef -= calculatedValue;
+            }
+            else if (effect.targetedStat.Equals("Speed", System.StringComparison.OrdinalIgnoreCase))
+            {
+                target.baseSpeed -= calculatedValue;
+            }
+        }
+
+        if (effect.statusEffect != null)
+        {
+            ApplyStatusEffect(target, effect.statusEffect);
+        }
 
         if (target.baseHp <= 0)
+        {
+            Debug.Log($"{target.unitName} has been defeated!");
             RemoveUnit(target);
+        }
     }
+
 
     int GetStat(BaseUnit unit, string statName)
     {
-        if (statName == "Strength") return unit.baseStr;
-        if (statName == "Intelligence") return unit.baseInt;
+        string statNameLower = statName.ToLower();
+        if (statNameLower == "strength" || statNameLower == "str")
+            return unit.baseStr;
+        if (statNameLower == "int" || statNameLower == "intelligence")
+            return unit.baseInt;
         return 0;
+    }
+
+    void ApplyStatusEffect(BaseUnit target, BaseUnit.StatusEffect statusEffect)
+    {
+        if (statusEffect.ccType == BaseUnit.CrowdControlType.Poison)
+        {
+            int poisonDamage = (int)(statusEffect.tickDamage + (statusEffect.scalingPercent * target.baseInt / 100));
+            target.baseHp -= poisonDamage;
+            Debug.Log($"{target.unitName} takes {poisonDamage} poison damage. HP left: {target.baseHp}");
+        }
     }
 
     void RemoveUnit(BaseUnit unit)
     {
-        playerUnits.Remove(unit);
-        enemyUnits.Remove(unit);
+        if (playerUnits.Contains(unit))
+        {
+            playerUnits.Remove(unit);
+        }
+        else if (enemyUnits.Contains(unit))
+        {
+            enemyUnits.Remove(unit);
+        }
+
         allUnits.Remove(unit);
     }
 
-    BaseUnit GetRandomUnit(List<BaseUnit> unitList)
+    BaseUnit GetRandomUnit(List<BaseUnit> units)
     {
-        if (unitList.Count == 0) return null;
-        return unitList[Random.Range(0, unitList.Count)];
+        if (units.Count == 0) return null;
+        int randomIndex = Random.Range(0, units.Count);
+        return units[randomIndex];
     }
 
     void EndBattle()
     {
-        if (playerUnits.Count == 0)
-            Debug.Log("Enemy Wins!");
-        else
-            Debug.Log("Player Wins!");
+        Debug.Log("The battle is over!");
     }
 }

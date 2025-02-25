@@ -52,35 +52,35 @@ namespace Gacha
         // Get a random unit based on rarity chances
         // Get a random unit based on rarity chances, but exclude rarity 2
         private BaseUnit GetRandomUnitFromPool()
-{
-    // Create a list of units weighted by their rarity chance
-    List<BaseUnit> weightedPool = new List<BaseUnit>();
-
-    foreach (var unit in UnitContext.allUnits)
-    {
-        if (rarityChances.ContainsKey(unit.rarity))
         {
-            int weight = rarityChances[unit.rarity];
+            // Create a list of units weighted by their rarity chance
+            List<BaseUnit> weightedPool = new List<BaseUnit>();
 
-            // Add the unit to the list multiple times based on its weight
-            for (int i = 0; i < weight; i++)
+            foreach (var unit in UnitContext.allUnits)
             {
-                weightedPool.Add(unit);
+                if (rarityChances.ContainsKey(unit.rarity))
+                {
+                    int weight = rarityChances[unit.rarity];
+
+                    // Add the unit to the list multiple times based on its weight
+                    for (int i = 0; i < weight; i++)
+                    {
+                        weightedPool.Add(unit);
+                    }
+                }
             }
+
+            // Check if we have any units to pick from
+            if (weightedPool.Count == 0)
+            {
+                Debug.LogWarning("No valid units available for gacha pull!");
+                return null;
+            }
+
+            // Pick a random unit from the weighted pool
+            int randomIndex = UnityEngine.Random.Range(0, weightedPool.Count);
+            return weightedPool[randomIndex];
         }
-    }
-
-    // Check if we have any units to pick from
-    if (weightedPool.Count == 0)
-    {
-        Debug.LogWarning("No valid units available for gacha pull!");
-        return null;
-    }
-
-    // Pick a random unit from the weighted pool
-    int randomIndex = UnityEngine.Random.Range(0, weightedPool.Count);
-    return weightedPool[randomIndex];
-}
 
 
 
@@ -98,9 +98,8 @@ namespace Gacha
                 // Display the unit name and rarity
                 resultText.text = $"You pulled: {unit.unitName} (Rarity: {unit.rarity})";
 
-                // Optionally, instantiate the unit sprite prefab at a certain position
-                GameObject unitSprite = Instantiate(heroSpritePrefab, spawnPoint.position, Quaternion.identity);
-                unitSprite.GetComponent<SpriteRenderer>().sprite = unit.unitSprite;
+                GameObject unitImage = Instantiate(heroSpritePrefab, spawnPoint.position, Quaternion.identity);
+
             }
             else
             {
