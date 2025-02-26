@@ -89,8 +89,26 @@ public class MenuPrincipalManager : MonoBehaviour
         }
     }
 
-    public async void OnSqueaky()
+    void DisableAllButtons()
     {
+        Button[] buttons = FindObjectsOfType<Button>(); // Find all buttons in the scene
+        foreach (Button btn in buttons)
+        {
+            btn.interactable = false; // Disable them
+        }
+    }
+
+    void EnableAllButtons()
+    {
+        Button[] buttons = FindObjectsOfType<Button>(); // Find all buttons again
+        foreach (Button btn in buttons)
+        {
+            btn.interactable = true; // Re-enable them
+        }
+    }
+    public async void OnSqueaky(Button button)
+    {
+        DisableAllButtons();
         string username = "Patoinks";
         string password = "#Martim123";
 
