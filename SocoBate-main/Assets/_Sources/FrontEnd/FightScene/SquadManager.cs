@@ -3,6 +3,7 @@ using UnityEngine;
 using Context;
 using System.Collections.Generic;
 using Models;
+using UnityEngine.UI;
 
 public class SquadManager : MonoBehaviour
 {
@@ -12,12 +13,13 @@ public class SquadManager : MonoBehaviour
     private Dictionary<int, Transform> playerHexPositions = new Dictionary<int, Transform>();
     private Dictionary<int, Transform> enemyHexPositions = new Dictionary<int, Transform>();
 
+    public HealthBar healthbar;
+    public GameObject healthBarPrefab;
     public List<BaseUnit> playerUnits = new List<BaseUnit>(); // Add this to hold player units for the battle
     public List<BaseUnit> enemyUnits = new List<BaseUnit>();  // Add this to hold enemy units for the battle
-
-    public HealthBar healthBar;
     private Dictionary<BaseUnit, GameObject> unitPrefabs = new Dictionary<BaseUnit, GameObject>(); // Store unit prefabs
-
+    private Dictionary<HealthBar, GameObject> healthbarPrefabs = new Dictionary<HealthBar, GameObject>();
+    public Dictionary<BaseUnit, HealthBar> unitHealthBars = new Dictionary<BaseUnit, HealthBar>();
     void Start()
     {
         InitializeHexPositions();
@@ -67,42 +69,37 @@ public class SquadManager : MonoBehaviour
             }
 
             Transform hexTransform = hexPositions[unit.HexId];
-            GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position, Quaternion.identity, hexTransform);
+            GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position + new Vector3(isEnemy ? 5f : -5f, 58f, 0), Quaternion.identity, hexTransform);
 
-            // Store the prefab in the dictionary for later use
-            unitPrefabs[LoadBaseUnit(unit.UnitName)] = spawnedUnit;
-
-            // Rotate enemy units
-            if (isEnemy)
-            {
-                spawnedUnit.transform.rotation = Quaternion.Euler(0f, -180f, 0f);
-            }
+            GameObject healthBar = Instantiate(healthBarPrefab, spawnedUnit.transform.position, Quaternion.identity, spawnedUnit.transform);
+            HealthBar healthBarScript = healthBar.GetComponent<HealthBar>();
+            healthBarScript.healthSlider = healthBar.GetComponentInChildren<Slider>();
 
             // Clone a fresh instance of the unit for this battle
             BaseUnit clonedUnit = LoadBaseUnit(unit.UnitName);
             if (clonedUnit != null)
             {
+                unitHealthBars[clonedUnit] = healthBarScript;
+
                 if (isEnemy)
                 {
-                    healthBar.Initialize(clonedUnit.baseHp, spawnedUnit.transform);
+                    healthBarScript.SetMaxHealth(clonedUnit.baseHp);
                     enemyUnits.Add(clonedUnit);
                     Debug.Log($"Added enemy unit: {clonedUnit.name}");
                 }
                 else
                 {
-                    healthBar.Initialize(clonedUnit.baseHp, spawnedUnit.transform);
+                    healthBarScript.SetMaxHealth(clonedUnit.baseHp);
                     playerUnits.Add(clonedUnit);
                     Debug.Log($"Added player unit: {clonedUnit.name}");
                 }
             }
+            // Rotate enemy units
+            if (isEnemy)
+            {
+                spawnedUnit.transform.rotation = Quaternion.Euler(0f, -180f, 0f);
+            }
         }
-
-        // Log the unit counts after spawning
-        Debug.Log("Player Units Count: " + playerUnits.Count);
-        Debug.Log("Enemy Units Count: " + enemyUnits.Count);
-
-        
-
     }
 
     private GameObject FindUnitPrefab(string unitName)

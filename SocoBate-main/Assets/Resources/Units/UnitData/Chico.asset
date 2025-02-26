@@ -15,6 +15,7 @@ MonoBehaviour:
   unitName: Chico
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
+  maxHp: 70
   baseHp: 70
   mDef: 50
   pDef: 30

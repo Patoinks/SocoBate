@@ -8,15 +8,40 @@ public class DuelScript : MonoBehaviour
     public List<BaseUnit> enemyUnits;
     private List<BaseUnit> allUnits;
 
-    public HealthBar healthBar; 
+    public HealthBar healthBar;
     public SquadManager squadManager;
+    private Dictionary<BaseUnit, HealthBar> unitHealthBars;
+
     public UIFight uiFight;
 
     void Start()
     {
+        squadManager = FindObjectOfType<SquadManager>();
+        if (squadManager != null)
+        {
+            unitHealthBars = squadManager.unitHealthBars;
+        }
+        else
+        {
+            Debug.LogError("SquadManager not found in the scene.");
+        }
+
         playerUnits.Clear();
         enemyUnits.Clear();
-        Invoke("InitializeBattleDelayed", 1f);
+        Invoke("InitializeBattleDelayed", 5f);
+    }
+
+    public void UpdateHealth(BaseUnit unit, float newHealth)
+    {
+        if (unitHealthBars != null && unitHealthBars.ContainsKey(unit))
+        {
+            HealthBar healthBar = unitHealthBars[unit];
+            healthBar.SetHealth((int)newHealth);
+        }
+        else
+        {
+            Debug.LogError("HealthBar not found for the given unit.");
+        }
     }
 
     void InitializeBattleDelayed()
@@ -31,12 +56,11 @@ public class DuelScript : MonoBehaviour
         while (playerUnits.Count > 0 && enemyUnits.Count > 0)
         {
             List<BaseUnit> aliveUnits = new List<BaseUnit>(allUnits);
-
-            // Sort the units by speed (higher speed first)
             aliveUnits.Sort((unit1, unit2) => unit2.baseSpeed.CompareTo(unit1.baseSpeed));
 
             foreach (BaseUnit unit in aliveUnits)
             {
+                // Ensure the unit is still alive before taking its turn
                 if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
                     continue;
 
@@ -52,8 +76,13 @@ public class DuelScript : MonoBehaviour
     }
 
 
+
     IEnumerator ExecuteTurn(BaseUnit unit)
     {
+        // Ensure unit is still alive
+        if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
+            yield break;
+
         ApplyPassiveEffects(unit);
 
         if (unit.specialAttack.turnsToSpecial == 0)
@@ -64,39 +93,21 @@ public class DuelScript : MonoBehaviour
         Debug.Log($"Unit {unit.unitName} has completed its turn.");
     }
 
+
     void ApplyPassiveEffects(BaseUnit unit)
     {
-        // Check if unit has passive abilities
         if (unit.passiveAbility != null)
         {
             Debug.Log($"Applying passive effects for {unit.unitName}.");
 
             foreach (var effect in unit.passiveAbility.effects)
             {
-                Debug.Log($"Effect found: {effect.effectType} for {unit.unitName}");
+                List<BaseUnit> targets = SelectTargets(unit, effect.targetType);
 
-                // Apply the debuff effect if it targets all enemies
-                if (effect.effectType == BaseUnit.EffectType.Debuff)
+                foreach (var target in targets)
                 {
-                    if (effect.targetType == BaseUnit.TargetType.AllEnemies)
-                    {
-                        Debug.Log($"Debuff effect targeting all enemies: {effect.targetedStat}");
-
-                        // Get all enemy units based on the unit's allegiance
-                        List<BaseUnit> targets = GetEnemyUnits(unit);
-
-                        // Apply debuff to each enemy unit
-                        foreach (var target in targets)
-                        {
-                            // Debugging output to track which units are being targeted
-                            Debug.Log($"Applying debuff {effect.effectType} to {target.unitName}");
-
-                            if (target != unit)  // Exclude the caster
-                            {
-                                ApplyEffect(target, effect);  // Apply the debuff
-                            }
-                        }
-                    }
+                        Debug.Log($"Applying passive effect {effect.effectType} to {target.unitName}");
+                        ApplyEffect(target, effect);
                 }
             }
         }
@@ -109,20 +120,16 @@ public class DuelScript : MonoBehaviour
 
     List<BaseUnit> GetEnemyUnits(BaseUnit unit)
     {
-        List<BaseUnit> enemyUnits = new List<BaseUnit>();
-        if (playerUnits.Contains(unit))
-        {
-            // If the unit is a player unit, target all enemy units
-            enemyUnits.AddRange(enemyUnits);
-        }
-        else
-        {
-            // If the unit is an enemy, target all player units
-            enemyUnits.AddRange(playerUnits);
-        }
+        List<BaseUnit> enemies = new List<BaseUnit>();
 
-        return enemyUnits;
+        if (playerUnits.Contains(unit))
+            enemies.AddRange(enemyUnits);
+        else
+            enemies.AddRange(playerUnits);
+
+        return enemies;
     }
+
 
 
 
@@ -193,17 +200,8 @@ public class DuelScript : MonoBehaviour
             else
                 targets.AddRange(playerUnits);
         }
-
-        // Ensure that the caster is not included as the target for debuffs
-        if (attacker != null)
-        {
-            targets.Remove(attacker); // Remove the attacker from the list of targets if it's included
-        }
-
         return targets;
     }
-
-
 
     void ApplyEffect(BaseUnit target, BaseUnit.Effect effect)
     {
@@ -249,14 +247,18 @@ public class DuelScript : MonoBehaviour
 
             finalDamage = Mathf.Max(finalDamage, 0); // Ensure damage cannot go below 0
             target.baseHp -= finalDamage; // Apply the damage to the target's HP
-            healthBar.UpdateHealth(target.baseHp);  
+            UpdateHealth(target, target.baseHp);
             Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {target.baseHp}");
         }
         else if (effect.effectType == BaseUnit.EffectType.Heal)
         {
+            Debug.Log($"{target.unitName} is attempting to heal for {calculatedValue}");
             target.baseHp += calculatedValue;
-            Debug.Log($"{target.unitName} heals {calculatedValue}. New HP: {target.baseHp}");
+            target.baseHp = Mathf.Min(target.baseHp, target.maxHp); // Ensure it doesn't exceed max HP
+            UpdateHealth(target, target.baseHp);
+            Debug.Log($"{target.unitName} healed successfully. New HP: {target.baseHp}");
         }
+
         else if (effect.effectType == BaseUnit.EffectType.Buff)
         {
             // Apply Buff effects based on targeted stat (defense, speed, etc.)

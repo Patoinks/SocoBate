@@ -8,6 +8,7 @@ public class BaseUnit : ScriptableObject
     public Sprite unitSprite;
     public Sprite splashImage;
 
+    public int maxHp;
     public int baseHp;
     public int mDef;  // Magical Defense
     public int pDef;  // Physical Defense

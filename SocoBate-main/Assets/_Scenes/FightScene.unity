@@ -2091,7 +2091,6 @@ GameObject:
   - component: {fileID: 1734219105}
   - component: {fileID: 1734219106}
   - component: {fileID: 1734219108}
-  - component: {fileID: 1734219107}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -2128,7 +2127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerUnits: []
   enemyUnits: []
-  healthBar: {fileID: 1734219107}
+  healthBar: {fileID: 9215014980507884211, guid: ee429d8ce311d9a428b04609c499276e, type: 3}
   squadManager: {fileID: 1734219105}
   uiFight: {fileID: 1734219106}
 --- !u!114 &1734219105
@@ -2163,9 +2162,10 @@ MonoBehaviour:
   - {fileID: 1549446346}
   - {fileID: 81629069}
   - {fileID: 305718849}
+  healthbar: {fileID: 9215014980507884211, guid: ee429d8ce311d9a428b04609c499276e, type: 3}
+  healthBarPrefab: {fileID: 1406659314805011031, guid: ee429d8ce311d9a428b04609c499276e, type: 3}
   playerUnits: []
   enemyUnits: []
-  healthBar: {fileID: 1734219107}
 --- !u!114 &1734219106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2178,21 +2178,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bf258efc681da9439a6c844ecab7f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1734219107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734219102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b17377d93b5437747b6b916116a2949d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthSlider: {fileID: 3835994278282972481, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
-  healthFill: {fileID: 3511211640808256581, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
-  healthBarPrefab: {fileID: 2773581845477676462, guid: be8dc26241c15cf4d9bfd5bc8d717a3f, type: 3}
 --- !u!114 &1734219108
 MonoBehaviour:
   m_ObjectHideFlags: 0
