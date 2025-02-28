@@ -21,7 +21,7 @@ MonoBehaviour:
   pDef: 30
   baseSpeed: 80
   baseStr: 50
-  baseInt: 150
+  baseInt: 100
   baseEvasion: 0
   baseLuck: 0
   rarity: 5
@@ -31,7 +31,7 @@ MonoBehaviour:
       targetType: 4
       targetedStat: HP
       scalingAttribute: Intelligence
-      scalingPercent: 50
+      scalingPercent: 25
       baseValue: 15
       isPercentage: 0
       statusEffect:

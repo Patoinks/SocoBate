@@ -15,42 +15,76 @@ MonoBehaviour:
   unitName: Gonki
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  baseHp: 0
-  baseDef: 0
-  baseSpeed: 0
-  baseStr: 0
-  baseInt: 0
+  maxHp: 50
+  baseHp: 50
+  mDef: 25
+  pDef: 25
+  baseSpeed: 50
+  baseStr: 1
+  baseInt: 1
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
-  normalAttackEffectType: 
-  normalAttackTargetedStat: 
-  normalAttackScalingAttribute: 
-  normalAttackScalingPercent: 0
-  normalAttackValue: 0
-  isNormalAttackAoE: 0
-  isNormalAttackPercentage: 0
-  isNormalAttackCC: 0
-  normalAttackCCDuration: 0
-  normalAttackDescription: 
-  passiveEffectType: 
-  passiveTargetedStat: 
-  passiveScalingAttribute: 
-  passiveScalingPercent: 0
-  passiveValue: 0
-  isPassiveAoE: 0
-  isPassivePercentage: 0
-  isPassiveCC: 0
-  passiveCCDuration: 0
-  passiveDescription: 
-  specialEffectType: 
-  specialTargetedStat: 
-  specialScalingAttribute: 
-  specialScalingPercent: 0
-  specialValue: 0
-  isSpecialAttackAoE: 0
-  isSpecialAttackPercentage: 0
-  isSpecialAttackCC: 0
-  specialAttackCCDuration: 0
-  turnsToSpecial: 0
-  specialDescription: 
+  normalAttack:
+    effects:
+    - effectType: 0
+      targetType: 4
+      targetedStat: 
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 10
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: SpeedUP
+    turnsToSpecial: 0
+  passiveAbility:
+    effects:
+    - effectType: 1
+      targetType: 0
+      targetedStat: 
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 10
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Cura tudo
+    turnsToSpecial: 0
+  specialAttack:
+    effects:
+    - effectType: 1
+      targetType: 0
+      targetedStat: 
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 50
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Espalha conhecimento
+    turnsToSpecial: 6

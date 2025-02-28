@@ -15,42 +15,76 @@ MonoBehaviour:
   unitName: Vandri
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  baseHp: 0
-  baseDef: 0
-  baseSpeed: 0
-  baseStr: 0
-  baseInt: 0
+  maxHp: 200
+  baseHp: 200
+  mDef: 50
+  pDef: 50
+  baseSpeed: 110
+  baseStr: 111
+  baseInt: 11
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
-  normalAttackEffectType: 
-  normalAttackTargetedStat: 
-  normalAttackScalingAttribute: 
-  normalAttackScalingPercent: 0
-  normalAttackValue: 0
-  isNormalAttackAoE: 0
-  isNormalAttackPercentage: 0
-  isNormalAttackCC: 0
-  normalAttackCCDuration: 0
-  normalAttackDescription: 
-  passiveEffectType: 
-  passiveTargetedStat: 
-  passiveScalingAttribute: 
-  passiveScalingPercent: 0
-  passiveValue: 0
-  isPassiveAoE: 0
-  isPassivePercentage: 0
-  isPassiveCC: 0
-  passiveCCDuration: 0
-  passiveDescription: 
-  specialEffectType: 
-  specialTargetedStat: 
-  specialScalingAttribute: 
-  specialScalingPercent: 0
-  specialValue: 0
-  isSpecialAttackAoE: 0
-  isSpecialAttackPercentage: 0
-  isSpecialAttackCC: 0
-  specialAttackCCDuration: 0
-  turnsToSpecial: 0
-  specialDescription: 
+  normalAttack:
+    effects:
+    - effectType: 0
+      targetType: 4
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Rotacao
+    turnsToSpecial: 0
+  passiveAbility:
+    effects:
+    - effectType: 2
+      targetType: 0
+      targetedStat: PDEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 20
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Upar DEFESA
+    turnsToSpecial: 0
+  specialAttack:
+    effects:
+    - effectType: 0
+      targetType: 3
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 50
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Demenciaaa
+    turnsToSpecial: 5

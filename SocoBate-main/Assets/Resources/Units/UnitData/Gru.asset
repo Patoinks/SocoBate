@@ -44,7 +44,7 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
-    description: 
+    description: aaa
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -68,6 +68,23 @@ MonoBehaviour:
     description: Drip Violento
     turnsToSpecial: 0
   specialAttack:
-    effects: []
-    description: 
-    turnsToSpecial: 0
+    effects:
+    - effectType: 2
+      targetType: 0
+      targetedStat: INT
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 20
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: AAAA
+    turnsToSpecial: 6
