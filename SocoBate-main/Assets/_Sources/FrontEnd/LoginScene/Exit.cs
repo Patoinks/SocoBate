@@ -5,18 +5,14 @@ using UnityEngine.UI;
 
 public class EXIT : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    public GameObject prefab;
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Application.Quit();
+             Destroy(prefab);
         }
     }
 }

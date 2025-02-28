@@ -15,23 +15,57 @@ MonoBehaviour:
   unitName: Gru
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 0
-  baseHp: 0
-  mDef: 0
-  pDef: 0
-  baseSpeed: 0
-  baseStr: 0
-  baseInt: 0
+  maxHp: 300
+  baseHp: 300
+  mDef: 1
+  pDef: 1
+  baseSpeed: 20
+  baseStr: 1
+  baseInt: 10
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
   normalAttack:
-    effects: []
+    effects:
+    - effectType: 0
+      targetType: 4
+      targetedStat: HP
+      scalingAttribute: INT
+      scalingPercent: 10
+      baseValue: 10
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
     description: 
     turnsToSpecial: 0
   passiveAbility:
-    effects: []
-    description: 
+    effects:
+    - effectType: 3
+      targetType: 4
+      targetedStat: INT
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 50
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Drip Violento
     turnsToSpecial: 0
   specialAttack:
     effects: []

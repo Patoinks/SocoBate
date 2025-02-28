@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DuelScript : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class DuelScript : MonoBehaviour
 
         playerUnits.Clear();
         enemyUnits.Clear();
-        Invoke("InitializeBattleDelayed", 5f);
+        Invoke("InitializeBattleDelayed", 1f);
     }
 
     public void UpdateHealth(BaseUnit unit, float newHealth)
@@ -106,8 +107,8 @@ public class DuelScript : MonoBehaviour
 
                 foreach (var target in targets)
                 {
-                        Debug.Log($"Applying passive effect {effect.effectType} to {target.unitName}");
-                        ApplyEffect(target, effect);
+                    Debug.Log($"Applying passive effect {effect.effectType} to {target.unitName}");
+                    ApplyEffect(target, effect);
                 }
             }
         }
@@ -296,12 +297,17 @@ public class DuelScript : MonoBehaviour
         {
             ApplyStatusEffect(target, effect.statusEffect);
         }
-
         if (target.baseHp <= 0)
         {
             Debug.Log($"{target.unitName} has been defeated!");
-            RemoveUnit(target);
+            StartCoroutine(RemoveUnitAfterDelay(target, 0.5f));
         }
+    }
+
+    IEnumerator RemoveUnitAfterDelay(BaseUnit unit, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        RemoveUnit(unit);
     }
 
 
@@ -349,5 +355,6 @@ public class DuelScript : MonoBehaviour
     void EndBattle()
     {
         Debug.Log("The battle is over!");
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

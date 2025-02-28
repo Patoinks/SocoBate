@@ -11,10 +11,8 @@ public class UIFight : MonoBehaviour
     }
     private IEnumerator MoveUnitCloserCoroutine(BaseUnit target, BaseUnit attacker)
     {
-        // Find units in their respective hexes
         GameObject targetPrefab = FindUnitInHexContainer(target);
         GameObject attackerPrefab = FindUnitInHexContainer(attacker);
-
 
         if (targetPrefab != null && attackerPrefab != null)
         {

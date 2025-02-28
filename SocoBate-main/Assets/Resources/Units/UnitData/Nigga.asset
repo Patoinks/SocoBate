@@ -15,25 +15,76 @@ MonoBehaviour:
   unitName: Nigga
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 0
-  baseHp: 0
-  mDef: 0
-  pDef: 0
-  baseSpeed: 0
-  baseStr: 0
-  baseInt: 0
+  maxHp: 150
+  baseHp: 150
+  mDef: 30
+  pDef: 30
+  baseSpeed: 70
+  baseStr: 150
+  baseInt: 50
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
   normalAttack:
-    effects: []
-    description: Atirar Halter
+    effects:
+    - effectType: 0
+      targetType: 3
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 20
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Machados
     turnsToSpecial: 0
   passiveAbility:
-    effects: []
-    description: 
+    effects:
+    - effectType: 1
+      targetType: 0
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 10
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+    description: Bulk
     turnsToSpecial: 0
   specialAttack:
-    effects: []
+    effects:
+    - effectType: 0
+      targetType: 2
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 10
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
     description: 
-    turnsToSpecial: 0
+    turnsToSpecial: 3
