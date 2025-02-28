@@ -4,16 +4,17 @@ using Models;
 
 public class UIFight : MonoBehaviour
 {
+    public SquadManager squadManager;
     public IEnumerator MoveUnitCloser(BaseUnit target, BaseUnit attacker)
     {
         yield return StartCoroutine(MoveUnitCloserCoroutine(target, attacker));
     }
-
     private IEnumerator MoveUnitCloserCoroutine(BaseUnit target, BaseUnit attacker)
     {
         // Find units in their respective hexes
-        GameObject targetPrefab = FindUnitInHexContainer(target.unitName, target);
-        GameObject attackerPrefab = FindUnitInHexContainer(attacker.unitName, attacker);
+        GameObject targetPrefab = FindUnitInHexContainer(target);
+        GameObject attackerPrefab = FindUnitInHexContainer(attacker);
+
 
         if (targetPrefab != null && attackerPrefab != null)
         {
@@ -53,53 +54,48 @@ public class UIFight : MonoBehaviour
         unit.transform.position = end;
     }
 
-    public GameObject FindUnitInHexContainer(string unitName, BaseUnit unit)
+    public GameObject FindUnitInHexContainer(BaseUnit unit)
     {
-        // Iterate through hexes by name (e.g., Hex1, Hex2, ..., Hex9, Hex1J2, Hex2J2, ..., Hex9J2)
+        string unitIdentifier = unit.unitName + (squadManager.playerUnits.Contains(unit) ? "_Player" : "_Enemy");
+        Debug.Log($"Looking for unit with identifier: {unitIdentifier}");
+
         for (int i = 1; i <= 9; i++)
         {
-            // Search for the standard Hex and HexJ2
-            string hexName = "Hex" + i;
-            GameObject hex = GameObject.Find(hexName);
-            if (hex != null)
+            foreach (string hexName in new[] { "Hex" + i, "Hex" + i + "J2" })
             {
-                // Look for the unit by name inside this hex
-                Transform unitInHex = hex.transform.Find(unitName);
-                if (unitInHex != null)
+                GameObject hex = GameObject.Find(hexName);
+                if (hex != null)
                 {
-                    return unitInHex.gameObject;
-                }
+                    Debug.Log($"Searching in hex: {hexName}");
 
-                // If not found by exact name, check if it’s a cloned unit (e.g., unitName + "(Clone)")
-                Transform clonedUnitInHex = hex.transform.Find(unitName + "(Clone)");
-                if (clonedUnitInHex != null)
-                {
-                    return clonedUnitInHex.gameObject;
-                }
-            }
-
-            // Check Hex1J2, Hex2J2, ..., Hex9J2 as well
-            string hexJ2Name = "Hex" + i + "J2";
-            hex = GameObject.Find(hexJ2Name);
-            if (hex != null)
-            {
-                // Look for the unit by name inside this hex
-                Transform unitInHex = hex.transform.Find(unitName);
-                if (unitInHex != null)
-                {
-                    return unitInHex.gameObject;
-                }
-
-                // If not found by exact name, check if it’s a cloned unit (e.g., unitName + "(Clone)")
-                Transform clonedUnitInHex = hex.transform.Find(unitName + "(Clone)");
-                if (clonedUnitInHex != null)
-                {
-                    return clonedUnitInHex.gameObject;
+                    foreach (Transform child in hex.transform)
+                    {
+                        Debug.Log($"Checking child: {child.name}");
+                        if (child.name == unitIdentifier)
+                        {
+                            return child.gameObject;
+                        }
+                    }
                 }
             }
         }
 
-        // If no unit is found in any hex, return null
+        return null;
+    }
+
+
+
+
+    private GameObject FindUnitInHex(GameObject hex, BaseUnit unit)
+    {
+        foreach (Transform child in hex.transform)
+        {
+            BaseUnit unitComponent = child.GetComponent<BaseUnit>();
+            if (unitComponent != null && unitComponent == unit) // Ensure exact match
+            {
+                return child.gameObject;
+            }
+        }
         return null;
     }
 

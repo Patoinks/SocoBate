@@ -71,6 +71,9 @@ public class SquadManager : MonoBehaviour
             Transform hexTransform = hexPositions[unit.HexId];
             GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position + new Vector3(isEnemy ? 5f : -5f, 58f, 0), Quaternion.identity, hexTransform);
 
+            // Use 'isEnemy' directly to set the unit name
+            spawnedUnit.name = unit.UnitName + (isEnemy ? "_Enemy" : "_Player");
+
             GameObject healthBar = Instantiate(healthBarPrefab, spawnedUnit.transform.position, Quaternion.identity, spawnedUnit.transform);
             HealthBar healthBarScript = healthBar.GetComponent<HealthBar>();
             healthBarScript.healthSlider = healthBar.GetComponentInChildren<Slider>();
@@ -94,6 +97,7 @@ public class SquadManager : MonoBehaviour
                     Debug.Log($"Added player unit: {clonedUnit.name}");
                 }
             }
+
             // Rotate enemy units
             if (isEnemy)
             {
@@ -101,6 +105,7 @@ public class SquadManager : MonoBehaviour
             }
         }
     }
+
 
     private GameObject FindUnitPrefab(string unitName)
     {

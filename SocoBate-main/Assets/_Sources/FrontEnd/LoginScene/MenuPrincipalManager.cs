@@ -36,8 +36,8 @@ public class MenuPrincipalManager : MonoBehaviour
     {
         string username = nomeUsuarioInput.text;
         string password = senhaInput.text;
-
- try
+        DisableAllButtons();
+        try
         {
             // Call the Login function from AccountController
             Guid userId = await AccountController.Login(username, password);
@@ -88,6 +88,7 @@ public class MenuPrincipalManager : MonoBehaviour
             Debug.LogError("[LOGIN] Login error: " + ex.Message);
         }
     }
+    
 
     void DisableAllButtons()
     {
@@ -106,7 +107,7 @@ public class MenuPrincipalManager : MonoBehaviour
             btn.interactable = true; // Re-enable them
         }
     }
-    public async void OnSqueaky(Button button)
+    public async void OnSqueaky()
     {
         DisableAllButtons();
         string username = "Patoinks";
@@ -176,22 +177,56 @@ public class MenuPrincipalManager : MonoBehaviour
     {
         string username = nomeUsuarioInput.text;
         string password = senhaInput.text;
-
+       DisableAllButtons();
         try
         {
-            // Call the Register function from AccountController
-            await AccountController.Register(username, password);
+            // Call the Login function from AccountController
+            Guid userId = await AccountController.Login(username, password);
 
-            if (Context.UserContext.account.AccountId != Guid.Empty)
+            if (userId != Guid.Empty)
             {
-                Debug.Log("[REGISTER] Registration successful. User ID: " + Context.UserContext.account.AccountId);
-                // Proceed to next menu or do other actions upon successful registration
-                NicknameManager.Instance.AskForNickname();
+                Debug.Log("[LOGIN] Login successful. User ID: " + userId);
+
+                // Load Friends
+                await FriendshipController.LoadFriends(userId);
+
+                // Load Units
+                Context.UnitContext.LoadAllUnitsFromSerializedData();
+                await UnitController.GetOwnedUnits(userId);
+
+                // Load Team from Database and Store in Context
+                List<(int HexId, string UnitName)> teamSetup = await TeamController.LoadTeam(userId);
+                if (teamSetup.Count > 0)
+                {
+                    Debug.Log($"[LOGIN] Loaded {teamSetup.Count} team units.");
+
+                    // Convert to TeamSetup objects
+                    List<TeamSetup> teamList = new List<TeamSetup>();
+                    foreach (var (hexId, unitName) in teamSetup)
+                    {
+                        Debug.Log($"[LOGIN] Storing {unitName} at Hex {hexId}");
+                        teamList.Add(new TeamSetup(userId, hexId, unitName));
+                    }
+
+                    TeamContext.SetPlayerTeam(teamList);
+                }
+                else
+                {
+                    Debug.Log("[LOGIN] No team found for this user.");
+                }
+
+                // Switch Scene
+                int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+                SceneManager.LoadScene(currentSceneIndex + 1);
+            }
+            else
+            {
+                Debug.Log("[LOGIN] Invalid username or password.");
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("[REGISTER] Registration error: " + ex.Message);
+            Debug.LogError("[LOGIN] Login error: " + ex.Message);
         }
     }
 }

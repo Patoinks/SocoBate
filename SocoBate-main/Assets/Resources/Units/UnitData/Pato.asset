@@ -28,7 +28,7 @@ MonoBehaviour:
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 4
+      targetType: 3
       targetedStat: HP
       scalingAttribute: Intelligence
       scalingPercent: 10

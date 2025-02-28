@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6deebea15a234cb40bd98a84921b3297, type: 3}
-  m_Name: Nigga
+  m_Name: Gru
   m_EditorClassIdentifier: 
-  unitName: Nigga
+  unitName: Gru
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
   maxHp: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   rarity: 3
   normalAttack:
     effects: []
-    description: Atirar Halter
+    description: 
     turnsToSpecial: 0
   passiveAbility:
     effects: []

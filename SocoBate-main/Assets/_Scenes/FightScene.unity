@@ -2178,6 +2178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bf258efc681da9439a6c844ecab7f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  squadManager: {fileID: 1734219105}
 --- !u!114 &1734219108
 MonoBehaviour:
   m_ObjectHideFlags: 0
