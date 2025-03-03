@@ -5,7 +5,6 @@ using UnityEngine;
 using MySql.Data.MySqlClient;
 using Context;
 using Models;
-using Database.Utils;  // <-- Make sure to include this for SecureLoginManager
 
 namespace Database
 {
@@ -18,10 +17,10 @@ namespace Database
 
             string query = "SELECT * FROM Account WHERE username = @username AND password_hash = @password_hash LIMIT 1";
             var parameters = new Dictionary<string, object>
-            {
-                { "@username", username },
-                { "@password_hash", hashedInput }
-            };
+    {
+        { "@username", username },
+        { "@password_hash", hashedInput }
+    };
 
             List<object[]> result = await DatabaseConnector.QueryDatabaseAsync(query, parameters);
 
@@ -44,10 +43,6 @@ namespace Database
                 );
 
                 UserContext.SetUser(account);
-
-                // Save login credentials securely for persistent login
-                SecureLoginManager.SaveLogin(username, password);
-
                 return accountId;
             }
 
@@ -71,17 +66,17 @@ namespace Database
             string hashedPass = Cryptography.HashSHA512(password);
 
             string insertQuery = @"
-                INSERT INTO Account (account_id, username, email, password_hash, gems, tickets, level, experience, banned, arena_elo, nickname)
-                VALUES (@accountId, @username, @email, @password_hash, 0, 0, 1, 0, false, 1000, @nickname)";
+        INSERT INTO Account (account_id, username, email, password_hash, gems, tickets, level, experience, banned, arena_elo, nickname)
+        VALUES (@accountId, @username, @email, @password_hash, 0, 0, 1, 0, false, 1000, @nickname)";
 
             var insertParams = new Dictionary<string, object>
-            {
-                { "@accountId", accountId },
-                { "@username", username },
-                { "@email", email },
-                { "@password_hash", hashedPass },
-                { "@nickname", nickname }
-            };
+    {
+        { "@accountId", accountId },
+        { "@username", username },
+        { "@email", email },
+        { "@password_hash", hashedPass },
+        { "@nickname", nickname }
+    };
 
             // Execute INSERT query
             List<object[]> insertResult = await DatabaseConnector.QueryDatabaseAsync(insertQuery, insertParams);
@@ -115,18 +110,13 @@ namespace Database
                 );
 
                 UserContext.SetUser(account);
-
-                // Optionally save credentials for auto-login after registration
-                if (loginOnRegister)
-                {
-                    SecureLoginManager.SaveLogin(username, password);
-                }
-
                 return new RegisterResult { Success = true, AccountId = accountId };
             }
 
             return new RegisterResult { Success = false, ErrorMessage = "Error retrieving user data after registration." };
         }
+
+
 
         // Method to change/update nickname for a user
         public async static Task<bool> AddNicknameToAccount(Guid accountId, string nickname)
@@ -146,10 +136,10 @@ namespace Database
             // Step 2: Update the user's nickname in the database
             string updateQuery = "UPDATE Account SET nickname = @nickname WHERE account_id = @accountId";
             var updateParams = new Dictionary<string, object>
-            {
-                { "@nickname", nickname },
-                { "@accountId", accountId }
-            };
+    {
+        { "@nickname", nickname },
+        { "@accountId", accountId }
+    };
 
             List<object[]> result = await DatabaseConnector.QueryDatabaseAsync(updateQuery, updateParams);
 
@@ -162,5 +152,6 @@ namespace Database
             Debug.LogError("Error updating nickname.");
             return false; // There was an error while updating
         }
+
     }
 }
