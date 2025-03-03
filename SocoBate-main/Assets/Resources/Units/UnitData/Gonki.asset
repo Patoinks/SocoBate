@@ -27,9 +27,9 @@ MonoBehaviour:
   rarity: 3
   normalAttack:
     effects:
-    - effectType: 1
+    - effectType: 2
       targetType: 1
-      targetedStat: HP
+      targetedStat: INT
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 25

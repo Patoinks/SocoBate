@@ -1,4 +1,6 @@
 using UnityEngine;
+using Context;
+using System.Collections;
 
 public class CloseMenu : MonoBehaviour
 {
@@ -7,6 +9,11 @@ public class CloseMenu : MonoBehaviour
     private GameObject amigosMenuInstance;
 
     // Method to set the AmigosMenu prefab instance
+    void Start()
+    {
+        UserContext.GetFriends();
+    }
+
     public void SetAmigosMenuInstance(GameObject instance)
     {
         amigosMenuInstance = instance;
@@ -19,6 +26,7 @@ public void CloseMenuButton()
     if (amigosMenuInstance != null)
     {
         // Destroy the prefab instance
+        UserContext.ClearFriends();
         Destroy(amigosMenuInstance);
     }
     else

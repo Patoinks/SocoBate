@@ -55,7 +55,6 @@ public class UIFight : MonoBehaviour
     public GameObject FindUnitInHexContainer(BaseUnit unit)
     {
         string unitIdentifier = unit.unitName + (squadManager.playerUnits.Contains(unit) ? "_Player" : "_Enemy");
-        Debug.Log($"Looking for unit with identifier: {unitIdentifier}");
 
         for (int i = 1; i <= 9; i++)
         {

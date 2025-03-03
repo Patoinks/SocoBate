@@ -105,7 +105,7 @@ public class DuelScript : MonoBehaviour
     {
         if (unit.passiveAbility != null)
         {
-            Debug.Log($"Applying passive effects for {unit.unitName}.");
+            Debug.Log($" {unit.unitName} is using passive {unit.passiveAbility.description}.");
 
             foreach (var effect in unit.passiveAbility.effects)
             {
@@ -225,7 +225,7 @@ public class DuelScript : MonoBehaviour
 
     void ApplyEffect(BaseUnit target, BaseUnit attacker, BaseUnit.Effect effect)
     {
-        Debug.Log($"[DEBUG] ApplyEffect called: {target.unitName} | Effect: {effect.effectType} | TargetedStat: {effect.targetedStat} | BaseValue: {effect.baseValue}");
+        Debug.Log($"[DEBUG] ApplyEffect to: {target.unitName} | Effect: {effect.effectType} | TargetedStat: {effect.targetedStat} | BaseValue: {effect.baseValue}");
 
         int calculatedValue = effect.baseValue;
 
@@ -237,7 +237,7 @@ public class DuelScript : MonoBehaviour
             {
                 // Apply percentage damage to HP (example: 5% of the target's HP)
                 calculatedValue = (int)((target.maxHp * effect.baseValue) / 100f);
-                Debug.Log($"[DEBUG] Calculated Percentage Damage: {calculatedValue} (5% of {target.maxHp})");
+                Debug.Log($"[DEBUG] Calculated Percentage Damage: {calculatedValue} % {target.maxHp})");
             }
         }
         else
@@ -262,7 +262,6 @@ public class DuelScript : MonoBehaviour
         switch (effect.effectType)
         {
             case BaseUnit.EffectType.Damage:
-                Debug.Log("[DEBUG] Inside Damage case");
                 ApplyDamage(target, effect.targetedStat, calculatedValue); // Pass correct parameters
                 break;
             case BaseUnit.EffectType.Heal:
@@ -374,7 +373,6 @@ public class DuelScript : MonoBehaviour
     int GetStat(BaseUnit unit, string statName)
     {
         string statNameLower = statName.ToLower();
-        Debug.Log($"Checking stat {statName} for {unit.unitName}");
 
         if (statNameLower == "strength" || statNameLower == "str")
             return unit.baseStr;
@@ -389,7 +387,6 @@ public class DuelScript : MonoBehaviour
         if (statNameLower == "hp" || statNameLower == "health")
             return unit.baseHp;
 
-        Debug.LogError($"Stat '{statName}' not found for {unit.unitName}!");
         return 0;
     }
 
