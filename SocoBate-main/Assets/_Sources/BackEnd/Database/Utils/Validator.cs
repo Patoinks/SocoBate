@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine;
+
 
 public static class Validator
 {
@@ -13,9 +15,9 @@ public static class Validator
     {
         List<Exception> exceptions = new List<Exception>();
 
-        if (input.Length < 8)
+        if (input.Length < 6)
         {
-            exceptions.Add(new Exception("Password must be at least 8 characters long"));
+            exceptions.Add(new Exception("Password must be at least 6 characters long"));
         }
 
         if (!input.Any(c => Char.IsLetter(c)))
@@ -23,28 +25,28 @@ public static class Validator
             exceptions.Add(new Exception("Password must contain at least one letter"));
         }
 
-        if (!input.Any(c => Char.IsDigit(c)))
-        {
-            exceptions.Add(new Exception("Password must contain at least one digit"));
-        }
+        // if (!input.Any(c => Char.IsDigit(c)))
+        // {
+        //     exceptions.Add(new Exception("Password must contain at least one digit"));
+        // }
 
-        if (!input.Any(c => IsSymbol(c)))
-        {
-            exceptions.Add(new Exception("Password must contain at least one symbol"));
-        }
+        // if (!input.Any(c => IsSymbol(c)))
+        // {
+        //     exceptions.Add(new Exception("Password must contain at least one symbol"));
+        // }
 
-        if (input.Where(char.IsUpper).Count() < 1)
-        {
-            exceptions.Add(new Exception("Password must contain at least one uppercase letter"));
-        }
+        // if (input.Where(char.IsUpper).Count() < 1)
+        // {
+        //     exceptions.Add(new Exception("Password must contain at least one uppercase letter"));
+        // }
 
         if (exceptions.Count > 0)
         {
+            return false;
             throw new AggregateException(exceptions);
-
         }
 
-        return exceptions.Count == 0;
+        return true;
     }
 
     public static bool HasDigit(string input)
