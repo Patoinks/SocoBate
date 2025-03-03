@@ -67,7 +67,7 @@ public static class Validator
         return input.Any(c => Char.IsLetter(c));
     }
 
-    public static bool HasMinimumLength(string input, int minLength = 8)
+    public static bool HasMinimumLength(string input, int minLength = 6)
     {
         return input.Length >= minLength;
     }
