@@ -64,11 +64,9 @@ public class UIFight : MonoBehaviour
                 GameObject hex = GameObject.Find(hexName);
                 if (hex != null)
                 {
-                    Debug.Log($"Searching in hex: {hexName}");
 
                     foreach (Transform child in hex.transform)
                     {
-                        Debug.Log($"Checking child: {child.name}");
                         if (child.name == unitIdentifier)
                         {
                             return child.gameObject;

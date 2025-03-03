@@ -4,6 +4,8 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "BaseUnits", menuName = "Units/UnitData/BaseUnits", order = 1)]
 public class BaseUnit : ScriptableObject
 {
+    public int HexId { get; set; }  // Ensure this exists in BaseUnit
+
     public string unitName;
     public Sprite unitSprite;
     public Sprite splashImage;
@@ -55,14 +57,18 @@ public class BaseUnit : ScriptableObject
         public bool preventsAction;
         public bool preventsMovement;
         public bool preventsAttacks;
+        public bool isRng;  // Determines if the CC effect is ranged
+        public float rngChance;  // Chance for the ranged CC to land (e.g., 0.7 for 70%)
+        public bool isSummon; // Whether the effect is for summoning a unit
+        public BaseUnit summonUnit; // The unit to summon if the effect is a summon
     }
 
     // Types of Effects
     public enum EffectType
     {
-        Damage, 
-        Heal, 
-        Buff, 
+        Damage,
+        Heal,
+        Buff,
         Debuff
     }
 
@@ -76,8 +82,9 @@ public class BaseUnit : ScriptableObject
         Blind,  // Reduces accuracy
         Slow,   // Reduces movement speed
         Poison, // Deals damage over time
-        Burn,    // Deals damage over time
-        Taunt
+        Burn,   // Deals damage over time
+        Taunt,  // Forces enemies to target this unit
+        Summon  // Summons a unit for a certain duration
     }
 
     // Target Types (For Different Attack/Effect Applications)
@@ -94,4 +101,26 @@ public class BaseUnit : ScriptableObject
     public AttackData normalAttack;
     public AttackData passiveAbility;
     public AttackData specialAttack;
+
+    // Added status flags to track CC effects
+    [HideInInspector]
+    public bool isStunned;
+    [HideInInspector]
+    public bool isTaunted;
+    [HideInInspector]
+    public bool isRooted;
+    [HideInInspector]
+    public bool isSilenced;
+    [HideInInspector]
+    public bool isPoisoned;
+    [HideInInspector]
+    public int tauntDuration;
+    [HideInInspector]
+    public int stunDuration;
+    [HideInInspector]
+    public int rootDuration;
+    [HideInInspector]
+    public int silenceDuration;
+    [HideInInspector]
+    public int poisonDuration;
 }

@@ -79,7 +79,8 @@ public class SquadManager : MonoBehaviour
             healthBarScript.healthSlider = healthBar.GetComponentInChildren<Slider>();
 
             // Clone a fresh instance of the unit for this battle
-            BaseUnit clonedUnit = LoadBaseUnit(unit.UnitName);
+            BaseUnit clonedUnit = LoadBaseUnit(unit.UnitName, unit.HexId);
+
             if (clonedUnit != null)
             {
                 unitHealthBars[clonedUnit] = healthBarScript;
@@ -120,7 +121,7 @@ public class SquadManager : MonoBehaviour
         return loadedPrefab;
     }
 
-    private BaseUnit LoadBaseUnit(string unitName)
+    private BaseUnit LoadBaseUnit(string unitName, int hexId)
     {
         // Load the original BaseUnit from Resources
         BaseUnit originalUnit = Resources.Load<BaseUnit>($"Units/UnitData/{unitName}");
@@ -133,7 +134,9 @@ public class SquadManager : MonoBehaviour
 
         // Clone to ensure it's a fresh instance
         BaseUnit clonedUnit = Instantiate(originalUnit);
+        clonedUnit.HexId = hexId; // Assign the HexId to the unit
 
         return clonedUnit;
     }
+
 }

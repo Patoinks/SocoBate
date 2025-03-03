@@ -354,7 +354,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 923137388}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
@@ -399,17 +399,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 60506578}
   m_CullTransparentMesh: 1
---- !u!114 &162846255 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1614749775857871196, guid: e778cf59510c41447a16ee9fc08fd0fc, type: 3}
-  m_PrefabInstance: {fileID: 1555186517}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &373976567
 GameObject:
   m_ObjectHideFlags: 0
@@ -1118,7 +1107,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Password must be at least 8 characters long
+  m_Text: Password must be at least 6 characters long
 --- !u!222 &557752310
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2517,8 +2506,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -530.6816, y: -65}
-  m_SizeDelta: {x: 456.6368, y: 50}
+  m_AnchoredPosition: {x: -530.6816, y: -65.94462}
+  m_SizeDelta: {x: 456.6368, y: 48.1107}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1978490123
 MonoBehaviour:
@@ -2542,8 +2531,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a18425f27d003a94280801972dbeff74, type: 2}
+  m_sharedMaterial: {fileID: -5750640562483919468, guid: a18425f27d003a94280801972dbeff74, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2971,3 +2960,4 @@ SceneRoots:
   - {fileID: 32427233}
   - {fileID: 504184798}
   - {fileID: 7829471371316725532}
+  - {fileID: 60506579}

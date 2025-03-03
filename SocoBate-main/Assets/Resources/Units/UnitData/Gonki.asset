@@ -27,12 +27,12 @@ MonoBehaviour:
   rarity: 3
   normalAttack:
     effects:
-    - effectType: 0
-      targetType: 4
-      targetedStat: 
+    - effectType: 1
+      targetType: 1
+      targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 25
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -44,13 +44,17 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: SpeedUP
     turnsToSpecial: 0
   passiveAbility:
     effects:
     - effectType: 1
-      targetType: 0
-      targetedStat: 
+      targetType: 2
+      targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 10
@@ -65,13 +69,17 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: Cura tudo
     turnsToSpecial: 0
   specialAttack:
     effects:
     - effectType: 1
       targetType: 0
-      targetedStat: 
+      targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 50
@@ -86,5 +94,19 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: Espalha conhecimento
     turnsToSpecial: 6
+  isStunned: 0
+  isTaunted: 0
+  isRooted: 0
+  isSilenced: 0
+  isPoisoned: 0
+  tauntDuration: 0
+  stunDuration: 0
+  rootDuration: 0
+  silenceDuration: 0
+  poisonDuration: 0

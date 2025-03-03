@@ -114,7 +114,7 @@ public class DuelScript : MonoBehaviour
                 foreach (var target in targets)
                 {
                     Debug.Log($"Applying passive effect {effect.effectType} to {target.unitName}");
-                    ApplyEffect(target, effect);
+                    ApplyEffect(target, unit, effect);
                 }
             }
         }
@@ -149,7 +149,7 @@ public class DuelScript : MonoBehaviour
                 if (target != null)
                 {
                     Debug.Log($"Applying effect {effect.effectType} to {target.unitName}");
-                    ApplyEffect(target, effect);
+                    ApplyEffect(target, attacker, effect);
 
                     if (effect.effectType == BaseUnit.EffectType.Damage)
                     {
@@ -171,140 +171,199 @@ public class DuelScript : MonoBehaviour
     {
         List<BaseUnit> targets = new List<BaseUnit>();
 
+        // Define front-row hex positions
+        List<int> frontRow = new List<int> { 3, 6, 9 };
+
+        // Determine if attacker is a player or enemy
+        List<BaseUnit> allies = playerUnits.Contains(attacker) ? playerUnits : enemyUnits;
+        List<BaseUnit> enemies = playerUnits.Contains(attacker) ? enemyUnits : playerUnits;
+
         if (targetType == BaseUnit.TargetType.Self)
         {
             targets.Add(attacker);
         }
         else if (targetType == BaseUnit.TargetType.SingleAlly)
         {
-            if (playerUnits.Contains(attacker))
-                targets.Add(GetRandomUnit(playerUnits));
-            else
-                targets.Add(GetRandomUnit(enemyUnits));
+            targets.Add(GetRandomUnit(allies));
         }
         else if (targetType == BaseUnit.TargetType.AllAllies)
         {
-            if (playerUnits.Contains(attacker))
-                targets.AddRange(playerUnits);
-            else
-                targets.AddRange(enemyUnits);
+            targets.AddRange(allies);
         }
         else if (targetType == BaseUnit.TargetType.SingleEnemy)
         {
-            if (playerUnits.Contains(attacker))
-                targets.Add(GetRandomUnit(enemyUnits));  // Player attacks enemy
-            else
-                targets.Add(GetRandomUnit(playerUnits)); // Enemy attacks player
-        }
-        else if (targetType == BaseUnit.TargetType.AllEnemies)
-        {
-            if (playerUnits.Contains(attacker))
-                targets.AddRange(enemyUnits);
-            else
-                targets.AddRange(playerUnits);
-        }
-        return targets;
-    }
+            // Prioritize enemies in the front row
+            List<BaseUnit> frontEnemies = enemies.FindAll(unit => frontRow.Contains(unit.HexId));
 
-    void ApplyEffect(BaseUnit target, BaseUnit.Effect effect)
-    {
-        Debug.Log($"{target.unitName} is affected by {effect.effectType} with {effect.baseValue} {effect.targetedStat}.");
-
-        int calculatedValue = effect.baseValue;
-
-        // Check if the effect is a percentage-based calculation
-        if (effect.isPercentage)
-        {
-            // Apply scaling percentage for intelligence
-            if (effect.scalingAttribute.Equals("Intelligence", System.StringComparison.OrdinalIgnoreCase))
+            if (frontEnemies.Count > 0)
             {
-                int scalingStatValue = target.baseInt; // Get the intelligence value of the target
-                calculatedValue += (int)(scalingStatValue * (effect.scalingPercent / 100.0f)); // 20% of intelligence + base value
+                targets.Add(GetRandomUnit(frontEnemies));
             }
             else
             {
-                // If not Intelligence, use the existing logic for other stats (like Strength)
-                int scalingStatValue = GetStat(target, effect.scalingAttribute);
-                calculatedValue += (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
+                // If no front-row enemies exist, target any enemy
+                targets.Add(GetRandomUnit(enemies));
+            }
+        }
+        else if (targetType == BaseUnit.TargetType.AllEnemies)
+        {
+            // Prioritize front-row enemies first, then the rest
+            List<BaseUnit> frontEnemies = enemies.FindAll(unit => frontRow.Contains(unit.HexId));
+            if (frontEnemies.Count > 0)
+            {
+                targets.AddRange(frontEnemies);
+            }
+            else
+            {
+                targets.AddRange(enemies);
+            }
+        }
+
+        return targets;
+    }
+
+
+    void ApplyEffect(BaseUnit target, BaseUnit attacker, BaseUnit.Effect effect)
+    {
+        Debug.Log($"[DEBUG] ApplyEffect called: {target.unitName} | Effect: {effect.effectType} | TargetedStat: {effect.targetedStat} | BaseValue: {effect.baseValue}");
+
+        int calculatedValue = effect.baseValue;
+
+        // Apply percentage scaling if applicable
+        if (effect.isPercentage && string.IsNullOrEmpty(effect.scalingAttribute))
+        {
+            // If it's a percentage effect without a scaling attribute, apply percentage damage directly to the targeted stat (HP for example)
+            if (effect.targetedStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
+            {
+                // Apply percentage damage to HP (example: 5% of the target's HP)
+                calculatedValue = (int)((target.maxHp * effect.baseValue) / 100f);
+                Debug.Log($"[DEBUG] Calculated Percentage Damage: {calculatedValue} (5% of {target.maxHp})");
             }
         }
         else
         {
-            // If not percentage-based, use the existing baseValue calculation logic
-            int scalingStatValue = GetStat(target, effect.scalingAttribute);
-            calculatedValue += (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
-        }
+            // Apply scaling with the attacker's stat (STR, for example)
+            if (!string.IsNullOrEmpty(effect.scalingAttribute))
+            {
+                // Get the attacker's scaling stat value (e.g., STR, INT, etc.)
+                int scalingStatValue = GetStat(attacker, effect.scalingAttribute); // Use the attacker's stat
 
-        // Apply the damage calculation
-        if (effect.effectType == BaseUnit.EffectType.Damage)
-        {
-            int finalDamage = calculatedValue;
-            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                finalDamage -= target.pDef;
-            }
-            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                finalDamage -= target.mDef;
-            }
+                // Calculate scaling damage as a percentage of the attacker's stat (e.g., STR)
+                int scaledDamage = (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
 
-            finalDamage = Mathf.Max(finalDamage, 0); // Ensure damage cannot go below 0
-            target.baseHp -= finalDamage; // Apply the damage to the target's HP
-            UpdateHealth(target, target.baseHp);
-            Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {target.baseHp}");
-        }
-        else if (effect.effectType == BaseUnit.EffectType.Heal)
-        {
-            Debug.Log($"{target.unitName} is attempting to heal for {calculatedValue}");
-            target.baseHp += calculatedValue;
-            target.baseHp = Mathf.Min(target.baseHp, target.maxHp); // Ensure it doesn't exceed max HP
-            UpdateHealth(target, target.baseHp);
-            Debug.Log($"{target.unitName} healed successfully. New HP: {target.baseHp}");
-        }
+                // Add the base value + scaled damage
+                calculatedValue += scaledDamage;
 
-        else if (effect.effectType == BaseUnit.EffectType.Buff)
-        {
-            // Apply Buff effects based on targeted stat (defense, speed, etc.)
-            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.pDef += calculatedValue;
-            }
-            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.mDef += calculatedValue;
-            }
-            else if (effect.targetedStat.Equals("Speed", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.baseSpeed += calculatedValue;
-            }
-        }
-        else if (effect.effectType == BaseUnit.EffectType.Debuff)
-        {
-            // Apply Debuff effects based on targeted stat (defense, speed, etc.)
-            if (effect.targetedStat.Equals("PDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.pDef -= calculatedValue;
-            }
-            else if (effect.targetedStat.Equals("MDEF", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.mDef -= calculatedValue;
-            }
-            else if (effect.targetedStat.Equals("Speed", System.StringComparison.OrdinalIgnoreCase))
-            {
-                target.baseSpeed -= calculatedValue;
+                Debug.Log($"[DEBUG] Calculated Scaling Damage: {calculatedValue} (Scaling: {effect.scalingPercent}% of {scalingStatValue} from {effect.scalingAttribute})");
             }
         }
 
+        // Apply effects based on type
+        switch (effect.effectType)
+        {
+            case BaseUnit.EffectType.Damage:
+                Debug.Log("[DEBUG] Inside Damage case");
+                ApplyDamage(target, effect.targetedStat, calculatedValue); // Pass correct parameters
+                break;
+            case BaseUnit.EffectType.Heal:
+                ApplyHealing(target, calculatedValue);
+                break;
+            case BaseUnit.EffectType.Buff:
+                ModifyStat(target, effect.targetedStat, calculatedValue, false); // Buff = positive change
+                break;
+            case BaseUnit.EffectType.Debuff:
+                ModifyStat(target, effect.targetedStat, calculatedValue, true); // Debuff = negative change
+                break;
+        }
+
+        // Apply status effect if present
         if (effect.statusEffect != null)
         {
             ApplyStatusEffect(target, effect.statusEffect);
         }
-        if (target.baseHp <= 0)
+
+        // Check if unit is defeated
+        if (GetStat(target, "HP") <= 0)
         {
             Debug.Log($"{target.unitName} has been defeated!");
             StartCoroutine(RemoveUnitAfterDelay(target, 0.5f));
         }
     }
+    void ApplyDamage(BaseUnit target, string defenseStat, int rawDamage)
+    {
+        // Handle HP damage and defense
+        if (defenseStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
+        {
+            target.baseHp -= rawDamage;
+            target.baseHp = Mathf.Max(target.baseHp, 0); // Ensure HP doesn't go below 0
+            Debug.Log($"{target.unitName} takes {rawDamage} damage. Remaining HP: {target.baseHp}");
+            UpdateHealth(target, target.baseHp);
+        }
+        else
+        {
+            // Apply defense and calculate final damage
+            int defenseValue = GetStat(target, defenseStat);
+            int finalDamage = Mathf.Max(rawDamage - defenseValue, 1); // Ensure at least 1 damage
+
+            int newHp = GetStat(target, "HP") - finalDamage;
+            SetStat(target, "HP", newHp);
+            UpdateHealth(target, newHp);
+
+            Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {newHp}");
+        }
+    }
+
+
+
+
+
+    void ApplyHealing(BaseUnit target, int healAmount)
+    {
+        int newHp = Mathf.Min(GetStat(target, "HP") + healAmount, target.maxHp);
+        SetStat(target, "HP", newHp);
+        UpdateHealth(target, newHp);
+
+        Debug.Log($"{target.unitName} heals for {healAmount}. New HP: {newHp}");
+    }
+
+    void ModifyStat(BaseUnit target, string statName, int valueChange, bool isDebuff)
+    {
+        int currentValue = GetStat(target, statName);
+
+        if (isDebuff)
+        {
+            valueChange = -Mathf.Abs(valueChange); // Ensure debuffs always subtract
+        }
+
+        SetStat(target, statName, currentValue + valueChange);
+
+        Debug.Log($"{target.unitName}'s {statName} modified by {valueChange}. New value: {GetStat(target, statName)}");
+    }
+
+
+
+    void SetStat(BaseUnit unit, string statName, int newValue)
+    {
+        string statNameLower = statName.ToLower();
+        Debug.Log($"Setting stat {statName} for {unit.unitName} to {newValue}");
+
+        if (statNameLower == "strength" || statNameLower == "str")
+            unit.baseStr = newValue;
+        else if (statNameLower == "intelligence" || statNameLower == "int")
+            unit.baseInt = newValue;
+        else if (statNameLower == "speed" || statNameLower == "spd")
+            unit.baseSpeed = newValue;
+        else if (statNameLower == "pdef" || statNameLower == "physicaldefense")
+            unit.pDef = newValue;
+        else if (statNameLower == "mdef" || statNameLower == "magicaldefense")
+            unit.mDef = newValue;
+        else if (statNameLower == "hp" || statNameLower == "health")
+            unit.baseHp = Mathf.Clamp(newValue, 0, unit.maxHp); // Ensure HP stays within range
+        else
+            Debug.LogError($"Stat '{statName}' not found for {unit.unitName}!");
+    }
+
+
 
     IEnumerator RemoveUnitAfterDelay(BaseUnit unit, float delay)
     {
@@ -315,12 +374,25 @@ public class DuelScript : MonoBehaviour
     int GetStat(BaseUnit unit, string statName)
     {
         string statNameLower = statName.ToLower();
+        Debug.Log($"Checking stat {statName} for {unit.unitName}");
+
         if (statNameLower == "strength" || statNameLower == "str")
             return unit.baseStr;
-        if (statNameLower == "int" || statNameLower == "intelligence")
+        if (statNameLower == "intelligence" || statNameLower == "int")
             return unit.baseInt;
+        if (statNameLower == "speed" || statNameLower == "spd")
+            return unit.baseSpeed;
+        if (statNameLower == "pdef" || statNameLower == "physicaldefense")
+            return unit.pDef;
+        if (statNameLower == "mdef" || statNameLower == "magicaldefense")
+            return unit.mDef;
+        if (statNameLower == "hp" || statNameLower == "health")
+            return unit.baseHp;
+
+        Debug.LogError($"Stat '{statName}' not found for {unit.unitName}!");
         return 0;
     }
+
 
     void ApplyStatusEffect(BaseUnit target, BaseUnit.StatusEffect statusEffect)
     {
@@ -357,30 +429,5 @@ public class DuelScript : MonoBehaviour
     {
         Debug.Log("The battle is over!");
         SceneManager.LoadScene("MainMenuScene");
-    }
-
-    public void ToggleSkipFight()
-    {
-        skipFight = !skipFight;
-        Debug.Log(skipFight ? "Fight skipping enabled" : "Fight skipping disabled");
-    }
-
-    public void ToggleFightSpeed()
-    {
-        if (fightSpeedMultiplier == 1f)
-        {
-            fightSpeedMultiplier = 2f;
-            Debug.Log("Fight speed set to 2x.");
-        }
-        else if (fightSpeedMultiplier == 2f)
-        {
-            fightSpeedMultiplier = 4f;
-            Debug.Log("Fight speed set to 4x.");
-        }
-        else
-        {
-            fightSpeedMultiplier = 1f;
-            Debug.Log("Fight speed set back to 1x.");
-        }
     }
 }

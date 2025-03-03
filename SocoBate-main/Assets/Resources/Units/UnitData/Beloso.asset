@@ -15,10 +15,10 @@ MonoBehaviour:
   unitName: Beloso
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 200
-  baseHp: 200
-  mDef: 20
-  pDef: 20
+  maxHp: 175
+  baseHp: 175
+  mDef: 50
+  pDef: 50
   baseSpeed: 20
   baseStr: 20
   baseInt: 20
@@ -44,6 +44,10 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: Juro
     turnsToSpecial: 0
   passiveAbility:
@@ -53,7 +57,7 @@ MonoBehaviour:
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 25
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -65,6 +69,10 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: Crescendo
     turnsToSpecial: 0
   specialAttack:
@@ -86,5 +94,19 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: NSEIO
     turnsToSpecial: 6
+  isStunned: 0
+  isTaunted: 0
+  isRooted: 0
+  isSilenced: 0
+  isPoisoned: 0
+  tauntDuration: 0
+  stunDuration: 0
+  rootDuration: 0
+  silenceDuration: 0
+  poisonDuration: 0

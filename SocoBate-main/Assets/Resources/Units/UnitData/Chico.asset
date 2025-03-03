@@ -21,7 +21,7 @@ MonoBehaviour:
   pDef: 30
   baseSpeed: 80
   baseStr: 50
-  baseInt: 100
+  baseInt: 250
   baseEvasion: 0
   baseLuck: 0
   rarity: 5
@@ -31,7 +31,7 @@ MonoBehaviour:
       targetType: 4
       targetedStat: HP
       scalingAttribute: Intelligence
-      scalingPercent: 25
+      scalingPercent: 30
       baseValue: 15
       isPercentage: 0
       statusEffect:
@@ -44,6 +44,10 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: AOE Damage as Rats
     turnsToSpecial: 0
   passiveAbility:
@@ -65,9 +69,13 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     - effectType: 3
       targetType: 4
-      targetedStat: M.DEF
+      targetedStat: MDEF
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 5
@@ -82,9 +90,44 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 3
+      targetType: 4
+      targetedStat: PDEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
     description: Rots enemies Armor
     turnsToSpecial: 0
   specialAttack:
     effects: []
     description: Summons a Rat as a Unit in frontline
     turnsToSpecial: 6
+  isStunned: 0
+  isTaunted: 0
+  isRooted: 0
+  isSilenced: 0
+  isPoisoned: 0
+  tauntDuration: 0
+  stunDuration: 0
+  rootDuration: 0
+  silenceDuration: 0
+  poisonDuration: 0
