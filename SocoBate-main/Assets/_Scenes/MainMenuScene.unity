@@ -5266,7 +5266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   amigosMenuPrefab: {fileID: 5017421811860725404, guid: ad79b896df2433642a03915553bfde8b, type: 3}
   teamSetupPrefab: {fileID: 6371503801653937809, guid: 1cf96554e195c0243a3a08cf700ba11b, type: 3}
-  heroListprefab: {fileID: 5017421811860725404, guid: 2592c06bb99ac5548ac6c893def8fc98, type: 3}
+  heroListprefab: {fileID: 7574839551862512712, guid: 5cc093d545ec0734a8bbfda45e82c69a, type: 3}
   mailBoxprefab: {fileID: 5017421811860725404, guid: 85dc95e23d2b7094c82e16cb732ac164, type: 3}
 --- !u!4 &2113435306
 Transform:

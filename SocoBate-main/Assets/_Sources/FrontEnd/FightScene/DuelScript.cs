@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Models;
+using System.Collections.Generic;
 public class DuelScript : MonoBehaviour
 {
     public List<BaseUnit> playerUnits;
@@ -14,6 +14,9 @@ public class DuelScript : MonoBehaviour
     private Dictionary<BaseUnit, HealthBar> unitHealthBars;
 
     public UIFight uiFight;
+
+    private bool skipFight = false;
+    private float fightSpeedMultiplier = 1f; // 1x, 2x, or 4x
 
     void Start()
     {
@@ -61,6 +64,12 @@ public class DuelScript : MonoBehaviour
 
             foreach (BaseUnit unit in aliveUnits)
             {
+                // If skip is true, skip the current unit's turn
+                if (skipFight)
+                {
+                    continue;
+                }
+
                 // Ensure the unit is still alive before taking its turn
                 if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
                     continue;
@@ -69,14 +78,12 @@ public class DuelScript : MonoBehaviour
 
                 yield return StartCoroutine(ExecuteTurn(unit));
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.5f / fightSpeedMultiplier); // Adjust the delay based on speed multiplier
             }
         }
 
         EndBattle();
     }
-
-
 
     IEnumerator ExecuteTurn(BaseUnit unit)
     {
@@ -93,7 +100,6 @@ public class DuelScript : MonoBehaviour
 
         Debug.Log($"Unit {unit.unitName} has completed its turn.");
     }
-
 
     void ApplyPassiveEffects(BaseUnit unit)
     {
@@ -118,7 +124,6 @@ public class DuelScript : MonoBehaviour
         }
     }
 
-
     List<BaseUnit> GetEnemyUnits(BaseUnit unit)
     {
         List<BaseUnit> enemies = new List<BaseUnit>();
@@ -130,9 +135,6 @@ public class DuelScript : MonoBehaviour
 
         return enemies;
     }
-
-
-
 
     IEnumerator ExecuteAttack(BaseUnit attacker, BaseUnit.AttackData attackData)
     {
@@ -310,7 +312,6 @@ public class DuelScript : MonoBehaviour
         RemoveUnit(unit);
     }
 
-
     int GetStat(BaseUnit unit, string statName)
     {
         string statNameLower = statName.ToLower();
@@ -356,5 +357,30 @@ public class DuelScript : MonoBehaviour
     {
         Debug.Log("The battle is over!");
         SceneManager.LoadScene("MainMenuScene");
+    }
+
+    public void ToggleSkipFight()
+    {
+        skipFight = !skipFight;
+        Debug.Log(skipFight ? "Fight skipping enabled" : "Fight skipping disabled");
+    }
+
+    public void ToggleFightSpeed()
+    {
+        if (fightSpeedMultiplier == 1f)
+        {
+            fightSpeedMultiplier = 2f;
+            Debug.Log("Fight speed set to 2x.");
+        }
+        else if (fightSpeedMultiplier == 2f)
+        {
+            fightSpeedMultiplier = 4f;
+            Debug.Log("Fight speed set to 4x.");
+        }
+        else
+        {
+            fightSpeedMultiplier = 1f;
+            Debug.Log("Fight speed set back to 1x.");
+        }
     }
 }

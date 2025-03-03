@@ -217,6 +217,34 @@ MonoBehaviour:
     m_Y: 0
     m_Width: 887
     m_Height: 1023
+  - m_X: 568
+    m_Y: 87
+    m_Width: 455
+    m_Height: 936
+  - m_X: 568
+    m_Y: 83
+    m_Width: 3
+    m_Height: 940
+  - m_X: 388
+    m_Y: 69
+    m_Width: 47
+    m_Height: 18
+  - m_X: 466
+    m_Y: 166
+    m_Width: 557
+    m_Height: 857
+  - m_X: 243
+    m_Y: 156
+    m_Width: 145
+    m_Height: 867
+  - m_X: 327
+    m_Y: 137
+    m_Width: 61
+    m_Height: 886
+  - m_X: 466
+    m_Y: 87
+    m_Width: 33
+    m_Height: 936
   m_fontInfo:
     Name: Roboto
     PointSize: 146

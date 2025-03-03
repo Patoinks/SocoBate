@@ -30,20 +30,41 @@ public class MusicPlayer : MonoBehaviour
 
     private void Awake()
     {
-        // Ensure there's only one instance of the MusicPlayer
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject); // Keep MusicPlayer persistent across scenes
+            SceneManager.sceneLoaded += OnSceneLoaded; // Listen for scene changes
         }
         else
         {
             Destroy(gameObject); // Prevent duplicates
             return;
         }
-
-
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Check if the MusicPlayer is still valid before continuing
+        if (this == null) return;
+
+        if (isInCanvas)
+        {
+            // Find Canvas again in the new scene
+            GameObject canvas = GameObject.Find("Canvas");
+            if (canvas != null)
+            {
+                canvasTransform = canvas.transform;
+                transform.SetParent(canvasTransform, false); // Reattach to new scene's Canvas
+            }
+            else
+            {
+                Debug.LogError("No Canvas found in the new scene!");
+            }
+        }
+    }
+
+
 
     void Start()
     {
@@ -63,8 +84,6 @@ public class MusicPlayer : MonoBehaviour
         {
             audioSource.clip = tracks[currentTrackIndex];
             trackNameText.text = audioSource.clip.name;
-            audioSource.Play(); // Start playing the music
-            isPlaying = true;
         }
 
         // Set default slider values
@@ -100,13 +119,15 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    private Transform originalParent; // Store original parent before moving to Canvas
+
+
+
     public void MoveToCanvas()
     {
-
-        // Automatically find and assign the Canvas if it is not assigned in the Inspector
         if (canvasTransform == null)
         {
-            GameObject canvas = GameObject.Find("Canvas"); // Try to find Canvas by name
+            GameObject canvas = GameObject.Find("Canvas");
             if (canvas != null)
             {
                 canvasTransform = canvas.transform;
@@ -114,26 +135,29 @@ public class MusicPlayer : MonoBehaviour
             else
             {
                 Debug.LogError("No Canvas found in the scene!");
+                return;
             }
         }
-        if (canvasTransform != null && !isInCanvas)
+
+        if (!isInCanvas)
         {
-            // Move MusicPlayer out of the scene object hierarchy temporarily
-            transform.SetParent(canvasTransform, false); // Move inside the Canvas
+            originalParent = transform.parent; // Store original parent
+            transform.SetParent(canvasTransform, false); // Move inside Canvas
             isInCanvas = true;
 
-            // Set the position and size of the MusicPlayer
+            // Reset scale and set position
             RectTransform rectTransform = GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = new Vector2(600f, -433f);  // Set the position
-            rectTransform.sizeDelta = new Vector2(700f, 300f); // Set the size
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchoredPosition = new Vector2(737, -418);  // or wherever you want
 
-            EnableButtons(true); // Enable buttons when inside the canvas
+            EnableButtons(true);
         }
-        else
-        {
-            Debug.LogError("Canvas not assigned in MusicPlayer or already in Canvas!");
-        }
+
+        // Ensure the MusicPlayer is active
+        gameObject.SetActive(true); // This line will make sure the object is active and interactable
     }
+
+
 
     public void MoveOutOfCanvas()
     {
@@ -253,4 +277,35 @@ public class MusicPlayer : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
     }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from the sceneLoaded event to avoid calling methods on a destroyed object
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        if (isInCanvas)
+        {
+            // Delay the removal of the MusicPlayer from the Canvas
+            if (gameObject != null) // Check if the object is still valid
+            {
+                StartCoroutine(RemoveFromCanvas());
+            }
+        }
+    }
+
+    private IEnumerator RemoveFromCanvas()
+    {
+        // Wait for the end of the current frame before removing
+        yield return null;
+
+        // Now remove MusicPlayer from the canvas hierarchy if it's still valid
+        if (gameObject != null)
+        {
+            transform.SetParent(null, false);
+            isInCanvas = false;
+        }
+    }
+
+
+
 }
