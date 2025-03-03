@@ -43,6 +43,7 @@ public class NicknameManager : MonoBehaviour
 
             // Instantiate the nicknamePrefab under the "Canvas" GameObject's transform
             Instantiate(nicknamePrefab, canvasTransform);
+            
         }
         else
         {

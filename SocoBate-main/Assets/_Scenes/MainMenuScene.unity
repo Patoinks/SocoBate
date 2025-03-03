@@ -2792,7 +2792,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: IDLE
+  m_text: EXIT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a18425f27d003a94280801972dbeff74, type: 2}
   m_sharedMaterial: {fileID: -5750640562483919468, guid: a18425f27d003a94280801972dbeff74, type: 2}
@@ -3855,9 +3855,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2113435305}
-        m_TargetAssemblyTypeName: FriendListManager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 2113435308}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: OnLogoutButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4309,7 +4309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00024414062}
+  m_AnchoredPosition: {x: 0, y: -0.00018311}
   m_SizeDelta: {x: 0, y: -0.00036621}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1468908025
@@ -5244,6 +5244,7 @@ GameObject:
   - component: {fileID: 2113435305}
   - component: {fileID: 2113435307}
   - component: {fileID: 2113435308}
+  - component: {fileID: 2113435309}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -5307,7 +5308,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d8bc1311b6ea174da07555076fd66a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  logoutManager: {fileID: 2113435309}
   nicknameText: {fileID: 1362146660}
+--- !u!114 &2113435309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113435304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf03ca0aecc8acb4d95f36c95d0d4769, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &2129667362
 Mesh:
   m_ObjectHideFlags: 0
