@@ -21,7 +21,7 @@ MonoBehaviour:
   pDef: 30
   baseSpeed: 80
   baseStr: 50
-  baseInt: 250
+  baseInt: 150
   baseEvasion: 0
   baseLuck: 0
   rarity: 5
