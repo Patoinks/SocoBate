@@ -377,6 +377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nicknameInputField: {fileID: 4391143282987397501}
+  friendList: {fileID: 6522507324320650362}
 --- !u!114 &2270616556342502253
 MonoBehaviour:
   m_ObjectHideFlags: 0

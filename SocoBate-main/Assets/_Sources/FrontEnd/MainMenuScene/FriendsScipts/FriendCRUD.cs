@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using System;
 using System.Threading.Tasks;
 using Database;
+using Models;
 
 public class FriendCRUD : MonoBehaviour
 {
     public InputField nicknameInputField;
+    public FriendList friendList;
 
     public async void AddFriend()
     {
@@ -29,6 +31,7 @@ public class FriendCRUD : MonoBehaviour
             if (success)
             {
                 Debug.Log($"Friend '{nickname}' added successfully.");
+                friendList.OnClickRefreshButton();
             }
             else
             {

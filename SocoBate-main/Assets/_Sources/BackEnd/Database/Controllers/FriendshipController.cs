@@ -56,13 +56,13 @@ namespace Database
             if (result != null) // Assuming non-null result means successful execution
             {
                 Debug.Log("Friendship added successfully.");
+                UserContext.ClearFriends();
+                await LoadFriends(accountId1);
                 return true;
             }
 
             Debug.LogError("Error adding friendship.");
             return false; // There was an error while adding friendship
-            UserContext.ClearFriends();
-            LoadFriends(accountId1);
         }
 
         // Method to remove a friendship between two users
