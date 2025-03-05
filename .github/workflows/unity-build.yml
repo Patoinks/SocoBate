@@ -17,14 +17,39 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4  # Latest version
 
+    - name: Cache Unity Library
+      uses: actions/cache@v3
+      with:
+        path: Library
+        key: Library-${{ runner.os }}-${{ hashFiles('**/ProjectSettings/ProjectVersion.txt') }}
+        restore-keys: |
+          Library-${{ runner.os }}-
+
     - name: Set up Unity Builder
       uses: game-ci/unity-builder@v3  # Correct action for Unity builds
       with:
-        unityVersion: '2020.3.20f1'  # Replace with your Unity version
+        unityVersion: '2022.3.17f1'  # Replace with your Unity version
         targetPlatform: StandaloneLinux64  # Adjust based on your target platform
+        # If using a Unity Pro license, uncomment and set the following secrets in your repository:
+        # unitySerial: ${{ secrets.UNITY_SERIAL }}
+        # unityUsername: ${{ secrets.UNITY_USERNAME }}
+        # unityPassword: ${{ secrets.UNITY_PASSWORD }}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4  # Corrected artifact upload
       with:
         name: build
         path: build  # Ensure this matches your actual build output folder
+
+    # Optional: Add a step to notify on build failure
+    - name: Notify on Failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🚨 Build failed! Please check the logs.'
+          })
