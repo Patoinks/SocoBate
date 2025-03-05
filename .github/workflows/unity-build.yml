@@ -15,10 +15,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # Updated to latest version
+      uses: actions/checkout@v4  # Latest version
 
     - name: Set up Unity
-      uses: game-ci/unity-actions/setup@v3  # Updated to v3
+      uses: game-ci/setup-unity@v2  # Correct Unity setup action
       with:
         unityVersion: '2020.3.20f1'  # Replace with your Unity version
 
@@ -34,4 +34,4 @@ jobs:
       uses: actions/upload-artifact@v4  # Updated to v4
       with:
         name: build
-        path: ./Build/StandaloneLinux64  # Modify according to your build output
+        path: ./Build/StandaloneLinux64  # Modify based on your build output
