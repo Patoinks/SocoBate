@@ -1,0 +1,38 @@
+name: Unity Build
+
+on:
+  push:
+    branches:
+      - main  # You can specify other branches too, like 'develop' or 'feature/*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Unity
+      uses: game-ci/unity-actions/setup@v2
+      with:
+        unityVersion: '2020.3.20f1'  # Replace with your Unity version
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y libncurses5
+        sudo apt-get install -y libx11-dev
+
+    - name: Build project
+      run: |
+        # Run the build command
+        unity -quit -batchmode -projectPath $(pwd) -buildTarget StandaloneLinux64 -executeMethod BuildScript.PerformBuild
+
+    - name: Upload Artifacts (optional)
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: ./Build/StandaloneLinux64  # Modify this path according to your Unity project build output
