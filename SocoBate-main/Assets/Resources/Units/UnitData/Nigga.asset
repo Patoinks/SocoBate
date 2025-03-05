@@ -98,7 +98,7 @@ MonoBehaviour:
     turnsToSpecial: 0
   specialAttack:
     effects: []
-    description: 
+    description: 100% Destruido
     turnsToSpecial: 6
   isStunned: 0
   isTaunted: 0
