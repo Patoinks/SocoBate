@@ -4,10 +4,12 @@ using System;
 using System.Threading.Tasks;
 using Database;
 using Models;
+using TMPro;
 
 public class FriendCRUD : MonoBehaviour
 {
-    public InputField nicknameInputField;
+    public TMP_InputField nicknameInputField;
+
     public FriendList friendList;
 
     public async void AddFriend()

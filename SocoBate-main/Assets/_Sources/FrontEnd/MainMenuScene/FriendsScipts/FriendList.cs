@@ -20,12 +20,21 @@ public class FriendList : MonoBehaviour
         PopulateRow();
         Debug.Log("FriendList script started");
     }
-
     public async void OnClickRefreshButton()
     {
+        // Clear existing rows
+        foreach (Transform child in painelamigos)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Fetch new friend list from the database
         await Database.FriendshipController.GetFriends(Context.UserContext.account.AccountId);
+
+        // Populate UI with updated data
         PopulateRow();
     }
+
 
     void PopulateRow()
     {
@@ -62,7 +71,7 @@ public class FriendList : MonoBehaviour
         Debug.Log("Duel against: " + account.Nickname);
 
         // Start loading the enemy team asynchronously without waiting
-       await TeamController.GetSquadByNickname(account.Nickname);  // No need to await, just call it asynchronously
+        await TeamController.GetSquadByNickname(account.Nickname);  // No need to await, just call it asynchronously
 
         // Immediately load the FightScene
         SceneManager.LoadScene("FightScene");
