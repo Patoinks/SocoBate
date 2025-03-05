@@ -17,21 +17,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4  # Latest version
 
-    - name: Set up Unity
-      uses: game-ci/setup-unity@v2  # Correct Unity setup action
+    - name: Set up Unity Builder
+      uses: game-ci/unity-builder@v3  # Correct action for Unity builds
       with:
         unityVersion: '2020.3.20f1'  # Replace with your Unity version
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get install -y libncurses5 libx11-dev
-
-    - name: Build project
-      run: |
-        unity -quit -batchmode -projectPath $(pwd) -buildTarget StandaloneLinux64 -executeMethod BuildScript.PerformBuild
+        targetPlatform: StandaloneLinux64  # Adjust based on your target platform
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4  # Updated to v4
+      uses: actions/upload-artifact@v4  # Corrected artifact upload
       with:
         name: build
-        path: ./Build/StandaloneLinux64  # Modify based on your build output
+        path: build  # Ensure this matches your actual build output folder
