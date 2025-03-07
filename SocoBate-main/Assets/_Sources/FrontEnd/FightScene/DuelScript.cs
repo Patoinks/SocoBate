@@ -8,7 +8,8 @@ public class DuelScript : MonoBehaviour
     public List<BaseUnit> playerUnits;
     public List<BaseUnit> enemyUnits;
     private List<BaseUnit> allUnits;
-
+    public GameObject menu;
+    public TeamStatsManager teamStatsManager;
     public HealthBar healthBar;
     public SquadManager squadManager;
     private Dictionary<BaseUnit, HealthBar> unitHealthBars;
@@ -262,10 +263,10 @@ public class DuelScript : MonoBehaviour
         switch (effect.effectType)
         {
             case BaseUnit.EffectType.Damage:
-                ApplyDamage(target, effect.targetedStat, calculatedValue); // Pass correct parameters
+                ApplyDamage(target, attacker, effect.targetedStat, calculatedValue); // Pass correct parameters
                 break;
             case BaseUnit.EffectType.Heal:
-                ApplyHealing(target, calculatedValue);
+                ApplyHealing(target, attacker, calculatedValue);
                 break;
             case BaseUnit.EffectType.Buff:
                 ModifyStat(target, effect.targetedStat, calculatedValue, false); // Buff = positive change
@@ -288,21 +289,24 @@ public class DuelScript : MonoBehaviour
             StartCoroutine(RemoveUnitAfterDelay(target, 0.5f));
         }
     }
-    void ApplyDamage(BaseUnit target, string defenseStat, int rawDamage)
+    void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, int rawDamage)
     {
-        // Handle HP damage and defense
+        if (teamStatsManager == null)
+            teamStatsManager = FindObjectOfType<TeamStatsManager>(); // Ensure we have a reference
+
+        int finalDamage = rawDamage; // Default to raw damage
+
         if (defenseStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
         {
             target.baseHp -= rawDamage;
-            target.baseHp = Mathf.Max(target.baseHp, 0); // Ensure HP doesn't go below 0
+            target.baseHp = Mathf.Max(target.baseHp, 0);
             Debug.Log($"{target.unitName} takes {rawDamage} damage. Remaining HP: {target.baseHp}");
             UpdateHealth(target, target.baseHp);
         }
         else
         {
-            // Apply defense and calculate final damage
             int defenseValue = GetStat(target, defenseStat);
-            int finalDamage = Mathf.Max(rawDamage - defenseValue, 1); // Ensure at least 1 damage
+            finalDamage = Mathf.Max(rawDamage - defenseValue, 1);
 
             int newHp = GetStat(target, "HP") - finalDamage;
             SetStat(target, "HP", newHp);
@@ -310,20 +314,33 @@ public class DuelScript : MonoBehaviour
 
             Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {newHp}");
         }
+
+        // Register stats in TeamStatsManager
+        teamStatsManager.RegisterDamageTaken(target, finalDamage);
+
+        // If there's an attacker reference, register damage dealt (you might need to pass it)
+        if (currentAttacker != null)
+        {
+            teamStatsManager.RegisterDamageDealt(currentAttacker, finalDamage);
+        }
     }
 
 
-
-
-
-    void ApplyHealing(BaseUnit target, int healAmount)
+    void ApplyHealing(BaseUnit target, BaseUnit attacker, int healAmount)
     {
+        if (teamStatsManager == null)
+            teamStatsManager = FindObjectOfType<TeamStatsManager>(); // Ensure we have a reference
+
         int newHp = Mathf.Min(GetStat(target, "HP") + healAmount, target.maxHp);
         SetStat(target, "HP", newHp);
         UpdateHealth(target, newHp);
 
         Debug.Log($"{target.unitName} heals for {healAmount}. New HP: {newHp}");
+
+        // Register healing in TeamStatsManager
+        teamStatsManager.RegisterHealing(attacker, healAmount);
     }
+
 
     void ModifyStat(BaseUnit target, string statName, int valueChange, bool isDebuff)
     {
@@ -425,6 +442,25 @@ public class DuelScript : MonoBehaviour
     void EndBattle()
     {
         Debug.Log("The battle is over!");
-        SceneManager.LoadScene("MainMenuScene");
+
+        RectTransform menuTransform = menu.GetComponent<RectTransform>();
+        if (menuTransform != null)
+        {
+            menuTransform.localScale = Vector3.one;
+        }
+        else
+        {
+            Debug.LogError("RectTransform not found on menu!");
+        }
+
+        StartCoroutine(DelayedLoadScene("MainMenuScene", 5f));
+
     }
+
+    private IEnumerator DelayedLoadScene(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+    }
+
 }

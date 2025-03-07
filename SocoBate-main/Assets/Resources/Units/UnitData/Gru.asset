@@ -98,7 +98,7 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: AAAA
+    description: Muita Ganza
     turnsToSpecial: 6
   isStunned: 0
   isTaunted: 0

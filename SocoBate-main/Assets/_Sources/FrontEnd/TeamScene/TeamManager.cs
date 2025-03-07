@@ -68,6 +68,7 @@ public class TeamManager : MonoBehaviour
 
             TMP_Text unitNameText = row.transform.Find("Nome")?.GetComponent<TMP_Text>();
             Button selectButton = row.transform.Find("SelectUnit")?.GetComponent<Button>();
+            RawImage splashImage = row.transform.Find("Splash")?.GetComponent<RawImage>();
 
             if (unitNameText != null)
             {
@@ -86,6 +87,20 @@ public class TeamManager : MonoBehaviour
             else
             {
                 Debug.LogError($"Select button not found for unit {unit.unitId}.");
+            }
+
+            if (splashImage != null)
+            {
+                string splashImageName = unit.unitId + "Splash";
+                Texture2D loadedTexture = Resources.Load<Texture2D>($"Sprites/SplashUnits/{splashImageName}");
+                if (loadedTexture != null)
+                {
+                    splashImage.texture = loadedTexture;
+                }
+                else
+                {
+                    Debug.LogError($"Splash image not found for {splashImageName}.");
+                }
             }
         }
 
@@ -250,7 +265,7 @@ public class TeamManager : MonoBehaviour
         // Destroy the unit object
         Destroy(unit);
         Debug.Log($"Unit {unitName} removed from hex {hex.name}.");
-        
+
         unitsPlaced--; // Decrease the count when a unit is removed
     }
 
