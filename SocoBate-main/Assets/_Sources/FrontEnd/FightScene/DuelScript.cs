@@ -9,10 +9,12 @@ public class DuelScript : MonoBehaviour
     public List<BaseUnit> enemyUnits;
     private List<BaseUnit> allUnits;
     public GameObject menu;
-    public TeamStatsManager teamStatsManager;
     public HealthBar healthBar;
     public SquadManager squadManager;
     private Dictionary<BaseUnit, HealthBar> unitHealthBars;
+
+    public List<BaseUnit> deadPlayerUnits = new List<BaseUnit>();
+    public List<BaseUnit> deadEnemyUnits = new List<BaseUnit>();
 
     public UIFight uiFight;
 
@@ -33,7 +35,24 @@ public class DuelScript : MonoBehaviour
 
         playerUnits.Clear();
         enemyUnits.Clear();
-        Invoke("InitializeBattleDelayed", 1f);
+        StartCoroutine(InitializeBattleWithFetch());
+    }
+
+    IEnumerator InitializeBattleWithFetch()
+    {
+        yield return new WaitForSeconds(3f); // Give time for units to initialize
+
+        // Ensure all units are actually present
+        if (playerUnits.Count == 0 || enemyUnits.Count == 0)
+        {
+            Debug.LogError("Units are not properly initialized before fetching!");
+        }
+        else
+        {
+            Debug.Log("All units are ready. Fetching...");
+        }
+
+        InitializeBattleDelayed(); // Proceed with battle setup
     }
 
     public void UpdateHealth(BaseUnit unit, float newHealth)
@@ -291,8 +310,7 @@ public class DuelScript : MonoBehaviour
     }
     void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, int rawDamage)
     {
-        if (teamStatsManager == null)
-            teamStatsManager = FindObjectOfType<TeamStatsManager>(); // Ensure we have a reference
+
 
         int finalDamage = rawDamage; // Default to raw damage
 
@@ -316,20 +334,18 @@ public class DuelScript : MonoBehaviour
         }
 
         // Register stats in TeamStatsManager
-        teamStatsManager.RegisterDamageTaken(target, finalDamage);
-
+        target.UpdateDamageTaken(finalDamage);
         // If there's an attacker reference, register damage dealt (you might need to pass it)
         if (currentAttacker != null)
         {
-            teamStatsManager.RegisterDamageDealt(currentAttacker, finalDamage);
+            currentAttacker.UpdateDamageDealt(finalDamage);
         }
     }
 
 
     void ApplyHealing(BaseUnit target, BaseUnit attacker, int healAmount)
     {
-        if (teamStatsManager == null)
-            teamStatsManager = FindObjectOfType<TeamStatsManager>(); // Ensure we have a reference
+
 
         int newHp = Mathf.Min(GetStat(target, "HP") + healAmount, target.maxHp);
         SetStat(target, "HP", newHp);
@@ -338,7 +354,7 @@ public class DuelScript : MonoBehaviour
         Debug.Log($"{target.unitName} heals for {healAmount}. New HP: {newHp}");
 
         // Register healing in TeamStatsManager
-        teamStatsManager.RegisterHealing(attacker, healAmount);
+        attacker.UpdateHealingDone(healAmount);
     }
 
 
@@ -420,17 +436,22 @@ public class DuelScript : MonoBehaviour
 
     void RemoveUnit(BaseUnit unit)
     {
+        // Remove the unit from combat
         if (playerUnits.Contains(unit))
         {
             playerUnits.Remove(unit);
+            deadPlayerUnits.Add(unit); // Add to dead list
         }
         else if (enemyUnits.Contains(unit))
         {
             enemyUnits.Remove(unit);
+            deadEnemyUnits.Add(unit); // Add to dead list
         }
 
         allUnits.Remove(unit);
     }
+
+
 
     BaseUnit GetRandomUnit(List<BaseUnit> units)
     {
@@ -438,23 +459,60 @@ public class DuelScript : MonoBehaviour
         int randomIndex = Random.Range(0, units.Count);
         return units[randomIndex];
     }
-
     void EndBattle()
     {
         Debug.Log("The battle is over!");
 
-        RectTransform menuTransform = menu.GetComponent<RectTransform>();
-        if (menuTransform != null)
+        // Instantiate the menu prefab in the scene and set it as a child of the Canvas
+        if (menu != null)
         {
-            menuTransform.localScale = Vector3.one;
+            // Find the Canvas in the scene
+            Canvas canvas = FindObjectOfType<Canvas>();
+            if (canvas != null)
+            {
+                GameObject instantiatedMenu = Instantiate(menu, canvas.transform);  // Set Canvas as the parent
+                instantiatedMenu.transform.localPosition = Vector3.zero;  // Reset local position to (0,0,0) within the Canvas
+            }
+            else
+            {
+                Debug.LogError("Canvas not found in the scene.");
+            }
         }
         else
         {
-            Debug.LogError("RectTransform not found on menu!");
+            Debug.LogError("Menu prefab not assigned in the inspector.");
         }
 
-        StartCoroutine(DelayedLoadScene("MainMenuScene", 5f));
+        DisplayUnitStats();
+        // Start loading the next scene after a delay
+        StartCoroutine(DelayedLoadScene("MainMenuScene", 500f));
+    }
 
+    void DisplayUnitStats()
+    {
+        // Display stats for alive player units
+        foreach (BaseUnit unit in playerUnits)
+        {
+            Debug.Log($"Player Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
+        }
+
+        // Display stats for dead player units
+        foreach (BaseUnit unit in deadPlayerUnits)
+        {
+            Debug.Log($"Dead Player Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
+        }
+
+        // Display stats for alive enemy units
+        foreach (BaseUnit unit in enemyUnits)
+        {
+            Debug.Log($"Enemy Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
+        }
+
+        // Display stats for dead enemy units
+        foreach (BaseUnit unit in deadEnemyUnits)
+        {
+            Debug.Log($"Dead Enemy Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
+        }
     }
 
     private IEnumerator DelayedLoadScene(string sceneName, float delay)

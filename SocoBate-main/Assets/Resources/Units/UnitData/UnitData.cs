@@ -21,6 +21,11 @@ public class BaseUnit : ScriptableObject
     public int baseLuck;
     public int rarity;
 
+    // Track stats for damage dealt, damage taken, and healing done
+    [HideInInspector] public float damageDealt;
+    [HideInInspector] public float damageTaken;
+    [HideInInspector] public float healingDone;
+
     // Attack Data Structure
     [System.Serializable]
     public class AttackData
@@ -103,24 +108,30 @@ public class BaseUnit : ScriptableObject
     public AttackData specialAttack;
 
     // Added status flags to track CC effects
-    [HideInInspector]
-    public bool isStunned;
-    [HideInInspector]
-    public bool isTaunted;
-    [HideInInspector]
-    public bool isRooted;
-    [HideInInspector]
-    public bool isSilenced;
-    [HideInInspector]
-    public bool isPoisoned;
-    [HideInInspector]
-    public int tauntDuration;
-    [HideInInspector]
-    public int stunDuration;
-    [HideInInspector]
-    public int rootDuration;
-    [HideInInspector]
-    public int silenceDuration;
-    [HideInInspector]
-    public int poisonDuration;
+    [HideInInspector] public bool isStunned;
+    [HideInInspector] public bool isTaunted;
+    [HideInInspector] public bool isRooted;
+    [HideInInspector] public bool isSilenced;
+    [HideInInspector] public bool isPoisoned;
+    [HideInInspector] public int tauntDuration;
+    [HideInInspector] public int stunDuration;
+    [HideInInspector] public int rootDuration;
+    [HideInInspector] public int silenceDuration;
+    [HideInInspector] public int poisonDuration;
+
+    // Methods to update the stats
+    public void UpdateDamageDealt(float amount)
+    {
+        damageDealt += amount;
+    }
+
+    public void UpdateDamageTaken(float amount)
+    {
+        damageTaken += amount;
+    }
+
+    public void UpdateHealingDone(float amount)
+    {
+        healingDone += amount;
+    }
 }

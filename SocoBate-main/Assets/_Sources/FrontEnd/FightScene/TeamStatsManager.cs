@@ -2,63 +2,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Models;
 using TMPro;
 
 public class TeamStatsManager : MonoBehaviour
 {
     public ScrollRect playerScrollView;
     public ScrollRect enemyScrollView;
+    public GameObject unitRowPrefab;
+    public TMP_Text displayText;
 
-    public GameObject unitRowPrefab;  // Prefab for each unit row
-    public Button updateButton;  // Button that updates data
-    public TMP_Text displayText;  // Optional: Display the current stat being shown (e.g., Damage Dealt, Damage Taken, Healing)
-
-    private Dictionary<BaseUnit, float> unitDamageStats;  // Damage dealt by units
-    private Dictionary<BaseUnit, float> unitDamageTakenStats;  // Damage taken by units
-    private Dictionary<BaseUnit, float> unitHealingStats;  // Healing stats of units
-
-    private List<BaseUnit> playerUnits;
-    private List<BaseUnit> enemyUnits;
-
-    public DuelScript duelScript;  // Reference to the DuelScript
-    private float maxDamageDealt = 0f;  // Used for normalizing damage slider
-    private float minDamageDealt = float.MaxValue; // Minimum damage for normalizing slider
-    private float maxDamageTaken = 0f;  // Used for normalizing damage taken slider
-    private float minDamageTaken = float.MaxValue; // Minimum damage for normalizing slider
-    private float maxHealing = 0f;  // Used for normalizing healing slider
-    private float minHealing = float.MaxValue; // Minimum healing for normalizing slider
-
-    private string currentStat = "DamageDealt";  // Can be "DamageDealt", "DamageTaken", or "Healing"
+    private List<BaseUnit> playerAliveUnits;
+    private List<BaseUnit> playerDeadUnits;
+    private List<BaseUnit> enemyAliveUnits;
+    private List<BaseUnit> enemyDeadUnits;
+    private string currentStat = "DamageDealt";  // Default stat
+    private List<UnitStatsRow> playerRows = new List<UnitStatsRow>();
+    private List<UnitStatsRow> enemyRows = new List<UnitStatsRow>();
 
     void Start()
     {
-        unitDamageStats = new Dictionary<BaseUnit, float>();
-        unitDamageTakenStats = new Dictionary<BaseUnit, float>();
-        unitHealingStats = new Dictionary<BaseUnit, float>();
-        updateButton.onClick.AddListener(UpdateUnitStats);
+        Debug.Log("Started TeamStatsManager");
         FetchUnitsFromDuelScript();
     }
 
-    void FetchUnitsFromDuelScript()
+    public void FetchUnitsFromDuelScript()
     {
         DuelScript duelScript = FindObjectOfType<DuelScript>();
         if (duelScript != null)
         {
-            playerUnits = duelScript.playerUnits;
-            enemyUnits = duelScript.enemyUnits;
+            // Fetch separate lists for alive and dead units
+            playerAliveUnits = duelScript.playerUnits;
+            playerDeadUnits = duelScript.deadPlayerUnits;
+            enemyAliveUnits = duelScript.enemyUnits;
+            enemyDeadUnits = duelScript.deadEnemyUnits;
 
-            Debug.Log($"Fetched Units: Player Count = {playerUnits.Count}, Enemy Count = {enemyUnits.Count}");
-
-            if (playerUnits.Count > 0 || enemyUnits.Count > 0)
-            {
-                InitializeRows();
-            }
-            else
-            {
-                Debug.LogWarning("Units are still empty. Trying again in 0.5 seconds...");
-                Invoke(nameof(FetchUnitsFromDuelScript), 0.5f);  // Retry fetching units after a short delay
-            }
+            InitializeRows();
         }
         else
         {
@@ -74,234 +52,178 @@ public class TeamStatsManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Initializing Rows: Player Units = {playerUnits.Count}, Enemy Units = {enemyUnits.Count}");
+        // Clear any existing rows before initializing
+        ClearExistingRows();
 
-        foreach (BaseUnit unit in playerUnits)
+        // Calculate the max and min values for the current stat (DamageDealt, DamageTaken, Healing)
+        float maxValue = GetMaxStatValue();
+        float minValue = GetMinStatValue();
+
+        // Instantiate rows for alive player units
+        foreach (BaseUnit unit in playerAliveUnits)
         {
-            InstantiateUnitRow(unit, playerScrollView.content);
+            InstantiateUnitRow(unit, playerScrollView.content, maxValue, minValue);
         }
 
-        foreach (BaseUnit unit in enemyUnits)
+        // Instantiate rows for dead player units
+        foreach (BaseUnit unit in playerDeadUnits)
         {
-            InstantiateUnitRow(unit, enemyScrollView.content);
+            InstantiateUnitRow(unit, playerScrollView.content, maxValue, minValue);
         }
 
-        StartCoroutine(ForceRefreshUI());
+        // Instantiate rows for alive enemy units
+        foreach (BaseUnit unit in enemyAliveUnits)
+        {
+            InstantiateUnitRow(unit, enemyScrollView.content, maxValue, minValue);
+        }
+
+        // Instantiate rows for dead enemy units
+        foreach (BaseUnit unit in enemyDeadUnits)
+        {
+            InstantiateUnitRow(unit, enemyScrollView.content, maxValue, minValue);
+        }
     }
 
-    void InstantiateUnitRow(BaseUnit unit, Transform parent)
+    void ClearExistingRows()
     {
-        // Instantiate the row
-        GameObject row = Instantiate(unitRowPrefab, parent);
-
-        // Set unit name
-        row.transform.Find("UnitNameText").GetComponent<TMP_Text>().text = unit.unitName;
-
-        // Set splash image
-        RawImage splashImage = row.transform.Find("Splash")?.GetComponent<RawImage>();
-        if (splashImage != null)
+        // Clear player rows
+        foreach (var row in playerRows)
         {
-            string splashImageName = unit.unitName + "Splash";
-            Texture2D loadedTexture = Resources.Load<Texture2D>($"Sprites/SplashUnits/{splashImageName}");
-            if (loadedTexture != null)
+            Destroy(row.gameObject);
+        }
+        playerRows.Clear();
+
+        // Clear enemy rows
+        foreach (var row in enemyRows)
+        {
+            Destroy(row.gameObject);
+        }
+        enemyRows.Clear();
+    }
+
+    void InstantiateUnitRow(BaseUnit unit, Transform parent, float maxValue, float minValue)
+    {
+        GameObject row = Instantiate(unitRowPrefab, parent);
+        UnitStatsRow rowComponent = row.GetComponent<UnitStatsRow>();
+        if (rowComponent != null)
+        {
+            // Add row to the respective list
+            if (parent == playerScrollView.content)
             {
-                splashImage.texture = loadedTexture;
+                playerRows.Add(rowComponent);
             }
             else
             {
-                Debug.LogWarning($"Splash image not found for {splashImageName}");
+                enemyRows.Add(rowComponent);
             }
+
+            // Initialize the row with the current stat
+            rowComponent.Initialize(unit, maxValue, minValue, currentStat);
         }
         else
         {
-            Debug.LogWarning("Splash image component not found in row prefab.");
+            Debug.LogError("UnitStatsRow component not found in prefab!");
+        }
+    }
+
+    float GetMaxStatValue()
+    {
+        float maxValue = float.MinValue;
+
+        // Check max value for player units
+        foreach (BaseUnit unit in playerAliveUnits)
+        {
+            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
         }
 
-        // Set initial damage values and sliders (set to 0)
-        row.transform.Find("DamageText").GetComponent<TMP_Text>().text = "0";
-        row.transform.Find("DamageSlider").GetComponent<Slider>().value = 0;
+        // Check max value for enemy units
+        foreach (BaseUnit unit in enemyAliveUnits)
+        {
+            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
+        }
+
+        // Check max value for dead player units
+        foreach (BaseUnit unit in playerDeadUnits)
+        {
+            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
+        }
+
+        // Check max value for dead enemy units
+        foreach (BaseUnit unit in enemyDeadUnits)
+        {
+            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
+        }
+
+        return maxValue;
     }
 
-    IEnumerator ForceRefreshUI()
+    float GetMinStatValue()
     {
-        yield return null; // Wait for the next frame
-        LayoutRebuilder.ForceRebuildLayoutImmediate(playerScrollView.content);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(enemyScrollView.content);
+        float minValue = float.MaxValue;
+
+        // Check min value for player units
+        foreach (BaseUnit unit in playerAliveUnits)
+        {
+            minValue = Mathf.Min(minValue, GetStatValue(unit));
+        }
+
+        // Check min value for enemy units
+        foreach (BaseUnit unit in enemyAliveUnits)
+        {
+            minValue = Mathf.Min(minValue, GetStatValue(unit));
+        }
+
+        // Check min value for dead player units
+        foreach (BaseUnit unit in playerDeadUnits)
+        {
+            minValue = Mathf.Min(minValue, GetStatValue(unit));
+        }
+
+        // Check min value for dead enemy units
+        foreach (BaseUnit unit in enemyDeadUnits)
+        {
+            minValue = Mathf.Min(minValue, GetStatValue(unit));
+        }
+
+        return minValue;
     }
 
-    // Call this method when the "Update" button is pressed
+    float GetStatValue(BaseUnit unit)
+    {
+        switch (currentStat)
+        {
+            case "DamageDealt":
+                return unit.damageDealt;
+            case "DamageTaken":
+                return unit.damageTaken;
+            case "Healing":
+                return unit.healingDone;
+            default:
+                return unit.damageDealt;  // Default to DamageDealt
+        }
+    }
+
     void UpdateUnitStats()
     {
-        // Update the current stat display
         displayText.text = "Current stat: " + currentStat;
 
-        // Reset the min/max values for the stat
-        ResetMinMaxValues();
+        // Calculate the max and min values for the current stat (DamageDealt, DamageTaken, Healing)
+        float maxValue = GetMaxStatValue();
+        float minValue = GetMinStatValue();
 
-        // Update the rows with the corresponding stats (DamageDealt, DamageTaken, Healing)
-        if (currentStat == "DamageDealt")
+        // Update the stats in all rows based on the current stat
+        foreach (UnitStatsRow row in playerRows)
         {
-            UpdateRows(unitDamageStats, maxDamageDealt, minDamageDealt);
+            row.UpdateStat(GetStatValue(row.unit)); // Update player rows
         }
-        else if (currentStat == "DamageTaken")
+
+        foreach (UnitStatsRow row in enemyRows)
         {
-            UpdateRows(unitDamageTakenStats, maxDamageTaken, minDamageTaken);
-        }
-        else if (currentStat == "Healing")
-        {
-            UpdateRows(unitHealingStats, maxHealing, minHealing);
+            row.UpdateStat(GetStatValue(row.unit)); // Update enemy rows
         }
     }
 
-
-    void ResetMinMaxValues()
-    {
-        // Reset the min and max values for the current stat
-        if (currentStat == "DamageDealt")
-        {
-            minDamageDealt = float.MaxValue;
-            maxDamageDealt = 0f;
-        }
-        else if (currentStat == "DamageTaken")
-        {
-            minDamageTaken = float.MaxValue;
-            maxDamageTaken = 0f;
-        }
-        else if (currentStat == "Healing")
-        {
-            minHealing = float.MaxValue;
-            maxHealing = 0f;
-        }
-    }
-
-    void UpdateRows(Dictionary<BaseUnit, float> unitStats, float maxStatValue, float minStatValue)
-    {
-        foreach (Transform child in playerScrollView.content)
-        {
-            TMP_Text damageText = child.transform.Find("DamageText").GetComponent<TMP_Text>();
-            Slider damageSlider = child.transform.Find("DamageSlider").GetComponent<Slider>();
-            TMP_Text unitNameText = child.transform.Find("UnitNameText").GetComponent<TMP_Text>();
-
-            string unitName = unitNameText.text.Replace("(Clone)", "").Trim(); // Remove (Clone)
-
-            // Find the matching unit in playerUnits based on unitName
-            BaseUnit matchingUnit = playerUnits.Find(u => u.unitName == unitName);
-
-            if (matchingUnit != null && unitStats.TryGetValue(matchingUnit, out float statValue))
-            {
-                damageText.text = statValue.ToString();
-                damageSlider.minValue = minStatValue;
-                damageSlider.maxValue = maxStatValue;
-                damageSlider.value = statValue;
-            }
-            else
-            {
-                Debug.LogWarning($"No matching stat found for player unit: {unitName}");
-            }
-        }
-
-        foreach (Transform child in enemyScrollView.content)
-        {
-            TMP_Text damageText = child.transform.Find("DamageText").GetComponent<TMP_Text>();
-            Slider damageSlider = child.transform.Find("DamageSlider").GetComponent<Slider>();
-            TMP_Text unitNameText = child.transform.Find("UnitNameText").GetComponent<TMP_Text>();
-
-            string unitName = unitNameText.text.Replace("(Clone)", "").Trim(); // Remove (Clone)
-
-            // Find the matching unit in enemyUnits based on unitName
-            BaseUnit matchingUnit = enemyUnits.Find(u => u.unitName == unitName);
-
-            if (matchingUnit != null && unitStats.TryGetValue(matchingUnit, out float statValue))
-            {
-                damageText.text = statValue.ToString();
-                damageSlider.minValue = 1;
-                damageSlider.maxValue = 1000;
-                damageSlider.value = statValue;
-            }
-            else
-            {
-                Debug.LogWarning($"No matching stat found for enemy unit: {unitName}");
-            }
-        }
-    }
-
-
-    GameObject FindRowForUnit(BaseUnit unit, Transform scrollContent)
-    {
-        foreach (Transform child in scrollContent)
-        {
-            string rowUnitName = child.transform.Find("UnitNameText").GetComponent<TMP_Text>().text;
-            if (rowUnitName == unit.unitName)
-            {
-                return child.gameObject;
-            }
-        }
-        Debug.LogWarning($"Row not found for unit: {unit.unitName}");
-        return null;
-    }
-
-    // Register damage dealt for units
-    public void RegisterDamageDealt(BaseUnit unit, float damage)
-    {
-        if (!unitDamageStats.ContainsKey(unit))
-        {
-            unitDamageStats[unit] = 0f;
-        }
-        unitDamageStats[unit] += damage;
-
-        // Update max damage for the unit
-        maxDamageDealt = Mathf.Max(maxDamageDealt, unitDamageStats[unit]);
-        minDamageDealt = Mathf.Min(minDamageDealt, unitDamageStats[unit]);
-
-        Debug.Log($"Updated Damage for {unit.unitName}: {unitDamageStats[unit]} (Max: {maxDamageDealt})");
-    }
-
-    // Register damage taken for units
-    public void RegisterDamageTaken(BaseUnit unit, float damage)
-    {
-        if (!unitDamageTakenStats.ContainsKey(unit))
-        {
-            unitDamageTakenStats[unit] = 0f;
-        }
-        unitDamageTakenStats[unit] += damage;
-        maxDamageTaken = Mathf.Max(maxDamageTaken, unitDamageTakenStats[unit]);
-        minDamageTaken = Mathf.Min(minDamageTaken, unitDamageTakenStats[unit]);
-
-        // Call UpdateUnitStats to refresh the UI immediately
-        UpdateUnitStats();
-    }
-
-    // Register healing for units
-    public void RegisterHealing(BaseUnit unit, float healing)
-    {
-        if (!unitHealingStats.ContainsKey(unit))
-        {
-            unitHealingStats[unit] = 0f;
-        }
-        unitHealingStats[unit] += healing;
-        maxHealing = Mathf.Max(maxHealing, unitHealingStats[unit]);
-        minHealing = Mathf.Min(minHealing, unitHealingStats[unit]);
-
-        // Call UpdateUnitStats to refresh the UI immediately
-        UpdateUnitStats();
-    }
-
-    // Change the stat displayed
-    public void ChangeStatToDamageDealt()
-    {
-        currentStat = "DamageDealt";
-        UpdateUnitStats();
-    }
-
-    public void ChangeStatToDamageTaken()
-    {
-        currentStat = "DamageTaken";
-        UpdateUnitStats();
-    }
-
-    public void ChangeStatToHealing()
-    {
-        currentStat = "Healing";
-        UpdateUnitStats();
-    }
+    public void ChangeStatToDamageDealt() { currentStat = "DamageDealt"; UpdateUnitStats(); }
+    public void ChangeStatToDamageTaken() { currentStat = "DamageTaken"; UpdateUnitStats(); }
+    public void ChangeStatToHealing() { currentStat = "Healing"; UpdateUnitStats(); }
 }
