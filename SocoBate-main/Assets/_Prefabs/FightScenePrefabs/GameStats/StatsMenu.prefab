@@ -1280,7 +1280,7 @@ MonoBehaviour:
   playerScrollView: {fileID: 2164908119457428230}
   enemyScrollView: {fileID: 5329575479780395161}
   unitRowPrefab: {fileID: 8447656419860127898, guid: 94c92d45f00c7dc449a32254ad5e6462, type: 3}
-  displayText: {fileID: 0}
+  displayText: {fileID: 2534843199409697190}
 --- !u!1 &6992886228462020008
 GameObject:
   m_ObjectHideFlags: 0

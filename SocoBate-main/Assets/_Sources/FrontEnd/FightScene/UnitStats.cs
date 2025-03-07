@@ -29,11 +29,16 @@ public class UnitStatsRow : MonoBehaviour
 
     void LoadSplashImage(string unitName)
     {
+        RawImage splashImage = transform.Find("Splash")?.GetComponent<RawImage>();
         string splashImageName = unitName + "Splash";
         Texture2D loadedTexture = Resources.Load<Texture2D>($"Sprites/SplashUnits/{splashImageName}");
         if (loadedTexture != null)
         {
-            damageSlider.GetComponentInChildren<Image>().sprite = Sprite.Create(loadedTexture, new Rect(0, 0, loadedTexture.width, loadedTexture.height), new Vector2(0.5f, 0.5f));
+            splashImage.texture = loadedTexture;
+        }
+        else
+        {
+            Debug.LogError($"Splash image not found for {splashImageName}.");
         }
     }
 

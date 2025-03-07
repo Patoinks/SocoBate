@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6deebea15a234cb40bd98a84921b3297, type: 3}
   m_Name: JohnnyBoy
   m_EditorClassIdentifier: 
-  unitName: Xorka
+  unitName: JohnnyBoy
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
   maxHp: 100
@@ -25,6 +25,9 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 4
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
