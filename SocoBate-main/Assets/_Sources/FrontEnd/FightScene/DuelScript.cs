@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Models;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using System.Linq;
 public class DuelScript : MonoBehaviour
 {
     public List<BaseUnit> playerUnits;
@@ -17,9 +19,7 @@ public class DuelScript : MonoBehaviour
     public List<BaseUnit> deadEnemyUnits = new List<BaseUnit>();
 
     public UIFight uiFight;
-
     private bool skipFight = false;
-    private float fightSpeedMultiplier = 1f; // 1x, 2x, or 4x
 
     void Start()
     {
@@ -35,6 +35,7 @@ public class DuelScript : MonoBehaviour
 
         playerUnits.Clear();
         enemyUnits.Clear();
+        SetUIInteractivity(false);
         StartCoroutine(InitializeBattleWithFetch());
     }
 
@@ -53,8 +54,27 @@ public class DuelScript : MonoBehaviour
         }
 
         InitializeBattleDelayed(); // Proceed with battle setup
+        SetUIInteractivity(true);
     }
 
+    void SetUIInteractivity(bool isInteractable)
+    {
+        Button[] buttons = FindObjectsOfType<Button>(); // Find all buttons in the scene
+        foreach (Button button in buttons)
+        {
+            button.interactable = isInteractable; // Enable or disable buttons
+        }
+
+        // If you have other interactable elements like sliders, you can disable them too
+        // Example for sliders:
+        Slider[] sliders = FindObjectsOfType<Slider>();
+        foreach (Slider slider in sliders)
+        {
+            slider.interactable = isInteractable;
+        }
+
+        // You can also disable other UI elements like panels or images if necessary
+    }
     public void UpdateHealth(BaseUnit unit, float newHealth)
     {
         if (unitHealthBars != null && unitHealthBars.ContainsKey(unit))
@@ -84,12 +104,6 @@ public class DuelScript : MonoBehaviour
 
             foreach (BaseUnit unit in aliveUnits)
             {
-                // If skip is true, skip the current unit's turn
-                if (skipFight)
-                {
-                    continue;
-                }
-
                 // Ensure the unit is still alive before taking its turn
                 if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
                     continue;
@@ -97,12 +111,14 @@ public class DuelScript : MonoBehaviour
                 Debug.Log($"Unit {unit.unitName} taking turn.");
 
                 yield return StartCoroutine(ExecuteTurn(unit));
-
-                yield return new WaitForSeconds(0.5f / fightSpeedMultiplier); // Adjust the delay based on speed multiplier
             }
         }
+            EndBattle();
+    }
 
-        EndBattle();
+    public void SkipFight()
+    {
+        skipFight = true;
     }
 
     IEnumerator ExecuteTurn(BaseUnit unit)
@@ -175,7 +191,15 @@ public class DuelScript : MonoBehaviour
                     {
                         if (uiFight != null)
                         {
-                            yield return StartCoroutine(uiFight.MoveUnitCloser(target, attacker));
+                            if (!skipFight)
+                            {
+                                yield return StartCoroutine(uiFight.MoveUnitCloser(target, attacker));
+                            }
+                            else
+                            {
+                                Debug.Log("Skipping fight animation.");
+                            }
+
                         }
                         else
                         {
@@ -249,7 +273,6 @@ public class DuelScript : MonoBehaviour
 
         int calculatedValue = effect.baseValue;
 
-        // Apply percentage scaling if applicable
         if (effect.isPercentage && string.IsNullOrEmpty(effect.scalingAttribute))
         {
             // If it's a percentage effect without a scaling attribute, apply percentage damage directly to the targeted stat (HP for example)
@@ -262,16 +285,12 @@ public class DuelScript : MonoBehaviour
         }
         else
         {
-            // Apply scaling with the attacker's stat (STR, for example)
             if (!string.IsNullOrEmpty(effect.scalingAttribute))
             {
-                // Get the attacker's scaling stat value (e.g., STR, INT, etc.)
-                int scalingStatValue = GetStat(attacker, effect.scalingAttribute); // Use the attacker's stat
+                int scalingStatValue = GetStat(attacker, effect.scalingAttribute);
 
-                // Calculate scaling damage as a percentage of the attacker's stat (e.g., STR)
                 int scaledDamage = (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
 
-                // Add the base value + scaled damage
                 calculatedValue += scaledDamage;
 
                 Debug.Log($"[DEBUG] Calculated Scaling Damage: {calculatedValue} (Scaling: {effect.scalingPercent}% of {scalingStatValue} from {effect.scalingAttribute})");
@@ -301,17 +320,13 @@ public class DuelScript : MonoBehaviour
             ApplyStatusEffect(target, effect.statusEffect);
         }
 
-        // Check if unit is defeated
         if (GetStat(target, "HP") <= 0)
         {
-            Debug.Log($"{target.unitName} has been defeated!");
-            StartCoroutine(RemoveUnitAfterDelay(target, 0.5f));
+            RemoveUnit(target);
         }
     }
     void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, int rawDamage)
     {
-
-
         int finalDamage = rawDamage; // Default to raw damage
 
         if (defenseStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
@@ -333,9 +348,7 @@ public class DuelScript : MonoBehaviour
             Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {newHp}");
         }
 
-        // Register stats in TeamStatsManager
         target.UpdateDamageTaken(finalDamage);
-        // If there's an attacker reference, register damage dealt (you might need to pass it)
         if (currentAttacker != null)
         {
             currentAttacker.UpdateDamageDealt(finalDamage);
@@ -345,15 +358,9 @@ public class DuelScript : MonoBehaviour
 
     void ApplyHealing(BaseUnit target, BaseUnit attacker, int healAmount)
     {
-
-
         int newHp = Mathf.Min(GetStat(target, "HP") + healAmount, target.maxHp);
         SetStat(target, "HP", newHp);
         UpdateHealth(target, newHp);
-
-        Debug.Log($"{target.unitName} heals for {healAmount}. New HP: {newHp}");
-
-        // Register healing in TeamStatsManager
         attacker.UpdateHealingDone(healAmount);
     }
 
@@ -371,7 +378,6 @@ public class DuelScript : MonoBehaviour
 
         Debug.Log($"{target.unitName}'s {statName} modified by {valueChange}. New value: {GetStat(target, statName)}");
     }
-
 
 
     void SetStat(BaseUnit unit, string statName, int newValue)
@@ -395,14 +401,6 @@ public class DuelScript : MonoBehaviour
             Debug.LogError($"Stat '{statName}' not found for {unit.unitName}!");
     }
 
-
-
-    IEnumerator RemoveUnitAfterDelay(BaseUnit unit, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        RemoveUnit(unit);
-    }
-
     int GetStat(BaseUnit unit, string statName)
     {
         string statNameLower = statName.ToLower();
@@ -422,8 +420,6 @@ public class DuelScript : MonoBehaviour
 
         return 0;
     }
-
-
     void ApplyStatusEffect(BaseUnit target, BaseUnit.StatusEffect statusEffect)
     {
         if (statusEffect.ccType == BaseUnit.CrowdControlType.Poison)
@@ -436,22 +432,19 @@ public class DuelScript : MonoBehaviour
 
     void RemoveUnit(BaseUnit unit)
     {
-        // Remove the unit from combat
         if (playerUnits.Contains(unit))
         {
             playerUnits.Remove(unit);
-            deadPlayerUnits.Add(unit); // Add to dead list
+            deadPlayerUnits.Add(unit);
         }
         else if (enemyUnits.Contains(unit))
         {
             enemyUnits.Remove(unit);
-            deadEnemyUnits.Add(unit); // Add to dead list
+            deadEnemyUnits.Add(unit);
         }
 
         allUnits.Remove(unit);
     }
-
-
 
     BaseUnit GetRandomUnit(List<BaseUnit> units)
     {
@@ -462,16 +455,13 @@ public class DuelScript : MonoBehaviour
     void EndBattle()
     {
         Debug.Log("The battle is over!");
-
-        // Instantiate the menu prefab in the scene and set it as a child of the Canvas
         if (menu != null)
         {
-            // Find the Canvas in the scene
             Canvas canvas = FindObjectOfType<Canvas>();
             if (canvas != null)
             {
-                GameObject instantiatedMenu = Instantiate(menu, canvas.transform);  // Set Canvas as the parent
-                instantiatedMenu.transform.localPosition = Vector3.zero;  // Reset local position to (0,0,0) within the Canvas
+                GameObject instantiatedMenu = Instantiate(menu, canvas.transform);
+                instantiatedMenu.transform.localPosition = Vector3.zero;
             }
             else
             {
@@ -482,43 +472,5 @@ public class DuelScript : MonoBehaviour
         {
             Debug.LogError("Menu prefab not assigned in the inspector.");
         }
-
-        DisplayUnitStats();
-        // Start loading the next scene after a delay
-        StartCoroutine(DelayedLoadScene("MainMenuScene", 500f));
     }
-
-    void DisplayUnitStats()
-    {
-        // Display stats for alive player units
-        foreach (BaseUnit unit in playerUnits)
-        {
-            Debug.Log($"Player Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
-        }
-
-        // Display stats for dead player units
-        foreach (BaseUnit unit in deadPlayerUnits)
-        {
-            Debug.Log($"Dead Player Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
-        }
-
-        // Display stats for alive enemy units
-        foreach (BaseUnit unit in enemyUnits)
-        {
-            Debug.Log($"Enemy Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
-        }
-
-        // Display stats for dead enemy units
-        foreach (BaseUnit unit in deadEnemyUnits)
-        {
-            Debug.Log($"Dead Enemy Unit: {unit.unitName} Damage Dealt: {unit.damageDealt}");
-        }
-    }
-
-    private IEnumerator DelayedLoadScene(string sceneName, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-    }
-
 }

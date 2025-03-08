@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Context;
 
 public class LogoutManager : MonoBehaviour
 {
@@ -15,6 +15,9 @@ public class LogoutManager : MonoBehaviour
 
     public void Logout()
     {
+        // Clear all contexts
+        ClearAllContexts();
+
         // Check if the file exists
         if (File.Exists(filePath))
         {
@@ -30,5 +33,17 @@ public class LogoutManager : MonoBehaviour
         // Optionally, reset any UI elements or scene
         // For example, returning to the login screen:
         SceneManager.LoadScene("LoginScene"); // Replace "LoginScene" with your actual login scene name
+    }
+
+    private void ClearAllContexts()
+    {
+        // Clear all contexts
+        TeamContext.ClearAllTeams();
+        UnitContext.ownedUnits.Clear();
+        UnitContext.allUnits.Clear();
+        UserContext.ClearUser();
+        UserContext.ClearFriends();
+
+        Debug.Log("All contexts have been cleared.");
     }
 }

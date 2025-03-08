@@ -25,15 +25,18 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 4
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 3
+      targetType: 4
       targetedStat: MDEF
       scalingAttribute: INT
-      scalingPercent: 10
-      baseValue: 10
-      isPercentage: 0
+      scalingPercent: 0
+      baseValue: 20
+      isPercentage: 1
       statusEffect:
         ccType: 0
         duration: 0
@@ -52,12 +55,33 @@ MonoBehaviour:
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 2
-      targetType: 0
-      targetedStat: STR
+    - effectType: 3
+      targetType: 4
+      targetedStat: PDEF
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 20
+      baseValue: 5
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 3
+      targetType: 4
+      targetedStat: MDEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -98,7 +122,7 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: jURO
+    description: Juro
     turnsToSpecial: 6
   isStunned: 0
   isTaunted: 0

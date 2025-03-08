@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using SceneManager = UnityEngine.SceneManagement.SceneManager;
 public class TeamStatsManager : MonoBehaviour
 {
     public ScrollRect playerScrollView;
@@ -221,6 +221,11 @@ public class TeamStatsManager : MonoBehaviour
         {
             row.UpdateStat(GetStatValue(row.unit)); // Update enemy rows
         }
+    }
+
+    public void OnClickChangeScene()
+    {
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     public void ChangeStatToDamageDealt() { currentStat = "DamageDealt"; UpdateUnitStats(); }

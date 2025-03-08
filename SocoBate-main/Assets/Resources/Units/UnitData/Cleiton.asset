@@ -20,19 +20,43 @@ MonoBehaviour:
   mDef: 100
   pDef: 100
   baseSpeed: 110
-  baseStr: 20
+  baseStr: 40
   baseInt: 20
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
       targetType: 3
       targetedStat: HP
-      scalingAttribute: INT
+      scalingAttribute: STR
+      scalingPercent: 20
+      baseValue: 20
+      isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 2
+      targetType: 0
+      targetedStat: SPD
+      scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 20
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -57,7 +81,7 @@ MonoBehaviour:
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 5
+      baseValue: 25
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -78,8 +102,8 @@ MonoBehaviour:
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 25
-      isPercentage: 1
+      baseValue: 100
+      isPercentage: 0
       statusEffect:
         ccType: 0
         duration: 0

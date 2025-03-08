@@ -20,11 +20,14 @@ MonoBehaviour:
   mDef: 30
   pDef: 30
   baseSpeed: 150
-  baseStr: 250
+  baseStr: 100
   baseInt: 50
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
@@ -52,34 +55,13 @@ MonoBehaviour:
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 2
-      targetType: 0
-      targetedStat: STR
-      scalingAttribute: 
-      scalingPercent: 0
+    - effectType: 0
+      targetType: 3
+      targetedStat: PDEF
+      scalingAttribute: STR
+      scalingPercent: 20
       baseValue: 20
-      isPercentage: 1
-      statusEffect:
-        ccType: 0
-        duration: 0
-        tickDamage: 0
-        scalingAttribute: 
-        scalingPercent: 0
-        isPercentage: 0
-        preventsAction: 0
-        preventsMovement: 0
-        preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
-        isSummon: 0
-        summonUnit: {fileID: 0}
-    - effectType: 3
-      targetType: 0
-      targetedStat: SPD
-      scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 20
-      isPercentage: 1
+      isPercentage: 0
       statusEffect:
         ccType: 0
         duration: 0

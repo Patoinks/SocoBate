@@ -81,7 +81,7 @@ MonoBehaviour:
   specialAttack:
     effects: []
     description: DF
-    turnsToSpecial: 0
+    turnsToSpecial: 6
   isStunned: 0
   isTaunted: 0
   isRooted: 0

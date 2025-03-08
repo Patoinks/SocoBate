@@ -21,10 +21,13 @@ MonoBehaviour:
   pDef: 30
   baseSpeed: 80
   baseStr: 50
-  baseInt: 150
+  baseInt: 80
   baseEvasion: 0
   baseLuck: 0
   rarity: 5
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0

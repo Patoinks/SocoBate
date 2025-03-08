@@ -15,25 +15,49 @@ MonoBehaviour:
   unitName: Beloso
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 175
-  baseHp: 175
+  maxHp: 250
+  baseHp: 250
   mDef: 50
   pDef: 50
   baseSpeed: 20
   baseStr: 20
-  baseInt: 20
+  baseInt: 80
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
-    - effectType: 0
-      targetType: 3
+    - effectType: 1
+      targetType: 0
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 20
       isPercentage: 1
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 0
+      targetType: 3
+      targetedStat: MDEF
+      scalingAttribute: INT
+      scalingPercent: 20
+      baseValue: 10
+      isPercentage: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -52,13 +76,34 @@ MonoBehaviour:
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 1
+    - effectType: 2
       targetType: 0
-      targetedStat: HP
+      targetedStat: MDEF
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 25
-      isPercentage: 1
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 3
+      targetType: 0
+      targetedStat: PDEF
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 25
+      isPercentage: 0
       statusEffect:
         ccType: 0
         duration: 0

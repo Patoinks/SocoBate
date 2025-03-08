@@ -25,14 +25,17 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 2
-      targetType: 1
-      targetedStat: INT
+      targetType: 2
+      targetedStat: SPD
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 25
+      baseValue: 10
       isPercentage: 1
       statusEffect:
         ccType: 0
@@ -57,7 +60,7 @@ MonoBehaviour:
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 20
       isPercentage: 1
       statusEffect:
         ccType: 0

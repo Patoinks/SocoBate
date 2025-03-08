@@ -25,14 +25,17 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
       targetType: 3
-      targetedStat: 
-      scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 0
+      targetedStat: PDEF
+      scalingAttribute: STR
+      scalingPercent: 20
+      baseValue: 10
       isPercentage: 0
       statusEffect:
         ccType: 1

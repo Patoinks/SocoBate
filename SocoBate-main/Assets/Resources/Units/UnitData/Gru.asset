@@ -21,19 +21,22 @@ MonoBehaviour:
   pDef: 30
   baseSpeed: 20
   baseStr: 1
-  baseInt: 10
+  baseInt: 1
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  damageDealt: 0
+  damageTaken: 0
+  healingDone: 0
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 3
-      targetedStat: PDEF
-      scalingAttribute: STR
-      scalingPercent: 10
-      baseValue: 50
-      isPercentage: 0
+      targetType: 4
+      targetedStat: HP
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 5
+      isPercentage: 1
       statusEffect:
         ccType: 0
         duration: 0
@@ -52,12 +55,12 @@ MonoBehaviour:
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 3
-      targetType: 4
-      targetedStat: INT
+    - effectType: 2
+      targetType: 2
+      targetedStat: STR
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 5
+      baseValue: 15
       isPercentage: 1
       statusEffect:
         ccType: 0

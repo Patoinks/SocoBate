@@ -1153,7 +1153,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1734219104}
         m_TargetAssemblyTypeName: DuelScript, Assembly-CSharp
-        m_MethodName: ToggleSkipFight
+        m_MethodName: SkipFight
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2532,6 +2532,8 @@ MonoBehaviour:
   menu: {fileID: 5944752009471779972, guid: f00a344f0fcd317459efea6156110403, type: 3}
   healthBar: {fileID: 9215014980507884211, guid: ee429d8ce311d9a428b04609c499276e, type: 3}
   squadManager: {fileID: 1734219105}
+  deadPlayerUnits: []
+  deadEnemyUnits: []
   uiFight: {fileID: 1734219106}
 --- !u!114 &1734219105
 MonoBehaviour:
