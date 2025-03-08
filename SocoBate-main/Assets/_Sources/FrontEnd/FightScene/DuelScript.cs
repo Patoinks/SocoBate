@@ -113,7 +113,7 @@ public class DuelScript : MonoBehaviour
                 yield return StartCoroutine(ExecuteTurn(unit));
             }
         }
-            EndBattle();
+        EndBattle();
     }
 
     public void SkipFight()
@@ -127,6 +127,8 @@ public class DuelScript : MonoBehaviour
         if (!playerUnits.Contains(unit) && !enemyUnits.Contains(unit))
             yield break;
 
+        // Example in ExecuteTurn method (line 130 in your stack trace)
+        Debug.Log($"[DEBUG] Applying passive effects to unit: {unit?.unitName ?? "null unit"}");
         ApplyPassiveEffects(unit);
 
         if (unit.specialAttack.turnsToSpecial == 0)
@@ -141,24 +143,44 @@ public class DuelScript : MonoBehaviour
     {
         if (unit.passiveAbility != null)
         {
-            Debug.Log($" {unit.unitName} is using passive {unit.passiveAbility.description}.");
+            Debug.Log($"[DEBUG] {unit.unitName} is using passive ability: {unit.passiveAbility.description}");
 
             foreach (var effect in unit.passiveAbility.effects)
             {
+                // Log the effect details
+                Debug.Log($"[DEBUG] Processing effect: {effect.effectType} targeting: {effect.targetedStat} with base value: {effect.baseValue}");
+
                 List<BaseUnit> targets = SelectTargets(unit, effect.targetType);
 
-                foreach (var target in targets)
+                if (targets == null || targets.Count == 0)
                 {
-                    Debug.Log($"Applying passive effect {effect.effectType} to {target.unitName}");
-                    ApplyEffect(target, unit, effect);
+                    Debug.LogWarning($"[WARNING] No valid targets found for passive effect on {unit.unitName} with type {effect.targetType}");
+                }
+                else
+                {
+                    foreach (var target in targets)
+                    {
+                        // Check if target is still alive
+                        if (GetStat(target, "HP") <= 0)
+                        {
+                            Debug.LogWarning($"[WARNING] {target.unitName} is dead and cannot be affected by passive effect.");
+                            continue; // Skip dead targets
+                        }
+
+                        // Log target before applying effect
+                        Debug.Log($"[DEBUG] Applying passive effect {effect.effectType} to {target.unitName} with base value {effect.baseValue}");
+                        ApplyEffect(target, unit, effect);
+                    }
                 }
             }
         }
         else
         {
-            Debug.LogWarning($"{unit.unitName} does not have any passive abilities.");
+            Debug.LogWarning($"[WARNING] {unit.unitName} does not have any passive abilities.");
         }
     }
+
+
 
     List<BaseUnit> GetEnemyUnits(BaseUnit unit)
     {
@@ -322,8 +344,25 @@ public class DuelScript : MonoBehaviour
 
         if (GetStat(target, "HP") <= 0)
         {
-            RemoveUnit(target);
+            if (skipFight == true)
+            {
+                RemoveUnit(target);  // Instantly remove the unit if skipping the fight
+            }
+            else
+            {
+                StartCoroutine(HandleDeathWithDelay(target));
+            }
         }
+
+        IEnumerator HandleDeathWithDelay(BaseUnit target)
+        {
+
+            yield return new WaitForSeconds(0.5f);  // Delay if not skipping
+            RemoveUnit(target);
+
+        }
+
+
     }
     void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, int rawDamage)
     {

@@ -79,8 +79,29 @@ MonoBehaviour:
     description: Repair
     turnsToSpecial: 0
   specialAttack:
-    effects: []
-    description: 
+    effects:
+    - effectType: 0
+      targetType: 0
+      targetedStat: 
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 0
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    description: fssfdfsd
     turnsToSpecial: 6
   isStunned: 0
   isTaunted: 0
