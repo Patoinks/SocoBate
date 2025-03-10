@@ -1,122 +1,243 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
-using System.Linq;
+using Models;
 using Context;
 using Database;
 using System;
-using Models;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-namespace Gacha
+using UnityEngine.UI;
+using System.Collections;
+public class GachaManagerCS : MonoBehaviour
 {
-    public class GachaManagerCS : MonoBehaviour
+    public TextMeshProUGUI resultText;
+    public GameObject heroSpritePrefab;
+    public GameObject rotatingImagePrefab;
+    public Transform spawnPoint;
+    public CanvasGroup splashEffectCanvas;
+    public Image splashEffectImage;
+    public Canvas canvas;  // Add this reference to the Canvas
+
+    private GameObject previousUnitImage = null;  // Reference to the previous unit prefab
+    private GameObject previousRotatingImage = null;  // Reference to the previous rotating image
+    private GameObject previousSplashEffect = null;
+
+    private Dictionary<int, int> rarityChances = new Dictionary<int, int>
     {
-        public TextMeshProUGUI resultText;    // For displaying the result (Unit name)
-        public GameObject heroSpritePrefab;   // The prefab for displaying the unit sprite (if needed)
-        public Transform spawnPoint;          // Point where the unit sprite will spawn
+        { 2, 55 },
+        { 3, 35 },
+        { 4, 7 },
+        { 5, 3 },
+    };
 
-        private Dictionary<int, int> rarityChances = new Dictionary<int, int>
+    private void Start()
+    {
+        UnitContext.LoadAllUnitsFromSerializedData();
+        Debug.Log($"Total Units Loaded: {UnitContext.allUnits.Count}");
+        foreach (var unit in UnitContext.allUnits)
         {
-            { 2, 55 },   // 10% chance for Rarity 2 (Rare)
-            { 3, 35 },   // 10% chance for Rarity 3 (Rare)
-            { 4, 7 },   // 10% chance for Rarity 4 (Epic)
-            { 5, 3 },    // 7% chance for Rarity 5 (Legendary)
-        };
-
-        private void Start()
-        {
-            UnitContext.LoadAllUnitsFromSerializedData(); // Load all units from SerializedObjects
-
-            // Debugging: Check how many units are loaded
-            Debug.Log($"Total Units Loaded: {UnitContext.allUnits.Count}");
-            foreach (var unit in UnitContext.allUnits)
-            {
-                Debug.Log($"Loaded Unit: {unit.unitName} | Rarity: {unit.rarity}");
-            }
+            Debug.Log($"Loaded Unit: {unit.unitName} | Rarity: {unit.rarity}");
         }
+    }
 
+    public async void PullGacha()
+    {
+        // Lock all buttons
+        SetButtonsInteractable(false);
 
-        public async void PullGacha()
+        // Perform the gacha pull
+        BaseUnit pulledUnit = GetRandomUnitFromPool();
+        ShowResult(pulledUnit);
+        await AddUnitToAccount(pulledUnit);
+
+        // Wait for 1 second
+        await Task.Delay(2000);
+
+        // Unlock all buttons
+        SetButtonsInteractable(true);
+    }
+
+    private void SetButtonsInteractable(bool isInteractable)
+    {
+        foreach (var button in canvas.GetComponentsInChildren<Button>())
         {
-            // Get the pulled unit based on rarity chances
-            BaseUnit pulledUnit = GetRandomUnitFromPool();
-
-            // Display results and send unit data to the player's account
-            ShowResult(pulledUnit);
-
-            // Add the unit to the account and database
-            await AddUnitToAccount(pulledUnit);
+            button.interactable = isInteractable;
         }
+    }
 
-        // Get a random unit based on rarity chances
-        // Get a random unit based on rarity chances, but exclude rarity 2
-        private BaseUnit GetRandomUnitFromPool()
+
+    private BaseUnit GetRandomUnitFromPool()
+    {
+        List<BaseUnit> weightedPool = new List<BaseUnit>();
+        foreach (var unit in UnitContext.allUnits)
         {
-            // Create a list of units weighted by their rarity chance
-            List<BaseUnit> weightedPool = new List<BaseUnit>();
-
-            foreach (var unit in UnitContext.allUnits)
+            if (rarityChances.ContainsKey(unit.rarity))
             {
-                if (rarityChances.ContainsKey(unit.rarity))
+                int weight = rarityChances[unit.rarity];
+                for (int i = 0; i < weight; i++)
                 {
-                    int weight = rarityChances[unit.rarity];
-
-                    // Add the unit to the list multiple times based on its weight
-                    for (int i = 0; i < weight; i++)
-                    {
-                        weightedPool.Add(unit);
-                    }
+                    weightedPool.Add(unit);
                 }
             }
+        }
 
-            // Check if we have any units to pick from
-            if (weightedPool.Count == 0)
+        if (weightedPool.Count == 0)
+        {
+            Debug.LogWarning("No valid units available for gacha pull!");
+            return null;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, weightedPool.Count);
+        return weightedPool[randomIndex];
+    }
+
+    private void ShowResult(BaseUnit unit)
+    {
+        if (unit != null)
+        {
+            resultText.text = $"You pulled: {unit.unitName} (Rarity: {unit.rarity})";
+
+            // Remove the previous splash effect and unit image if they exist
+            if (previousUnitImage != null)
             {
-                Debug.LogWarning("No valid units available for gacha pull!");
-                return null;
+                Destroy(previousUnitImage);
+            }
+            if (previousRotatingImage != null)
+            {
+                Destroy(previousRotatingImage);
+            }
+            if (previousSplashEffect != null)
+            {
+                Destroy(previousSplashEffect);
             }
 
-            // Pick a random unit from the weighted pool
-            int randomIndex = UnityEngine.Random.Range(0, weightedPool.Count);
-            return weightedPool[randomIndex];
-        }
+            // Find the prefab for the unit using the unit's name
+            GameObject unitPrefab = FindUnitPrefab(unit.unitName);
 
-
-
-
-        // Get the chance for a given rarity
-        private int GetUnitRarityChance(int rarity)
-        {
-            return rarityChances.ContainsKey(rarity) ? rarityChances[rarity] : 0;
-        }
-
-        private void ShowResult(BaseUnit unit)
-        {
-            if (unit != null)
+            if (unitPrefab != null)
             {
-                // Display the unit name and rarity
-                resultText.text = $"You pulled: {unit.unitName} (Rarity: {unit.rarity})";
+                // Instantiate the unit prefab and parent it to the canvas
+                GameObject unitImage = Instantiate(unitPrefab, canvas.transform);
+                RectTransform unitImageRectTransform = unitImage.GetComponent<RectTransform>();
+                unitImageRectTransform.anchoredPosition = new Vector2(150, 0); // Position it at (50, 0) to the right
 
-                GameObject unitImage = Instantiate(heroSpritePrefab, spawnPoint.position, Quaternion.identity);
+                StartCoroutine(ScaleIn(unitImage.transform));
 
+                // Instantiate rotating image and parent it to the canvas
+                GameObject rotatingImage = Instantiate(rotatingImagePrefab, canvas.transform);
+                RectTransform rotatingImageRectTransform = rotatingImage.GetComponent<RectTransform>();
+                rotatingImageRectTransform.anchoredPosition = Vector2.zero; // Position it at (0, 0)
+
+                rotatingImage.transform.SetParent(unitImage.transform, false); // Parent it to the unit image
+
+
+                // Store references to the newly created objects
+                previousUnitImage = unitImage;
+                previousRotatingImage = rotatingImage;
             }
             else
             {
-                resultText.text = "No unit pulled!";
+                Debug.LogError($"No prefab found for unit: {unit.unitName}");
             }
+
+            StartCoroutine(ShowSplashEffect(unit.unitName));
+        }
+        else
+        {
+            resultText.text = "No unit pulled!";
+        }
+    }
+
+
+    private GameObject FindUnitPrefab(string unitName)
+    {
+        // Load prefab from Resources/UnitsPrefabs/
+        GameObject loadedPrefab = Resources.Load<GameObject>($"UnitsPrefabs/{unitName}");
+
+        if (loadedPrefab == null)
+        {
+            Debug.LogError($"Prefab '{unitName}' not found in Resources/UnitsPrefabs/.");
         }
 
-        private async Task AddUnitToAccount(BaseUnit unit)
-        {
-            if (unit != null)
-            {
-                Guid accountId = UserContext.account.AccountId;  // Get the logged-in account ID
-                Debug.Log($"Unit drawn: {unit.unitName} | Account ID: {accountId} | Rarity: {unit.rarity}");
+        return loadedPrefab;
+    }
 
-                // Insert the new hero into the account and the database
-                await UnitController.NewHeroUnlocked(accountId, unit.unitName);  // Pass the unit name (string) to match the DB schema
+
+
+
+    private IEnumerator ScaleIn(Transform obj)
+    {
+        float duration = 0.5f;
+        float time = 0;
+        Vector3 startScale = Vector3.zero;
+        Vector3 endScale = Vector3.one;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            obj.localScale = Vector3.Lerp(startScale, endScale, time / duration);
+            yield return null;
+        }
+        obj.localScale = endScale;
+    }
+    private IEnumerator ShowSplashEffect(string unitName)
+    {
+        // Remove previous splash effect if it exists
+        if (previousSplashEffect != null)
+        {
+            Destroy(previousSplashEffect);
+        }
+
+        string splashPath = $"Sprites/SplashUnits/{unitName}Splash";
+        Texture2D loadedTexture = Resources.Load<Texture2D>(splashPath);
+
+        if (loadedTexture != null)
+        {
+            // Create a new GameObject for the splash effect
+            GameObject splashEffect = new GameObject("SplashEffect");
+
+            splashEffect.transform.SetParent(canvas.transform, false);  // Parent it to the canvas
+            splashEffectImage.gameObject.SetActive(true);
+            splashEffectImage.sprite = Sprite.Create(loadedTexture, new Rect(0, 0, loadedTexture.width, loadedTexture.height), new Vector2(0.5f, 0.5f));
+
+            // Set the new splash effect
+            previousSplashEffect = splashEffect;
+
+            splashEffectCanvas.gameObject.SetActive(true);
+
+            // Fade in the splash effect
+            float fadeDuration = 0.5f;
+            float time = 0;
+
+            while (time < fadeDuration)
+            {
+                time += Time.deltaTime;
+                splashEffectCanvas.alpha = Mathf.Lerp(0, 1, time / fadeDuration);
+                yield return null;
             }
+
+            // After splash effect fades in, make sure it's visible and keep rotating
+            // Do not fade out, let it stay visible
+
+
+        }
+        else
+        {
+            Debug.LogError($"Splash image not found: {splashPath}");
+        }
+    }
+
+
+
+
+
+    private async Task AddUnitToAccount(BaseUnit unit)
+    {
+        if (unit != null)
+        {
+            Guid accountId = UserContext.account.AccountId;
+            Debug.Log($"Unit drawn: {unit.unitName} | Account ID: {accountId} | Rarity: {unit.rarity}");
+            await UnitController.NewHeroUnlocked(accountId, unit.unitName);
         }
     }
 }

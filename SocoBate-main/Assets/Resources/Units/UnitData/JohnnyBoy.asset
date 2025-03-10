@@ -24,7 +24,10 @@ MonoBehaviour:
   baseInt: 10
   baseEvasion: 0
   baseLuck: 0
-  rarity: 4
+  rarity: 3
+  aura: 0
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -37,6 +40,8 @@ MonoBehaviour:
       scalingPercent: 50
       baseValue: 1
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -52,6 +57,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: "Antebra\xE7o de Agricultor"
+    attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -62,6 +68,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 100
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -77,6 +85,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Mau Negocio
+    attackName: 
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -87,6 +96,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 0
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -102,9 +113,10 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: DF
+    attackName: 
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

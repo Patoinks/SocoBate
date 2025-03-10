@@ -24,7 +24,10 @@ MonoBehaviour:
   baseInt: 20
   baseEvasion: 0
   baseLuck: 0
-  rarity: 3
+  rarity: 4
+  aura: 0
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -37,6 +40,8 @@ MonoBehaviour:
       scalingPercent: 20
       baseValue: 20
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -58,6 +63,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -73,6 +80,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Afobado
+    attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -83,6 +91,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 25
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -104,6 +114,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 100
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -119,6 +131,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Open Relationship
+    attackName: 
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -129,6 +142,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 100
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -144,9 +159,10 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Point Click One Shot
+    attackName: 
     turnsToSpecial: 10
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

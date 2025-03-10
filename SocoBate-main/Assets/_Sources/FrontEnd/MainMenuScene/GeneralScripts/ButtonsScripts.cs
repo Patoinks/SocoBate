@@ -5,18 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class ButtonsScripts : MonoBehaviour
 {
-
     public GameObject amigosMenuPrefab; // Reference to the AmigosMenu prefab
     public GameObject teamSetupPrefab; // Reference to the TeamSetupPrefab prefab
     public GameObject heroListprefab; // Reference to the TeamSetupPrefab prefab
-
+    public GameObject gachaMenuPrefab; // Reference to the TeamSetupPrefab prefab
     public GameObject mailBoxprefab; // Reference to the TeamSetupPrefab prefab
-
     void Start()
     {
 
     }
-
     public void OnClickAmigosButton()
     {
         // Find the "Tudo" GameObject in the scene hierarchy
@@ -58,7 +55,6 @@ public class ButtonsScripts : MonoBehaviour
 
     public void OnClickMailBox()
     {
-        Debug.Log("Clicado");
         // Find the "Tudo" GameObject in the scene hierarchy
         GameObject tudoObject = GameObject.Find("Canvas");
 
@@ -79,10 +75,8 @@ public class ButtonsScripts : MonoBehaviour
 
     public void OnClickTeamButton()
     {
-        SceneManager.LoadScene("TeamScene");
+       SceneManager.LoadScene("TeamScene");
     }
-
-
     public void OnClickGachaButton()
     {
         SceneManager.LoadScene("GachaScene");
@@ -105,7 +99,4 @@ public class ButtonsScripts : MonoBehaviour
             Debug.LogError("CloseAmigosMenu component not found in AmigosMenu prefab.");
         }
     }
-
-
-
 }

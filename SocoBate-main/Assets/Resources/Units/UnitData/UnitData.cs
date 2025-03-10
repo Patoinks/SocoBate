@@ -20,6 +20,10 @@ public class BaseUnit : ScriptableObject
     public int baseEvasion;
     public int baseLuck;
     public int rarity;
+    public int aura;
+
+    public int DapAttemptChance;
+    public int DapSuccessChance;
 
     // Track stats for damage dealt, damage taken, and healing done
     [HideInInspector] public float damageDealt;
@@ -32,6 +36,7 @@ public class BaseUnit : ScriptableObject
     {
         public List<Effect> effects; // Multiple effects per attack (Damage, Heal, Buff, Debuff, etc.)
         public string description;
+        public string attackName;
         public int turnsToSpecial; // Only used for Special Attacks
     }
 
@@ -46,6 +51,9 @@ public class BaseUnit : ScriptableObject
         public int scalingPercent; // % Scaling (e.g., 20 for 20%)
         public int baseValue; // Flat effect value (e.g., damage, heal amount)
         public bool isPercentage; // True if it applies as a % instead of a flat value
+        public bool isRng;  // Determines if the CC effect is ranged
+        public bool auraRngChance;  // Chance for the ranged CC to land (e.g., 0.7 for 70%)
+
         public StatusEffect statusEffect; // Optional CC effect
     }
 
@@ -74,7 +82,9 @@ public class BaseUnit : ScriptableObject
         Damage,
         Heal,
         Buff,
-        Debuff
+        Debuff,
+        Steal,
+        Odds,
     }
 
     // Crowd Control Types
@@ -109,7 +119,7 @@ public class BaseUnit : ScriptableObject
 
     // Added status flags to track CC effects
     [HideInInspector] public bool isStunned;
-    [HideInInspector] public bool isTaunted;
+    [HideInInspector] public bool isTaunting;
     [HideInInspector] public bool isRooted;
     [HideInInspector] public bool isSilenced;
     [HideInInspector] public bool isPoisoned;
@@ -118,6 +128,8 @@ public class BaseUnit : ScriptableObject
     [HideInInspector] public int rootDuration;
     [HideInInspector] public int silenceDuration;
     [HideInInspector] public int poisonDuration;
+
+
 
     // Methods to update the stats
     public void UpdateDamageDealt(float amount)

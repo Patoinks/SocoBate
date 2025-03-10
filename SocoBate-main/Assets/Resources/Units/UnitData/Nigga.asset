@@ -25,6 +25,7 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  aura: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -52,14 +53,36 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Machados
+    attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 0
-      targetType: 3
-      targetedStat: PDEF
-      scalingAttribute: STR
-      scalingPercent: 20
+    - effectType: 2
+      targetType: 0
+      targetedStat: STR
+      scalingAttribute: 
+      scalingPercent: 0
+      baseValue: 20
+      isPercentage: 0
+      statusEffect:
+        ccType: 0
+        duration: 0
+        tickDamage: 0
+        scalingAttribute: 
+        scalingPercent: 0
+        isPercentage: 0
+        preventsAction: 0
+        preventsMovement: 0
+        preventsAttacks: 0
+        isRng: 0
+        rngChance: 0
+        isSummon: 0
+        summonUnit: {fileID: 0}
+    - effectType: 3
+      targetType: 0
+      targetedStat: SPD
+      scalingAttribute: 
+      scalingPercent: 0
       baseValue: 20
       isPercentage: 0
       statusEffect:
@@ -77,6 +100,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Bulk
+    attackName: 
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -102,9 +126,10 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: 100% Destruido
+    attackName: 
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

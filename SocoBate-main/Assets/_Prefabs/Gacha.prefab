@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 5140514278608905995}
   - component: {fileID: 3137365420741332242}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Gacha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

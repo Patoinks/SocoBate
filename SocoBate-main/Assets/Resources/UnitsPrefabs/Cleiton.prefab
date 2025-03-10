@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8947110810087924051}
   - component: {fileID: 7116458384753247152}
   - component: {fileID: -7336714552819696683}
+  - component: {fileID: -7511056866844917723}
   m_Layer: 5
   m_Name: Cleiton
   m_TagString: Untagged
@@ -35,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -2.252, y: -180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -632, y: -328}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 91.616, y: 138.266}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8947110810087924051
@@ -117,3 +118,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-7511056866844917723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919940938988584275}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: 8, y: 8}
+  m_UseGraphicAlpha: 0

@@ -1,15 +1,22 @@
 using System.Collections;
 using UnityEngine;
 using Models;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using System.Linq;
+
 
 public class UIFight : MonoBehaviour
 {
+
+    public Transform dapPosition1; // Assign in inspector
+    public Transform dapPosition2; // Assign in inspector
     public SquadManager squadManager;
-    public IEnumerator MoveUnitCloser(BaseUnit target, BaseUnit attacker)
+    public IEnumerator MoveUnitCloser(BaseUnit target, BaseUnit attacker, float duration)
     {
-        yield return StartCoroutine(MoveUnitCloserCoroutine(target, attacker));
+        yield return StartCoroutine(MoveUnitCloserCoroutine(target, attacker, duration));
     }
-    private IEnumerator MoveUnitCloserCoroutine(BaseUnit target, BaseUnit attacker)
+    private IEnumerator MoveUnitCloserCoroutine(BaseUnit target, BaseUnit attacker, float duration)
     {
         GameObject targetPrefab = FindUnitInHexContainer(target);
         GameObject attackerPrefab = FindUnitInHexContainer(attacker);
@@ -23,10 +30,10 @@ public class UIFight : MonoBehaviour
             {
                 Vector3 attackPosition = targetPrefab.transform.position;
                 Vector3 originalPosition = attackerPrefab.transform.position;
-                float duration = 0.2f;
+
 
                 yield return StartCoroutine(MoveUnit(attackerPrefab, originalPosition, attackPosition, duration));
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(duration);
                 yield return StartCoroutine(MoveUnit(attackerPrefab, attackPosition, originalPosition, duration));
             }
             else
@@ -52,6 +59,66 @@ public class UIFight : MonoBehaviour
         unit.transform.position = end;
     }
 
+
+    public IEnumerator MoveUnitToDapPosition(BaseUnit unit, bool left, float duration, bool rotation)
+    {
+        GameObject unitPrefab = FindUnitInHexContainer(unit);
+
+        if (unitPrefab != null)
+        {
+            Vector3 originalPosition = unitPrefab.transform.position;
+            Quaternion originalRotation = unitPrefab.transform.rotation;
+
+            Transform dapPosition = left ? dapPosition1 : dapPosition2;
+            Vector3 dapTarget = dapPosition.position;
+
+            // Determine rotation: Only rotate the "right" unit left & "left" unit right
+            Quaternion targetRotation = originalRotation;
+            if ((rotation && !left) || (!rotation && left))
+            {
+                targetRotation *= Quaternion.Euler(0, 180f, 0); // Rotate 180°
+            }
+
+            float elapsedTime = 0f;
+            while (elapsedTime < duration)
+            {
+                unitPrefab.transform.position = Vector3.Lerp(originalPosition, dapTarget, elapsedTime / duration);
+                unitPrefab.transform.rotation = Quaternion.Slerp(originalRotation, targetRotation, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            unitPrefab.transform.position = dapTarget;
+            unitPrefab.transform.rotation = targetRotation;
+
+            yield return new WaitForSeconds(duration); // Wait at dap position
+
+            // Move back & reset rotation
+            elapsedTime = 0f;
+            while (elapsedTime < duration)
+            {
+                unitPrefab.transform.position = Vector3.Lerp(dapTarget, originalPosition, elapsedTime / duration);
+                unitPrefab.transform.rotation = Quaternion.Slerp(targetRotation, originalRotation, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            unitPrefab.transform.position = originalPosition;
+            unitPrefab.transform.rotation = originalRotation;
+        }
+        else
+        {
+            Debug.LogError($"Unit prefab for {unit.unitName} not found!");
+        }
+    }
+
+
+
+
+
+
+
+
     public GameObject FindUnitInHexContainer(BaseUnit unit)
     {
         string unitIdentifier = unit.unitName + (squadManager.playerUnits.Contains(unit) ? "_Player" : "_Enemy");
@@ -76,6 +143,41 @@ public class UIFight : MonoBehaviour
         }
 
         return null;
+    }
+
+    public IEnumerator RotateUnit(BaseUnit unit, float duration)
+    {
+        Debug.Log("Rotating unit.");
+
+        // Find the unit in its hex first
+        GameObject targetPrefab = FindUnitInHexContainer(unit);
+        if (targetPrefab == null)
+        {
+            Debug.LogError("Unit not found in hex.");
+            yield break; // Exit if the unit is not found
+        }
+
+        float elapsedTime = 0f;
+        float totalRotations = 5f; // Total rotations (5 full turns)
+
+        // Store the initial rotation
+        Quaternion startingRotation = targetPrefab.transform.rotation;
+
+        // The target rotation after 5 full turns (360 degrees * 5 turns)
+        Quaternion targetRotation = startingRotation * Quaternion.Euler(0, 360 * totalRotations, 0);
+
+        while (elapsedTime < duration)
+        {
+            // Calculate the current rotation step
+            float t = elapsedTime / duration;
+            targetPrefab.transform.rotation = Quaternion.Slerp(startingRotation, targetRotation, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the final rotation is exactly the target rotation
+        targetPrefab.transform.rotation = targetRotation;
     }
 
 

@@ -4309,7 +4309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00018311}
+  m_AnchoredPosition: {x: 0, y: -0.00018310547}
   m_SizeDelta: {x: 0, y: -0.00036621}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1468908025
@@ -5265,8 +5265,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amigosMenuPrefab: {fileID: 5017421811860725404, guid: ad79b896df2433642a03915553bfde8b, type: 3}
-  teamSetupPrefab: {fileID: 6371503801653937809, guid: 1cf96554e195c0243a3a08cf700ba11b, type: 3}
+  teamSetupPrefab: {fileID: 3032426903175409525, guid: 67a7cfa7f276a11418ae68e1ad9c58e6, type: 3}
   heroListprefab: {fileID: 7574839551862512712, guid: 5cc093d545ec0734a8bbfda45e82c69a, type: 3}
+  gachaMenuPrefab: {fileID: 0}
   mailBoxprefab: {fileID: 5017421811860725404, guid: 85dc95e23d2b7094c82e16cb732ac164, type: 3}
 --- !u!4 &2113435306
 Transform:
@@ -5296,6 +5297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nicknameInputField: {fileID: 0}
+  friendList: {fileID: 0}
 --- !u!114 &2113435308
 MonoBehaviour:
   m_ObjectHideFlags: 0

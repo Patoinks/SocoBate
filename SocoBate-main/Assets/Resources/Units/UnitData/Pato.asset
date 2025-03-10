@@ -25,6 +25,9 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 4
+  aura: 20
+  DapAttemptChance: 100
+  DapSuccessChance: 10
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -32,11 +35,13 @@ MonoBehaviour:
     effects:
     - effectType: 0
       targetType: 4
-      targetedStat: MDEF
-      scalingAttribute: INT
-      scalingPercent: 0
-      baseValue: 20
-      isPercentage: 1
+      targetedStat: TRUE
+      scalingAttribute: AURA
+      scalingPercent: 100
+      baseValue: 10
+      isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -51,17 +56,20 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Budano
+    description: Damage scaling with Aura (Machine slot money dmg)
+    attackName: Coinflips with 50% chance to get aura or lose aura
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 3
-      targetType: 4
-      targetedStat: PDEF
+    - effectType: 5
+      targetType: 0
+      targetedStat: Aura
       scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 5
-      isPercentage: 1
+      scalingPercent: 50
+      baseValue: 10
+      isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -76,28 +84,8 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    - effectType: 3
-      targetType: 4
-      targetedStat: MDEF
-      scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 5
-      isPercentage: 1
-      statusEffect:
-        ccType: 0
-        duration: 0
-        tickDamage: 0
-        scalingAttribute: 
-        scalingPercent: 0
-        isPercentage: 0
-        preventsAction: 0
-        preventsMovement: 0
-        preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
-        isSummon: 0
-        summonUnit: {fileID: 0}
-    description: Forca
+    description: Coinflips with 50% chance to get aura or lose aura
+    attackName: Coinflip Aura
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -108,6 +96,8 @@ MonoBehaviour:
       scalingPercent: 10
       baseValue: 20
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -122,10 +112,11 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Juro
+    description: Coinflip
+    attackName: Coinflips with 50% chance to get aura or lose aura
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0
