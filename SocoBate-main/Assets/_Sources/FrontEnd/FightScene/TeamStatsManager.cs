@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using Context;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
 public class TeamStatsManager : MonoBehaviour
 {
     public ScrollRect playerScrollView;
     public ScrollRect enemyScrollView;
     public GameObject unitRowPrefab;
-    public TMP_Text displayText;
 
+    public TMP_Text nickname1;
+
+    public TMP_Text nickname2;
+    public TMP_Text winner1;
+    public TMP_Text winner2;
     private List<BaseUnit> playerAliveUnits;
     private List<BaseUnit> playerDeadUnits;
     private List<BaseUnit> enemyAliveUnits;
@@ -22,6 +28,29 @@ public class TeamStatsManager : MonoBehaviour
     void Start()
     {
         Debug.Log("Started TeamStatsManager");
+        if (nickname1 != null)
+        {
+            nickname1.text = UserContext.account.Nickname;
+            
+        }
+        if (nickname2 != null)
+        {
+            nickname2.text = FightContext.OpponentNickName;
+        }
+        
+        DuelScript duelScript = FindObjectOfType<DuelScript>();
+
+        if (duelScript.winner == 2)
+        {
+            winner1.text = "Winner";
+            winner2.text = "Loser";
+        }
+        else
+        {
+            winner1.text = "Loser";
+            winner2.text = "Winner";
+        }
+
         FetchUnitsFromDuelScript();
     }
 
@@ -205,7 +234,7 @@ public class TeamStatsManager : MonoBehaviour
 
     void UpdateUnitStats()
     {
-        displayText.text = "Current stat: " + currentStat;
+
 
         // Calculate the max and min values for the current stat (DamageDealt, DamageTaken, Healing)
         float maxValue = GetMaxStatValue();

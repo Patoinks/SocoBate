@@ -2,8 +2,8 @@ using System;
 
 namespace Context
 {
-    public static class DuelData
+    public static class FightContext
     {
-        public static Guid OpponentId { get; set; }
+        public static string OpponentNickName { get; set; }
     }
 }

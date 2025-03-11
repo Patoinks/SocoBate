@@ -25,9 +25,11 @@ public class DuelScript : MonoBehaviour
     public UIFight uiFight;
     private bool skipFight = false;
 
-    public float duration = 0.5f;
+    public float duration = 0.3f;
 
-    public float turnSpeed = 2f;
+    public float turnSpeed = 1f;
+
+    public int winner = 0;
 
     void Start()
     {
@@ -186,7 +188,17 @@ public class DuelScript : MonoBehaviour
             }
         }
 
-        EndBattle(); // End battle when all units are dead
+
+        if (playerUnits.Count == 0)
+        {
+            winner = 1;
+        }
+        else if (enemyUnits.Count == 0)
+        {
+            winner = 2;
+        }
+
+        EndBattle();
     }
 
 
@@ -482,15 +494,15 @@ public class DuelScript : MonoBehaviour
     public void OnClickFightSpeed()
     {
         Debug.Log("Changing fight speed.");
-        if (duration == 0.5f)
+        if (duration == 0.3f)
         {
-            turnSpeed = 1f;
-            duration = 0.25f;
+            turnSpeed = 0.5f;
+            duration = 0.15f;
         }
         else
         {
-            turnSpeed = 2f;
-            duration = 0.5f;
+            turnSpeed = 1f;
+            duration = 0.3f;
         }
     }
 
@@ -507,9 +519,9 @@ public class DuelScript : MonoBehaviour
 
         // Apply the stolen amount to the source unit
         int newSourceStatValue = GetStat(sourceUnit, targetedStat) + stolenAmount;
-        SetStat(sourceUnit, targetedStat, targetStatValue + newSourceStatValue);
+        SetStat(sourceUnit, targetedStat, newSourceStatValue); // FIXED
 
-        // Optionally, reduce the stat of the target unit to reflect the steal
+        // Reduce the target's stat
         int newTargetStatValue = Mathf.Max(0, targetStatValue - stolenAmount);
         SetStat(targetUnit, targetedStat, newTargetStatValue);
 
@@ -555,7 +567,7 @@ public class DuelScript : MonoBehaviour
                 }
 
                 // Destroy the effect after 1.5 seconds
-                Destroy(effectInstance, turnSpeed - 0.5f);
+                Destroy(effectInstance, turnSpeed);
             }
             else
             {
@@ -572,24 +584,25 @@ public class DuelScript : MonoBehaviour
     void ApplyOdds(BaseUnit attacker, BaseUnit target, int baseValue, string targetedStat, int scalingPercent)
     {
         // Log for debugging purposes
-        Debug.Log($"Applying odds effect to {target.unitName}.");
+        Debug.Log($"Applying odds effect ({scalingPercent}%) to {target.unitName}.");
 
         // Calculate the odds of the effect
-        float odds = Random.Range(0f, 100f);
+        float odds = Random.Range(0f, 100f); // Random value between 0 and 100
 
-        // Check if the odds are within the specified range
+        // Check if the odds are within the specified range (success)
         if (odds <= scalingPercent)
         {
-            // Log the successful odds
-            ModifyStat(target, targetedStat, baseValue, false); // Buff = positive change
+            // Log the successful application
+            Debug.Log($"Odds effect succeeded for {target.unitName}. Applied {baseValue} {targetedStat}.");
+            ModifyStat(target, targetedStat, baseValue, false); // Apply positive effect (buff)
         }
         else
-
         {
-            ModifyStat(target, targetedStat, baseValue, true); // Buff = positive change
+            ModifyStat(target, targetedStat, baseValue, true); // Apply negative effect (debuff)
             Debug.Log($"Odds effect failed for {target.unitName}.");
         }
     }
+
 
     void ModifyStat(BaseUnit target, string statName, int valueChange, bool isDebuff)
     {
@@ -619,6 +632,8 @@ public class DuelScript : MonoBehaviour
     void ApplyEffect(BaseUnit target, BaseUnit attacker, BaseUnit.Effect effect)
     {
 
+        int baseValueCalculated = 0;
+
         if (effect.effectType == BaseUnit.EffectType.Steal)
         {
             ApplyStealingStats(attacker, target, effect.baseValue, effect.targetedStat); // Steal = steal percentage of target's stats
@@ -633,30 +648,17 @@ public class DuelScript : MonoBehaviour
 
         Debug.Log($"[DEBUG] ApplyEffect to: {target.unitName} | Effect: {effect.effectType} | TargetedStat: {effect.targetedStat} | BaseValue: {effect.baseValue}");
 
-        int calculatedValue = effect.baseValue;
-
-        if (effect.isPercentage && string.IsNullOrEmpty(effect.scalingAttribute))
+        if (effect.scalingAttribute != null && effect.scalingPercent > 0)
         {
-            // If it's a percentage effect without a scaling attribute, apply percentage damage directly to the targeted stat (HP for example)
-            if (effect.targetedStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
-            {
-                // Apply percentage damage to HP (example: 5% of the target's HP)
-                calculatedValue = (int)((target.maxHp * effect.baseValue) / 100f);
-                Debug.Log($"[DEBUG] Calculated Percentage Damage: {calculatedValue} % {target.maxHp})");
-            }
+            // Calculate the scaled base value based on attacker's stat
+            baseValueCalculated = effect.baseValue + Mathf.FloorToInt(GetStat(attacker, effect.scalingAttribute) * (effect.scalingPercent / 100f));
+
+            Debug.Log($"[DEBUG] Calculated base value: {baseValueCalculated}");
         }
         else
         {
-            if (!string.IsNullOrEmpty(effect.scalingAttribute))
-            {
-                int scalingStatValue = GetStat(attacker, effect.scalingAttribute);
-
-                int scaledDamage = (int)((effect.scalingPercent / 100.0f) * scalingStatValue);
-
-                calculatedValue += scaledDamage;
-
-                Debug.Log($"[DEBUG] Calculated Scaling Damage: {calculatedValue} (Scaling: {effect.scalingPercent}% of {scalingStatValue} from {effect.scalingAttribute})");
-            }
+            baseValueCalculated = effect.baseValue;
+            Debug.Log($"[DEBUG] No Scaling Base value: {baseValueCalculated}");
         }
 
 
@@ -664,16 +666,16 @@ public class DuelScript : MonoBehaviour
         switch (effect.effectType)
         {
             case BaseUnit.EffectType.Damage:
-                ApplyDamage(target, attacker, effect.targetedStat, calculatedValue); // Pass correct parameters
+                ApplyDamage(target, attacker, effect.targetedStat, effect.scalingAttribute, baseValueCalculated); // Pass correct parameters
                 break;
             case BaseUnit.EffectType.Heal:
-                ApplyHealing(target, attacker, calculatedValue);
+                ApplyHealing(target, attacker, baseValueCalculated);
                 break;
             case BaseUnit.EffectType.Buff:
-                ModifyStat(target, effect.targetedStat, calculatedValue, false); // Buff = positive change
+                ModifyStat(target, effect.targetedStat, baseValueCalculated, false); // Buff = positive change
                 break;
             case BaseUnit.EffectType.Debuff:
-                ModifyStat(target, effect.targetedStat, calculatedValue, true); // Debuff = negative change
+                ModifyStat(target, effect.targetedStat, baseValueCalculated, true); // Debuff = negative change
                 break;
         }
 
@@ -698,49 +700,63 @@ public class DuelScript : MonoBehaviour
         IEnumerator HandleDeathWithDelay(BaseUnit target)
         {
 
-            yield return new WaitForSeconds(0.5f);  // Delay if not skipping
+            yield return new WaitForSeconds(0.2f);  // Delay if not skipping
             RemoveUnit(target);
 
         }
 
 
     }
-    void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, int rawDamage)
+    void ApplyDamage(BaseUnit target, BaseUnit currentAttacker, string defenseStat, string attackStat, int baseValueCalculated)
     {
-        int finalDamage = rawDamage; // Default to raw damage
+        int finalDamage = 0;
 
-        if (defenseStat.Equals("TRUE", System.StringComparison.OrdinalIgnoreCase))
+        if (defenseStat == "TRUE")
         {
-            int newHp = GetStat(target, "HP") - rawDamage;
+            finalDamage = baseValueCalculated;
+            Debug.Log("Dealing true damage. with base value calculated: " + baseValueCalculated + " to " + target.unitName + " with defense stat: " + defenseStat + " and attack stat: " + attackStat);
+            int newHp = GetStat(target, "HP") - finalDamage;
             SetStat(target, "HP", newHp);
             UpdateHealth(target, newHp);
-            Debug.Log($"{target.unitName} takes {rawDamage} damage. Remaining HP: {newHp}");
         }
 
-        if (defenseStat.Equals("HP", System.StringComparison.OrdinalIgnoreCase))
+        else if (defenseStat.Equals("%", System.StringComparison.OrdinalIgnoreCase))
         {
-            target.baseHp -= rawDamage;
-            target.baseHp = Mathf.Max(target.baseHp, 0);
-            Debug.Log($"{target.unitName} takes {rawDamage} damage. Remaining HP: {target.baseHp}");
-            UpdateHealth(target, target.baseHp);
+            // Deal damage as a percentage of the target's current HP
+            int currentHp = GetStat(target, "HP");
+            int percentDamage = Mathf.Max(Mathf.FloorToInt(currentHp * (baseValueCalculated / 100f)), 1); // Ensures at least 1 damage
+
+            int newHp = currentHp - percentDamage;
+            SetStat(target, "HP", newHp);
+            UpdateHealth(target, newHp);
+
+
         }
         else
         {
-            int defenseValue = GetStat(target, defenseStat);
-            finalDamage = Mathf.Max(rawDamage - defenseValue, 1);
+            int attackValue = GetStat(currentAttacker, attackStat); // Attacker's stat (Sp. Atk or Atk)
+            int defenseValue = GetStat(target, defenseStat); // Defender's stat (Sp. Def or Def)
+            int movePower = baseValueCalculated;
 
+            // Stat ratio and move power
+            float statRatio = (float)attackValue / Mathf.Max(defenseValue, 1); // Avoid division by zero
+            float baseDamage = (movePower * statRatio) / 2f;
+
+            // Apply random variation (85% to 100%)
+            float randomMultiplier = Random.Range(0.85f, 1.00f);
+            finalDamage = Mathf.Max(Mathf.FloorToInt(baseDamage * randomMultiplier), 1);
+
+            // Apply damage
             int newHp = GetStat(target, "HP") - finalDamage;
             SetStat(target, "HP", newHp);
             UpdateHealth(target, newHp);
 
-            Debug.Log($"{target.unitName} takes {finalDamage} damage. Remaining HP: {newHp}");
         }
 
         if (!skipFight)
         {
             ShowEffectOnUnit(target, finalDamage.ToString(), Color.red, defenseStat, false);
         }
-
 
         target.UpdateDamageTaken(finalDamage);
         if (currentAttacker != null)
@@ -758,6 +774,7 @@ public class DuelScript : MonoBehaviour
         UpdateHealth(target, newHp);
         if (!skipFight)
             ShowEffectOnUnit(target, healAmount.ToString(), Color.green, "HP", false);
+
         attacker.UpdateHealingDone(healAmount);
     }
 
@@ -805,10 +822,9 @@ public class DuelScript : MonoBehaviour
             return unit.mDef;
         if (statNameLower == "hp" || statNameLower == "health")
             return unit.baseHp;
-        if (statNameLower == "aura" || statNameLower == "aura")
-            return unit.aura;
-
-        return 0;
+        if (statNameLower == "AURA" || statNameLower == "aura")
+            Debug.Log("Aura: " + unit.aura + " for " + unit.unitName);
+        return unit.aura;
     }
     void ApplyStatusEffect(BaseUnit target, BaseUnit attacker, BaseUnit.StatusEffect statusEffect)
     {

@@ -15,16 +15,19 @@ MonoBehaviour:
   unitName: Gru
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 250
-  baseHp: 250
-  mDef: 30
-  pDef: 30
-  baseSpeed: 20
+  maxHp: 500
+  baseHp: 500
+  mDef: 100
+  pDef: 100
+  baseSpeed: 120
   baseStr: 1
   baseInt: 1
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  aura: 0
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -37,6 +40,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 5
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -51,7 +56,8 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Fonhase
+    description: Fonha-se
+    attackName: Fonha-se
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -62,6 +68,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 15
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -76,7 +84,8 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Removes 10% Enemies INT
+    description: Reclama
+    attackName: Reclama
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -87,6 +96,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -101,10 +112,11 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Muita Ganza
+    description: "Olha a\xED meu"
+    attackName: "Olha a\xED meu"
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

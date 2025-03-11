@@ -15,17 +15,17 @@ MonoBehaviour:
   unitName: Cleiton
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 300
-  baseHp: 300
-  mDef: 100
-  pDef: 100
-  baseSpeed: 110
-  baseStr: 40
+  maxHp: 350
+  baseHp: 350
+  mDef: 60
+  pDef: 60
+  baseSpeed: 150
+  baseStr: 80
   baseInt: 20
   baseEvasion: 0
   baseLuck: 0
   rarity: 4
-  aura: 0
+  aura: 10
   DapAttemptChance: 0
   DapSuccessChance: 0
   damageDealt: 0

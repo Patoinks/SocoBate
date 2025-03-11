@@ -15,8 +15,8 @@ MonoBehaviour:
   unitName: Tigas
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 200
-  baseHp: 200
+  maxHp: 350
+  baseHp: 350
   mDef: 50
   pDef: 50
   baseSpeed: 100
@@ -25,6 +25,9 @@ MonoBehaviour:
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  aura: 10
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -37,6 +40,8 @@ MonoBehaviour:
       scalingPercent: 20
       baseValue: 10
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 1
         duration: 2
@@ -52,6 +57,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Screwdriver Attack
+    attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -62,6 +68,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -77,6 +85,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Repair
+    attackName: 
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -87,6 +96,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 0
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -102,9 +113,10 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: fssfdfsd
+    attackName: 
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

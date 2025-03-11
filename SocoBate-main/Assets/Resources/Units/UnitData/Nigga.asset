@@ -15,17 +15,19 @@ MonoBehaviour:
   unitName: Nigga
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 100
-  baseHp: 100
+  maxHp: 150
+  baseHp: 150
   mDef: 30
   pDef: 30
   baseSpeed: 150
-  baseStr: 100
+  baseStr: 80
   baseInt: 50
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
-  aura: 0
+  aura: 10
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -35,9 +37,11 @@ MonoBehaviour:
       targetType: 3
       targetedStat: PDEF
       scalingAttribute: STR
-      scalingPercent: 25
+      scalingPercent: 20
       baseValue: 50
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -53,7 +57,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Machados
-    attackName: 
+    attackName: Machados
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -64,6 +68,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -85,6 +91,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -100,7 +108,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Bulk
-    attackName: 
+    attackName: Bulk
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -111,6 +119,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 0
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -125,8 +135,8 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: 100% Destruido
-    attackName: 
+    description: Summon Rose
+    attackName: Summon Rose
     turnsToSpecial: 6
   isStunned: 0
   isTaunting: 0

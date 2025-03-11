@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using Database;
 using Models;
+using Context;
 using TMPro;
 using System.Threading.Tasks;
 
@@ -72,6 +73,7 @@ public class FriendList : MonoBehaviour
 
         // Start loading the enemy team asynchronously without waiting
         await TeamController.GetSquadByNickname(account.Nickname);  // No need to await, just call it asynchronously
+        FightContext.OpponentNickName = account.Nickname;
 
         // Immediately load the FightScene
         SceneManager.LoadScene("FightScene");

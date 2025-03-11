@@ -15,17 +15,17 @@ MonoBehaviour:
   unitName: Xorka
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 100
+  maxHp: 50
   baseHp: 100
   mDef: 30
   pDef: 30
-  baseSpeed: 120
+  baseSpeed: 40
   baseStr: 50
   baseInt: 10
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
-  aura: 0
+  aura: 10
   DapAttemptChance: 0
   DapSuccessChance: 0
   damageDealt: 0

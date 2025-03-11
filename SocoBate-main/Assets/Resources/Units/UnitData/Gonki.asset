@@ -17,15 +17,15 @@ MonoBehaviour:
   splashImage: {fileID: 0}
   maxHp: 50
   baseHp: 50
-  mDef: 25
-  pDef: 25
+  mDef: 10
+  pDef: 10
   baseSpeed: 50
   baseStr: 1
   baseInt: 1
   baseEvasion: 0
   baseLuck: 0
   rarity: 4
-  aura: 0
+  aura: 10
   DapAttemptChance: 0
   DapSuccessChance: 0
   damageDealt: 0

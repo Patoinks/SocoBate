@@ -15,16 +15,19 @@ MonoBehaviour:
   unitName: Beloso
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 250
-  baseHp: 250
-  mDef: 50
-  pDef: 50
-  baseSpeed: 20
+  maxHp: 500
+  baseHp: 500
+  mDef: 100
+  pDef: 100
+  baseSpeed: 120
   baseStr: 20
-  baseInt: 80
+  baseInt: 20
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
+  aura: 10
+  DapAttemptChance: 0
+  DapSuccessChance: 0
   damageDealt: 0
   damageTaken: 0
   healingDone: 0
@@ -37,6 +40,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 20
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -58,6 +63,8 @@ MonoBehaviour:
       scalingPercent: 20
       baseValue: 10
       isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -73,6 +80,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Juro
+    attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -81,29 +89,10 @@ MonoBehaviour:
       targetedStat: MDEF
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 25
+      baseValue: 5
       isPercentage: 0
-      statusEffect:
-        ccType: 0
-        duration: 0
-        tickDamage: 0
-        scalingAttribute: 
-        scalingPercent: 0
-        isPercentage: 0
-        preventsAction: 0
-        preventsMovement: 0
-        preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
-        isSummon: 0
-        summonUnit: {fileID: 0}
-    - effectType: 3
-      targetType: 0
-      targetedStat: PDEF
-      scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 25
-      isPercentage: 0
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -119,6 +108,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Crescendo
+    attackName: 
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -129,6 +119,8 @@ MonoBehaviour:
       scalingPercent: 0
       baseValue: 100
       isPercentage: 1
+      isRng: 0
+      auraRngChance: 0
       statusEffect:
         ccType: 0
         duration: 0
@@ -144,9 +136,10 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: NSEIO
+    attackName: 
     turnsToSpecial: 6
   isStunned: 0
-  isTaunted: 0
+  isTaunting: 0
   isRooted: 0
   isSilenced: 0
   isPoisoned: 0

@@ -1605,8 +1605,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 866, y: 504.83}
-  m_SizeDelta: {x: 228, y: 49.6546}
+  m_AnchoredPosition: {x: 811, y: 514.83}
+  m_SizeDelta: {x: 298, y: 49.657}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1528584964
 MonoBehaviour:
@@ -1662,7 +1662,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1691,7 +1691,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 2.1815796, z: -70.13403, w: 0}
+  m_margin: {x: 0, y: 8.890312, z: 1.4255368, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2606,8 +2606,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3d236990c3e5db46b8c77b0ae3966d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectTextPrefab: {fileID: 8354019989141877516, guid: c3b5abfc62f2eaa448de9e618521c070, type: 3}
-  uiCanvas: {fileID: 1847682392}
+  Player1HealthBar: {fileID: 1529017675}
+  Player2HealthBar: {fileID: 963066662}
+  Nickname1: {fileID: 1221752713}
+  Nickname2: {fileID: 1528584962}
 --- !u!114 &1734219109
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,17 +15,17 @@ MonoBehaviour:
   unitName: JohnnyBoy
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 100
-  baseHp: 100
-  mDef: 30
-  pDef: 30
-  baseSpeed: 120
+  maxHp: 400
+  baseHp: 400
+  mDef: 80
+  pDef: 80
+  baseSpeed: 100
   baseStr: 100
   baseInt: 10
   baseEvasion: 0
   baseLuck: 0
   rarity: 3
-  aura: 0
+  aura: 10
   DapAttemptChance: 0
   DapSuccessChance: 0
   damageDealt: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: "Antebra\xE7o de Agricultor"
-    attackName: 
+    attackName: "Antebra\xE7o de Agricultor"
     turnsToSpecial: 0
   passiveAbility:
     effects:
@@ -85,7 +85,7 @@ MonoBehaviour:
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Mau Negocio
-    attackName: 
+    attackName: Mau Negocio
     turnsToSpecial: 0
   specialAttack:
     effects:
@@ -112,8 +112,8 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: DF
-    attackName: 
+    description: Desligar a PlayStation
+    attackName: Desligar a PlayStation
     turnsToSpecial: 6
   isStunned: 0
   isTaunting: 0
