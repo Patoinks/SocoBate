@@ -2556,6 +2556,7 @@ MonoBehaviour:
   uiFight: {fileID: 1734219109}
   duration: 0.5
   turnSpeed: 2
+  winner: 0
 --- !u!114 &1734219105
 MonoBehaviour:
   m_ObjectHideFlags: 0
