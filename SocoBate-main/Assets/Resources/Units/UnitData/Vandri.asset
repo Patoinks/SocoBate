@@ -15,12 +15,12 @@ MonoBehaviour:
   unitName: Vandri
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 350
-  baseHp: 350
+  maxHp: 300
+  baseHp: 300
   mDef: 10
   pDef: 10
   baseSpeed: 110
-  baseStr: 200
+  baseStr: 140
   baseInt: 11
   baseEvasion: 0
   baseLuck: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 4
+      targetType: 3
       targetedStat: PDEF
       scalingAttribute: STR
       scalingPercent: 30
