@@ -206,8 +206,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2113435305}
-        m_TargetAssemblyTypeName: FriendListManager, Assembly-CSharp
-        m_MethodName: OnClickTeamButton
+        m_TargetAssemblyTypeName: ButtonsScripts, Assembly-CSharp
+        m_MethodName: OnClickInventoryButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -520,7 +520,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 222547032}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2113435305}
+        m_TargetAssemblyTypeName: ButtonsScripts, Assembly-CSharp
+        m_MethodName: OnClickProfileButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &233147729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,18 +1232,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 478105581}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1916604706}
   - {fileID: 1047065442}
-  m_Father: {fileID: 1097565072}
+  m_Father: {fileID: 1468908024}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 664.7, y: -447.8}
+  m_AnchoredPosition: {x: 664.7, y: -447.7998}
   m_SizeDelta: {x: 497, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &478105583
@@ -2051,11 +2063,11 @@ RectTransform:
   m_Children:
   - {fileID: 1022462814}
   - {fileID: 239440612}
-  m_Father: {fileID: 1097565072}
+  m_Father: {fileID: 1468908024}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 713.19995, y: -330.3}
+  m_AnchoredPosition: {x: 713.19995, y: -330.2998}
   m_SizeDelta: {x: 400, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &690244367
@@ -3616,8 +3628,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1468908024}
-  - {fileID: 478105582}
-  - {fileID: 690244366}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4305,6 +4315,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 938464066}
+  - {fileID: 690244366}
+  - {fileID: 478105582}
   m_Father: {fileID: 1097565072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4716,7 +4728,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.7372549}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5264,6 +5276,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b5f393e7d0bce341abb19e372db04aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryMenuPrefab: {fileID: 3801194914792967770, guid: 01c528b0e281c0d459c8bcc2a65922a3, type: 3}
+  profileMenuPrefab: {fileID: 8458256633930129765, guid: 1cdc4616432c8054d95377ebbb1d728f, type: 3}
   amigosMenuPrefab: {fileID: 5017421811860725404, guid: ad79b896df2433642a03915553bfde8b, type: 3}
   teamSetupPrefab: {fileID: 3032426903175409525, guid: 67a7cfa7f276a11418ae68e1ad9c58e6, type: 3}
   heroListprefab: {fileID: 7574839551862512712, guid: 5cc093d545ec0734a8bbfda45e82c69a, type: 3}

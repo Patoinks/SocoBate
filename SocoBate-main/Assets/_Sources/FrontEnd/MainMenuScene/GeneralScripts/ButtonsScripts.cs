@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class ButtonsScripts : MonoBehaviour
 {
+    public GameObject inventoryMenuPrefab;
+
+    public GameObject profileMenuPrefab;
     public GameObject amigosMenuPrefab; // Reference to the AmigosMenu prefab
     public GameObject teamSetupPrefab; // Reference to the TeamSetupPrefab prefab
     public GameObject heroListprefab; // Reference to the TeamSetupPrefab prefab
@@ -27,6 +30,46 @@ public class ButtonsScripts : MonoBehaviour
 
             // Instantiate the AmigosMenu prefab under the "Tudo" GameObject's transform
             Instantiate(amigosMenuPrefab, tudoTransform);
+        }
+        else
+        {
+            Debug.LogError("Could not find 'Tudo' GameObject in the scene hierarchy.");
+        }
+    }
+
+        public void OnClickProfileButton()
+    {
+        // Find the "Tudo" GameObject in the scene hierarchy
+        GameObject tudoObject = GameObject.Find("Canvas");
+
+        // Check if the "Tudo" GameObject was found
+        if (tudoObject != null)
+        {
+            // Get the transform of the "Tudo" GameObject
+            Transform tudoTransform = tudoObject.transform;
+
+            // Instantiate the AmigosMenu prefab under the "Tudo" GameObject's transform
+            Instantiate(profileMenuPrefab, tudoTransform);
+        }
+        else
+        {
+            Debug.LogError("Could not find 'Tudo' GameObject in the scene hierarchy.");
+        }
+    }
+
+        public void OnClickInventoryButton()
+    {
+        // Find the "Tudo" GameObject in the scene hierarchy
+        GameObject tudoObject = GameObject.Find("Canvas");
+
+        // Check if the "Tudo" GameObject was found
+        if (tudoObject != null)
+        {
+            // Get the transform of the "Tudo" GameObject
+            Transform tudoTransform = tudoObject.transform;
+
+            // Instantiate the AmigosMenu prefab under the "Tudo" GameObject's transform
+            Instantiate(inventoryMenuPrefab, tudoTransform);
         }
         else
         {
