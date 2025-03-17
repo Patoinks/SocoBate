@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using System.Collections;
 public class GachaManagerCS : MonoBehaviour
 {
+    public GameObject oddsPanel;
     public TextMeshProUGUI resultText;
     public GameObject heroSpritePrefab;
     public GameObject rotatingImagePrefab;
@@ -40,6 +41,11 @@ public class GachaManagerCS : MonoBehaviour
         }
     }
 
+    public void OnClickInstantiateOdds()
+    {
+        Instantiate(oddsPanel, canvas.transform);
+    }
+
     public async void PullGacha()
     {
         // Lock all buttons
@@ -55,6 +61,11 @@ public class GachaManagerCS : MonoBehaviour
 
         // Unlock all buttons
         SetButtonsInteractable(true);
+    }
+
+    public Dictionary<int, int> GetRarityChances()
+    {
+        return rarityChances;
     }
 
     private void SetButtonsInteractable(bool isInteractable)
