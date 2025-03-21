@@ -14,8 +14,8 @@ public class UI : MonoBehaviour
     {
         Player1HealthBar.GetComponent<Slider>().value = 1;
         Player2HealthBar.GetComponent<Slider>().value = 1;
-        Nickname1.GetComponent<TMP_Text>().text = Context.UserContext.account.Nickname;
-        Nickname2.GetComponent<TMP_Text>().text = Context.FightContext.OpponentNickName;
+        Nickname2.GetComponent<TMP_Text>().text = Context.UserContext.account.Nickname;
+        Nickname1.GetComponent<TMP_Text>().text = Context.FightContext.OpponentNickName;
     }
 
 

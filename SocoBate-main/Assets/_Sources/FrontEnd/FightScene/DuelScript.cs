@@ -541,7 +541,7 @@ public class DuelScript : MonoBehaviour
                 string unitHexName = unitPrefab.transform.parent != null ? unitPrefab.transform.parent.name : "";
 
                 // Create the effect after finding the unit
-                Vector3 effectPosition = unitPrefab.transform.position + Vector3.up * 100.5f; // Slightly above the unit's hex.
+                Vector3 effectPosition = unitPrefab.transform.position; // Slightly above the unit's hex.
 
                 // Instantiate the effect under the canvas and set it up with necessary data
                 GameObject effectInstance = Instantiate(damageEffectPrefab);
@@ -938,6 +938,7 @@ public class DuelScript : MonoBehaviour
             Canvas canvas = FindObjectOfType<Canvas>();
             if (canvas != null)
             {
+                squadManager.SetSpriteLayerToDefault(deadPlayerUnits, deadEnemyUnits);
                 GameObject instantiatedMenu = Instantiate(menu, canvas.transform);
                 instantiatedMenu.transform.localPosition = Vector3.zero;
             }

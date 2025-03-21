@@ -181,7 +181,7 @@ public class GachaManagerCS : MonoBehaviour
         float duration = 0.5f;
         float time = 0;
         Vector3 startScale = Vector3.zero;
-        Vector3 endScale = Vector3.one;
+        Vector3 endScale = new Vector3(4F,4F,4F);
 
         while (time < duration)
         {

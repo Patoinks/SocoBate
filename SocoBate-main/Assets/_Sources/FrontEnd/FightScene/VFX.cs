@@ -1,0 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
+
+public class VFX : MonoBehaviour
+{
+    void AnimatePoison()
+    {
+        //StartCoroutine(AnimatePoisonCoroutine());
+    }
+
+}

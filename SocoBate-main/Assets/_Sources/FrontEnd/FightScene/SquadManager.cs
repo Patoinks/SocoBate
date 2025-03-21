@@ -22,6 +22,7 @@ public class SquadManager : MonoBehaviour
     private Dictionary<BaseUnit, GameObject> unitPrefabs = new Dictionary<BaseUnit, GameObject>(); // Store unit prefabs
     private Dictionary<HealthBar, GameObject> healthbarPrefabs = new Dictionary<HealthBar, GameObject>();
     public Dictionary<BaseUnit, HealthBar> unitHealthBars = new Dictionary<BaseUnit, HealthBar>();
+
     void Start()
     {
         InitializeHexPositions();
@@ -72,15 +73,17 @@ public class SquadManager : MonoBehaviour
             }
 
             Transform hexTransform = hexPositions[unit.HexId];
-            GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position + new Vector3(isEnemy ? 5f : -5f, 58f, 0), Quaternion.identity, hexTransform);
+            GameObject spawnedUnit = Instantiate(unitPrefab, hexTransform.position + new Vector3(0, 6.6f, 0), Quaternion.identity, hexTransform);
 
             // Use 'isEnemy' directly to set the unit name
             spawnedUnit.name = unit.UnitName + (isEnemy ? "_Enemy" : "_Player");
 
+            healthBarPrefab.transform.localScale = new Vector3(1f, 1f, 1f);
             // Instantiate and link health bar
-            GameObject healthBar = Instantiate(healthBarPrefab, spawnedUnit.transform.position, Quaternion.identity, spawnedUnit.transform);
+            GameObject healthBar = Instantiate(healthBarPrefab, spawnedUnit.transform.position + new Vector3(0, 10f, 0), Quaternion.identity, hexTransform.transform);
             HealthBar healthBarScript = healthBar.GetComponent<HealthBar>();
             healthBarScript.healthSlider = healthBar.GetComponentInChildren<Slider>();
+
 
             // Clone and load BaseUnit data
             BaseUnit clonedUnit = LoadBaseUnit(unit.UnitName, unit.HexId);
@@ -263,6 +266,49 @@ public class SquadManager : MonoBehaviour
         clonedUnit.HexId = hexId; // Assign the HexId to the unit
 
         return clonedUnit;
+    }
+
+    public void SetSpriteLayerToDefault(List<BaseUnit> playerUnits2, List<BaseUnit> enemyUnits2)
+    {
+        foreach (var unit in playerUnits)
+        {
+            GameObject unitPrefab = GameObject.Find(unit.unitName + "_Player");
+            if (unitPrefab != null && unitPrefab.GetComponent<SpriteRenderer>() != null)
+            {
+                unitPrefab.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Default";
+                unitPrefab.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            }
+        }
+
+        foreach (var unit in playerUnits2)
+        {
+            GameObject unitPrefab = GameObject.Find(unit.unitName + "_Player");
+            if (unitPrefab != null && unitPrefab.GetComponent<SpriteRenderer>() != null)
+            {
+                unitPrefab.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Default";
+                unitPrefab.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            }
+        }
+
+        foreach (var unit in enemyUnits2)
+        {
+            GameObject unitPrefab = GameObject.Find(unit.unitName + "_Enemy");
+            if (unitPrefab != null && unitPrefab.GetComponent<SpriteRenderer>() != null)
+            {
+                unitPrefab.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Default";
+                unitPrefab.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            }
+        }
+
+        foreach (var unit in enemyUnits)
+        {
+            GameObject unitPrefab = GameObject.Find(unit.unitName + "_Enemy");
+            if (unitPrefab != null && unitPrefab.GetComponent<SpriteRenderer>() != null)
+            {
+                unitPrefab.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Default";
+                unitPrefab.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+            }
+        }
     }
 
 }
