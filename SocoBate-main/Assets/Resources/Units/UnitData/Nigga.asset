@@ -19,8 +19,8 @@ MonoBehaviour:
   baseHp: 150
   mDef: 30
   pDef: 30
-  baseSpeed: 150
-  baseStr: 80
+  baseSpeed: 190
+  baseStr: 50
   baseInt: 50
   baseEvasion: 0
   baseLuck: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Summon Rose
     attackName: Summon Rose
-    turnsToSpecial: 6
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

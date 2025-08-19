@@ -1,21 +1,43 @@
+// HealthBar.cs (Definitive, Robust Version)
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Slider healthSlider; // Assign in Inspector
-    public Image healthFill; // Assign in Inspector
-    
-    private int maxHealth;
+    private Slider healthSlider;
 
-    public void SetHealth(int currentHp)
+    void Awake()
     {
-        healthSlider.value = (float)currentHp / maxHealth;
+        // --- THIS IS THE FIX ---
+        // GetComponentInChildren will search this object AND all of its children
+        // to find the Slider component. This is much safer.
+        healthSlider = GetComponentInChildren<Slider>();
+
+        // This new error message will tell you immediately if your prefab is set up incorrectly.
+        if (healthSlider == null)
+        {
+            Debug.LogError($"FATAL ERROR: The HealthBar script on '{gameObject.name}' could not find a Slider component on itself or any of its children. Health will not be displayed.");
+        }
     }
 
-    public int SetMaxHealth(int maxHp)
+    /// <summary>
+    /// Sets the maximum value of the health bar and initializes it to be full.
+    /// </summary>
+    public void SetMaxHealth(int maxHp)
     {
-        maxHealth = maxHp;
-        return maxHp;
+        if (healthSlider == null) return;
+
+        healthSlider.maxValue = maxHp;
+        healthSlider.value = maxHp;
+    }
+
+    /// <summary>
+    /// Updates the health bar to a new current value.
+    /// </summary>
+    public void SetHealth(int currentHp)
+    {
+        if (healthSlider == null) return;
+        
+        healthSlider.value = currentHp;
     }
 }

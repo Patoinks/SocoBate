@@ -1,46 +1,58 @@
-using System.Collections;
+// TeamStatsManager.cs
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
-using Context;
+using Context; // Assuming you still use this for nicknames
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
+
 public class TeamStatsManager : MonoBehaviour
 {
-    public ScrollRect playerScrollView;
-    public ScrollRect enemyScrollView;
-    public GameObject unitRowPrefab;
+    [Header("UI References")]
+    [SerializeField] private ScrollRect playerScrollView;
+    [SerializeField] private ScrollRect enemyScrollView;
+    [SerializeField] private GameObject unitRowPrefab;
+    [SerializeField] private TMP_Text nickname1;
+    [SerializeField] private TMP_Text nickname2;
+    [SerializeField] private TMP_Text winner1;
+    [SerializeField] private TMP_Text winner2;
 
-    public TMP_Text nickname1;
+    // --- Private State ---
+    private string _currentStatType = "DamageDealt"; // Default stat to display
+    private readonly List<UnitStatsRow> _playerRows = new List<UnitStatsRow>();
+    private readonly List<UnitStatsRow> _enemyRows = new List<UnitStatsRow>();
+    private List<BaseUnit> _allUnitsInDataFormat = new List<BaseUnit>();
 
-    public TMP_Text nickname2;
-    public TMP_Text winner1;
-    public TMP_Text winner2;
-    private List<BaseUnit> playerAliveUnits;
-    private List<BaseUnit> playerDeadUnits;
-    private List<BaseUnit> enemyAliveUnits;
-    private List<BaseUnit> enemyDeadUnits;
-    private string currentStat = "DamageDealt";  // Default stat
-    private List<UnitStatsRow> playerRows = new List<UnitStatsRow>();
-    private List<UnitStatsRow> enemyRows = new List<UnitStatsRow>();
-
-    void Start()
+    // This method is called when the EndBattleMenu is set active.
+    void OnEnable()
     {
-        Debug.Log("Started TeamStatsManager");
-        if (nickname1 != null)
-        {
-            nickname1.text = UserContext.account.Nickname;
-            
-        }
-        if (nickname2 != null)
-        {
-            nickname2.text = FightContext.OpponentNickName;
-        }
-        
-        DuelScript duelScript = FindObjectOfType<DuelScript>();
+        InitializeManager();
+    }
 
-        if (duelScript.winner == 2)
+    private void InitializeManager()
+    {
+        Debug.Log("Initializing TeamStatsManager...");
+
+        // Safety check for the singleton
+        if (BattleManager.Instance == null)
+        {
+            Debug.LogError("BattleManager.Instance is not available! Cannot populate stats screen.");
+            return;
+        }
+
+        SetupHeaderUI(BattleManager.Instance);
+        PopulateStatRows(BattleManager.Instance);
+    }
+
+    private void SetupHeaderUI(BattleManager manager)
+    {
+        // Set nicknames from your context scripts
+        if (nickname1 != null) nickname1.text = UserContext.account.Nickname;
+        if (nickname2 != null) nickname2.text = FightContext.OpponentNickName;
+
+        // Set the winner text based on the result from the BattleManager
+        if (manager.WinnerTeam == "Players")
         {
             winner1.text = "Winner";
             winner2.text = "Loser";
@@ -50,30 +62,9 @@ public class TeamStatsManager : MonoBehaviour
             winner1.text = "Loser";
             winner2.text = "Winner";
         }
-
-        FetchUnitsFromDuelScript();
     }
 
-    public void FetchUnitsFromDuelScript()
-    {
-        DuelScript duelScript = FindObjectOfType<DuelScript>();
-        if (duelScript != null)
-        {
-            // Fetch separate lists for alive and dead units
-            playerAliveUnits = duelScript.playerUnits;
-            playerDeadUnits = duelScript.deadPlayerUnits;
-            enemyAliveUnits = duelScript.enemyUnits;
-            enemyDeadUnits = duelScript.deadEnemyUnits;
-
-            InitializeRows();
-        }
-        else
-        {
-            Debug.LogError("DuelScript not found!");
-        }
-    }
-
-    void InitializeRows()
+    private void PopulateStatRows(BattleManager manager)
     {
         if (unitRowPrefab == null)
         {
@@ -81,183 +72,116 @@ public class TeamStatsManager : MonoBehaviour
             return;
         }
 
-        // Clear any existing rows before initializing
         ClearExistingRows();
 
-        // Calculate the max and min values for the current stat (DamageDealt, DamageTaken, Healing)
-        float maxValue = GetMaxStatValue();
-        float minValue = GetMinStatValue();
+        // Get all units that participated in the battle from the BattleManager
+        var allPlayerUnits = manager.PlayerUnitsAtEnd;
+        var allEnemyUnits = manager.EnemyUnitsAtEnd;
 
-        // Instantiate rows for alive player units
-        foreach (BaseUnit unit in playerAliveUnits)
+        // Convert facades to BaseUnit data for easier processing
+        var allPlayerUnitData = allPlayerUnits.Select(facade => facade.UnitData).ToList();
+        var allEnemyUnitData = allEnemyUnits.Select(facade => facade.UnitData).ToList();
+        _allUnitsInDataFormat = allPlayerUnitData.Concat(allEnemyUnitData).ToList();
+
+        // Calculate sliders based on the default stat type
+        UpdateAndDisplayStats();
+    }
+    
+    private void UpdateAndDisplayStats()
+    {
+        float maxValue = GetMaxStatValueForCurrentType();
+        float minValue = 0; // Stats like damage can't be negative, so min is 0
+
+        // If this is the first time populating, instantiate the rows
+        if (_playerRows.Count == 0 && _enemyRows.Count == 0)
         {
-            InstantiateUnitRow(unit, playerScrollView.content, maxValue, minValue);
+            // Get the unit data from our stored list
+            var allPlayerUnitData = _allUnitsInDataFormat.Where(u => BattleManager.Instance.PlayerUnitsAtEnd.Any(f => f.UnitData == u)).ToList();
+            var allEnemyUnitData = _allUnitsInDataFormat.Where(u => BattleManager.Instance.EnemyUnitsAtEnd.Any(f => f.UnitData == u)).ToList();
+
+            foreach (var unitData in allPlayerUnitData)
+            {
+                InstantiateUnitRow(unitData, playerScrollView.content, maxValue, minValue, _playerRows);
+            }
+            foreach (var unitData in allEnemyUnitData)
+            {
+                InstantiateUnitRow(unitData, enemyScrollView.content, maxValue, minValue, _enemyRows);
+            }
         }
-
-        // Instantiate rows for dead player units
-        foreach (BaseUnit unit in playerDeadUnits)
+        else // Otherwise, just update the existing rows
         {
-            InstantiateUnitRow(unit, playerScrollView.content, maxValue, minValue);
-        }
-
-        // Instantiate rows for alive enemy units
-        foreach (BaseUnit unit in enemyAliveUnits)
-        {
-            InstantiateUnitRow(unit, enemyScrollView.content, maxValue, minValue);
-        }
-
-        // Instantiate rows for dead enemy units
-        foreach (BaseUnit unit in enemyDeadUnits)
-        {
-            InstantiateUnitRow(unit, enemyScrollView.content, maxValue, minValue);
+            foreach (var row in _playerRows.Concat(_enemyRows))
+            {
+                row.Initialize(row.unit, maxValue, minValue, _currentStatType);
+            }
         }
     }
 
-    void ClearExistingRows()
-    {
-        // Clear player rows
-        foreach (var row in playerRows)
-        {
-            Destroy(row.gameObject);
-        }
-        playerRows.Clear();
 
-        // Clear enemy rows
-        foreach (var row in enemyRows)
-        {
-            Destroy(row.gameObject);
-        }
-        enemyRows.Clear();
-    }
-
-    void InstantiateUnitRow(BaseUnit unit, Transform parent, float maxValue, float minValue)
+    private void InstantiateUnitRow(BaseUnit unit, Transform parent, float maxValue, float minValue, List<UnitStatsRow> rowList)
     {
-        GameObject row = Instantiate(unitRowPrefab, parent);
-        UnitStatsRow rowComponent = row.GetComponent<UnitStatsRow>();
+        GameObject rowGO = Instantiate(unitRowPrefab, parent);
+        UnitStatsRow rowComponent = rowGO.GetComponent<UnitStatsRow>();
         if (rowComponent != null)
         {
-            // Add row to the respective list
-            if (parent == playerScrollView.content)
-            {
-                playerRows.Add(rowComponent);
-            }
-            else
-            {
-                enemyRows.Add(rowComponent);
-            }
-
-            // Initialize the row with the current stat
-            rowComponent.Initialize(unit, maxValue, minValue, currentStat);
-        }
-        else
-        {
-            Debug.LogError("UnitStatsRow component not found in prefab!");
+            rowComponent.Initialize(unit, maxValue, minValue, _currentStatType);
+            rowList.Add(rowComponent);
         }
     }
 
-    float GetMaxStatValue()
+    private void ClearExistingRows()
     {
-        float maxValue = float.MinValue;
-
-        // Check max value for player units
-        foreach (BaseUnit unit in playerAliveUnits)
+        foreach (var row in _playerRows.Concat(_enemyRows))
         {
-            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
+            Destroy(row.gameObject);
         }
-
-        // Check max value for enemy units
-        foreach (BaseUnit unit in enemyAliveUnits)
-        {
-            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
-        }
-
-        // Check max value for dead player units
-        foreach (BaseUnit unit in playerDeadUnits)
-        {
-            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
-        }
-
-        // Check max value for dead enemy units
-        foreach (BaseUnit unit in enemyDeadUnits)
-        {
-            maxValue = Mathf.Max(maxValue, GetStatValue(unit));
-        }
-
-        return maxValue;
+        _playerRows.Clear();
+        _enemyRows.Clear();
     }
 
-    float GetMinStatValue()
+    #region Stat Calculation Helpers
+
+    private float GetMaxStatValueForCurrentType()
     {
-        float minValue = float.MaxValue;
-
-        // Check min value for player units
-        foreach (BaseUnit unit in playerAliveUnits)
-        {
-            minValue = Mathf.Min(minValue, GetStatValue(unit));
-        }
-
-        // Check min value for enemy units
-        foreach (BaseUnit unit in enemyAliveUnits)
-        {
-            minValue = Mathf.Min(minValue, GetStatValue(unit));
-        }
-
-        // Check min value for dead player units
-        foreach (BaseUnit unit in playerDeadUnits)
-        {
-            minValue = Mathf.Min(minValue, GetStatValue(unit));
-        }
-
-        // Check min value for dead enemy units
-        foreach (BaseUnit unit in enemyDeadUnits)
-        {
-            minValue = Mathf.Min(minValue, GetStatValue(unit));
-        }
-
-        return minValue;
+        if (_allUnitsInDataFormat.Count == 0) return 0;
+        return _allUnitsInDataFormat.Max(GetStatValueFromUnit);
     }
 
-    float GetStatValue(BaseUnit unit)
+    private float GetStatValueFromUnit(BaseUnit unit)
     {
-        switch (currentStat)
+        switch (_currentStatType)
         {
-            case "DamageDealt":
-                return unit.damageDealt;
-            case "DamageTaken":
-                return unit.damageTaken;
-            case "Healing":
-                return unit.healingDone;
-            default:
-                return unit.damageDealt;  // Default to DamageDealt
+            case "DamageDealt": return unit.damageDealt;
+            case "DamageTaken": return unit.damageTaken;
+            case "Healing": return unit.healingDone;
+            default: return 0;
         }
     }
 
-    void UpdateUnitStats()
-    {
+    #endregion
 
-
-        // Calculate the max and min values for the current stat (DamageDealt, DamageTaken, Healing)
-        float maxValue = GetMaxStatValue();
-        float minValue = GetMinStatValue();
-
-        // Update the stats in all rows based on the current stat
-        foreach (UnitStatsRow row in playerRows)
-        {
-            row.UpdateStat(GetStatValue(row.unit)); // Update player rows
-        }
-
-        foreach (UnitStatsRow row in enemyRows)
-        {
-            row.UpdateStat(GetStatValue(row.unit)); // Update enemy rows
-        }
-    }
+    #region Public UI Button Handlers
 
     public void OnClickChangeScene()
     {
+        // It's good practice to reset Time.timeScale if you ever change it
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenuScene");
     }
 
-    public void ChangeStatToDamageDealt() { currentStat = "DamageDealt"; UpdateUnitStats(); }
-    public void ChangeStatToDamageTaken() { currentStat = "DamageTaken"; UpdateUnitStats(); }
-    public void ChangeStatToHealing() { currentStat = "Healing"; UpdateUnitStats(); }
+    public void SetStatType(string statType)
+    {
+        if (_currentStatType == statType) return; // No change needed
+
+        _currentStatType = statType;
+        Debug.Log($"Changing displayed stat to: {_currentStatType}");
+        UpdateAndDisplayStats();
+    }
+
+    // You can link these to your UI Buttons' OnClick() events in the Inspector
+    public void ChangeStatToDamageDealt() => SetStatType("DamageDealt");
+    public void ChangeStatToDamageTaken() => SetStatType("DamageTaken");
+    public void ChangeStatToHealing() => SetStatType("Healing");
+    
+    #endregion
 }

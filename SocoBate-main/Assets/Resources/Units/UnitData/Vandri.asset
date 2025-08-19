@@ -34,10 +34,10 @@ MonoBehaviour:
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 3
+      targetType: 4
       targetedStat: PDEF
       scalingAttribute: STR
-      scalingPercent: 30
+      scalingPercent: 80
       baseValue: 5
       isPercentage: 0
       isRng: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Demenciaaa
     attackName: 
-    turnsToSpecial: 5
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

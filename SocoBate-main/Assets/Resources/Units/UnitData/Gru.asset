@@ -114,7 +114,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: "Olha a\xED meu"
     attackName: "Olha a\xED meu"
-    turnsToSpecial: 6
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

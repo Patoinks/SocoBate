@@ -39,7 +39,7 @@ MonoBehaviour:
       scalingAttribute: 
       scalingPercent: 0
       baseValue: 20
-      isPercentage: 1
+      isPercentage: 0
       isRng: 0
       auraRngChance: 0
       statusEffect:
@@ -71,7 +71,7 @@ MonoBehaviour:
       isRng: 0
       auraRngChance: 0
       statusEffect:
-        ccType: 0
+        ccType: 1
         duration: 0
         tickDamage: 0
         scalingAttribute: 
@@ -114,7 +114,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Summons Botija
     attackName: 
-    turnsToSpecial: 6
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

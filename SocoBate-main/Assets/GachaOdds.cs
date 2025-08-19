@@ -44,13 +44,13 @@ public class GachaOdds : MonoBehaviour
 
         // Calculate and set odds text for each rarity
         if (rarityChances.ContainsKey(3))
-            rarity3Text.text = $"3 Rarity: {((float)rarityChances[3] / totalWeight * 100):F2}%";
+            rarity3Text.text = $"B Rarity: 84%";
 
         if (rarityChances.ContainsKey(4))
-            rarity4Text.text = $"4 Rarity: {((float)rarityChances[4] / totalWeight * 100):F2}%";
+            rarity4Text.text = $"A Rarity: 13%";
 
         if (rarityChances.ContainsKey(5))
-            rarity5Text.text = $"5 Rarity: {((float)rarityChances[5] / totalWeight * 100):F2}%";
+            rarity5Text.text = $"S Rarity: 3%";
     }
 
     private void PopulateScrollViews()

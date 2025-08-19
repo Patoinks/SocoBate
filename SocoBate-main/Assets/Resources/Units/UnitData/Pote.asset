@@ -17,8 +17,8 @@ MonoBehaviour:
   splashImage: {fileID: 0}
   maxHp: 500
   baseHp: 500
-  mDef: 100
-  pDef: 100
+  mDef: 20
+  pDef: 80
   baseSpeed: 200
   baseStr: 20
   baseInt: 20
@@ -34,7 +34,7 @@ MonoBehaviour:
   normalAttack:
     effects:
     - effectType: 0
-      targetType: 3
+      targetType: 4
       targetedStat: MDEF
       scalingAttribute: INT
       scalingPercent: 10
@@ -44,7 +44,7 @@ MonoBehaviour:
       auraRngChance: 0
       statusEffect:
         ccType: 1
-        duration: 1
+        duration: 2
         tickDamage: 0
         scalingAttribute: 
         scalingPercent: 0
@@ -52,8 +52,8 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
+        isRng: 1
+        rngChance: 30
         isSummon: 0
         summonUnit: {fileID: 0}
     description: ADHD Maxxing
@@ -80,8 +80,8 @@ MonoBehaviour:
         preventsAction: 0
         preventsMovement: 0
         preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
+        isRng: 1
+        rngChance: 40
         isSummon: 0
         summonUnit: {fileID: 0}
     description: Yawn
@@ -114,7 +114,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Blud starts singing taunting enemies
     attackName: 
-    turnsToSpecial: 5
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

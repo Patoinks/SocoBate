@@ -15,10 +15,10 @@ MonoBehaviour:
   unitName: Cleiton
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 350
-  baseHp: 350
-  mDef: 60
-  pDef: 60
+  maxHp: 400
+  baseHp: 400
+  mDef: 30
+  pDef: 30
   baseSpeed: 150
   baseStr: 80
   baseInt: 20
@@ -35,10 +35,10 @@ MonoBehaviour:
     effects:
     - effectType: 0
       targetType: 3
-      targetedStat: HP
-      scalingAttribute: STR
-      scalingPercent: 20
-      baseValue: 20
+      targetedStat: TRUE
+      scalingAttribute: SPD
+      scalingPercent: 30
+      baseValue: 10
       isPercentage: 1
       isRng: 0
       auraRngChance: 0
@@ -79,17 +79,17 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    description: Afobado
+    description: Afoba mas ataca rapido
     attackName: 
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 1
-      targetType: 2
+    - effectType: 3
+      targetType: 0
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 25
+      baseValue: 18
       isPercentage: 1
       isRng: 0
       auraRngChance: 0
@@ -107,30 +107,7 @@ MonoBehaviour:
         rngChance: 0
         isSummon: 0
         summonUnit: {fileID: 0}
-    - effectType: 3
-      targetType: 0
-      targetedStat: HP
-      scalingAttribute: 
-      scalingPercent: 0
-      baseValue: 100
-      isPercentage: 0
-      isRng: 0
-      auraRngChance: 0
-      statusEffect:
-        ccType: 0
-        duration: 0
-        tickDamage: 0
-        scalingAttribute: 
-        scalingPercent: 0
-        isPercentage: 0
-        preventsAction: 0
-        preventsMovement: 0
-        preventsAttacks: 0
-        isRng: 0
-        rngChance: 0
-        isSummon: 0
-        summonUnit: {fileID: 0}
-    description: Open Relationship
+    description: Foma gansa perde vida
     attackName: 
     turnsToSpecial: 0
   specialAttack:
@@ -160,7 +137,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Point Click One Shot
     attackName: 
-    turnsToSpecial: 10
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

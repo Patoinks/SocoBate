@@ -1,10 +1,13 @@
+// BaseUnit.cs
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "BaseUnits", menuName = "Units/UnitData/BaseUnits", order = 1)]
 public class BaseUnit : ScriptableObject
 {
-    public int HexId { get; set; }  // Ensure this exists in BaseUnit
+    // All of your existing fields remain exactly the same.
+    public int HexId { get; set; }
 
     public string unitName;
     public Sprite unitSprite;
@@ -12,8 +15,8 @@ public class BaseUnit : ScriptableObject
 
     public int maxHp;
     public int baseHp;
-    public int mDef;  // Magical Defense
-    public int pDef;  // Physical Defense
+    public int mDef;
+    public int pDef;
     public int baseSpeed;
     public int baseStr;
     public int baseInt;
@@ -25,99 +28,71 @@ public class BaseUnit : ScriptableObject
     public int DapAttemptChance;
     public int DapSuccessChance;
 
-    // Track stats for damage dealt, damage taken, and healing done
     [HideInInspector] public float damageDealt;
     [HideInInspector] public float damageTaken;
     [HideInInspector] public float healingDone;
 
-    // Attack Data Structure
     [System.Serializable]
     public class AttackData
     {
-        public List<Effect> effects; // Multiple effects per attack (Damage, Heal, Buff, Debuff, etc.)
+        public List<Effect> effects;
         public string description;
         public string attackName;
-        public int turnsToSpecial; // Only used for Special Attacks
+        public int turnsToSpecial;
     }
 
-    // Effect Structure (Damage, Heal, Buff, Debuff)
     [System.Serializable]
     public class Effect
     {
-        public EffectType effectType; // Damage, Heal, Buff, Debuff
-        public TargetType targetType; // Who gets affected (moved inside Effect)
-        public string targetedStat; // Single stat affected (e.g., HP, Speed, Strength)
-        public string scalingAttribute; // Strength, Intelligence, etc.
-        public int scalingPercent; // % Scaling (e.g., 20 for 20%)
-        public int baseValue; // Flat effect value (e.g., damage, heal amount)
-        public bool isPercentage; // True if it applies as a % instead of a flat value
-        public bool isRng;  // Determines if the CC effect is ranged
-        public bool auraRngChance;  // Chance for the ranged CC to land (e.g., 0.7 for 70%)
-
-        public StatusEffect statusEffect; // Optional CC effect
+        public EffectType effectType;
+        public TargetType targetType;
+        public string targetedStat;
+        public string scalingAttribute;
+        public int scalingPercent;
+        public int baseValue;
+        public bool isPercentage;
+        public bool isRng;
+        public bool auraRngChance;
+        public StatusEffect statusEffect;
     }
 
-    // Status Effect Structure
     [System.Serializable]
     public class StatusEffect
     {
-        public CrowdControlType ccType; // Stun, Root, Silence, etc.
-        public int duration; // Duration in turns
-        public int tickDamage; // Damage per turn for effects like Poison
-        public string scalingAttribute; // STR, INT, etc.
-        public int scalingPercent; // Scaling for DoT effects (e.g., Poison scales off INT)
-        public bool isPercentage; // If true, applies as % of target’s HP/Stat
+        public CrowdControlType ccType;
+        public int duration;
+        public int tickDamage;
+        public string scalingAttribute;
+        public int scalingPercent;
+        public bool isPercentage;
         public bool preventsAction;
         public bool preventsMovement;
         public bool preventsAttacks;
-        public bool isRng;  // Determines if the CC effect is ranged
-        public float rngChance;  // Chance for the ranged CC to land (e.g., 0.7 for 70%)
-        public bool isSummon; // Whether the effect is for summoning a unit
-        public BaseUnit summonUnit; // The unit to summon if the effect is a summon
+        public bool isRng;
+        public float rngChance;
+        public bool isSummon;
+        public BaseUnit summonUnit;
     }
 
-    // Types of Effects
     public enum EffectType
     {
-        Damage,
-        Heal,
-        Buff,
-        Debuff,
-        Steal,
-        Odds,
+        Damage, Heal, Buff, Debuff, Steal, Odds,
     }
 
-    // Crowd Control Types
     public enum CrowdControlType
     {
-        None,
-        Stun,   // Prevents all actions
-        Root,   // Prevents movement
-        Silence, // Prevents casting abilities
-        Blind,  // Reduces accuracy
-        Slow,   // Reduces movement speed
-        Poison, // Deals damage over time
-        Burn,   // Deals damage over time
-        Taunt,  // Forces enemies to target this unit
-        Summon  // Summons a unit for a certain duration
+        None, Stun, Root, Silence, Blind, Slow, Poison, Burn, Taunt, Summon
     }
 
-    // Target Types (For Different Attack/Effect Applications)
     public enum TargetType
     {
-        Self, // Only affects the caster
-        SingleAlly, // Targets one ally
-        AllAllies, // Affects all allies
-        SingleEnemy, // Targets one enemy
-        AllEnemies // Affects all enemies
+        Self, SingleAlly, AllAllies, SingleEnemy, AllEnemies
     }
 
-    // Attacks & Abilities
     public AttackData normalAttack;
     public AttackData passiveAbility;
     public AttackData specialAttack;
 
-    // Added status flags to track CC effects
     [HideInInspector] public bool isStunned;
     [HideInInspector] public bool isTaunting;
     [HideInInspector] public bool isRooted;
@@ -129,21 +104,39 @@ public class BaseUnit : ScriptableObject
     [HideInInspector] public int silenceDuration;
     [HideInInspector] public int poisonDuration;
 
-
-
-    // Methods to update the stats
-    public void UpdateDamageDealt(float amount)
+    // --- NEW, SAFE CLONING METHOD ---
+    public BaseUnit Clone()
     {
-        damageDealt += amount;
+        // Step 1: Create a new instance of this ScriptableObject in memory. This is the safe way.
+        var clone = CreateInstance<BaseUnit>();
+
+        // Step 2: Manually copy all value types and complex types from 'this' (the original asset) to the clone.
+        clone.unitName = this.unitName;
+        clone.unitSprite = this.unitSprite;
+        clone.splashImage = this.splashImage;
+        clone.maxHp = this.maxHp;
+        clone.baseHp = this.maxHp; // Start with full health
+        clone.mDef = this.mDef;
+        clone.pDef = this.pDef;
+        clone.baseSpeed = this.baseSpeed;
+        clone.baseStr = this.baseStr;
+        clone.baseInt = this.baseInt;
+        clone.baseEvasion = this.baseEvasion;
+        clone.baseLuck = this.baseLuck;
+        clone.rarity = this.rarity;
+        clone.aura = this.aura;
+        clone.DapAttemptChance = this.DapAttemptChance;
+        clone.DapSuccessChance = this.DapSuccessChance;
+        
+        // Deep copy attack data to ensure lists are new instances
+        clone.normalAttack = new AttackData { effects = new List<Effect>(this.normalAttack.effects), description = this.normalAttack.description, attackName = this.normalAttack.attackName, turnsToSpecial = this.normalAttack.turnsToSpecial };
+        clone.specialAttack = new AttackData { effects = new List<Effect>(this.specialAttack.effects), description = this.specialAttack.description, attackName = this.specialAttack.attackName, turnsToSpecial = this.specialAttack.turnsToSpecial };
+        clone.passiveAbility = new AttackData { effects = new List<Effect>(this.passiveAbility.effects), description = this.passiveAbility.description, attackName = this.passiveAbility.attackName, turnsToSpecial = this.passiveAbility.turnsToSpecial };
+
+        return clone;
     }
 
-    public void UpdateDamageTaken(float amount)
-    {
-        damageTaken += amount;
-    }
-
-    public void UpdateHealingDone(float amount)
-    {
-        healingDone += amount;
-    }
+    public void UpdateDamageDealt(float amount) { damageDealt += amount; }
+    public void UpdateDamageTaken(float amount) { damageTaken += amount; }
+    public void UpdateHealingDone(float amount) { healingDone += amount; }
 }

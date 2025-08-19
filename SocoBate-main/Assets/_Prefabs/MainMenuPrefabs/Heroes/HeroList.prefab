@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6760297515998653943}
   - component: {fileID: 7820770310343649841}
   - component: {fileID: 8054059581701369118}
-  - component: {fileID: 4913071427865932600}
   - component: {fileID: 2247838936077664191}
   m_Layer: 5
   m_Name: Scroll View
@@ -109,21 +108,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4913071427865932600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 815238423419743163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1a34e63a6a3fc5489c1efc1f37c6229, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ownedUnitRowPrefab: {fileID: 0}
-  scrollViewContent: {fileID: 0}
-  teamManager: {fileID: 0}
 --- !u!114 &2247838936077664191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,8 +155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 143, y: -1.4025}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 269.01736, y: -1.4025}
+  m_SizeDelta: {x: 452.0348, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &269586224409417560
 CanvasRenderer:
@@ -1130,8 +1114,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 144, y: 3.4707}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 272.21185, y: 3.4707}
+  m_SizeDelta: {x: 452.0348, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7088258998810527833
 CanvasRenderer:
@@ -2234,8 +2218,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 143, y: -2.022}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 269.01965, y: -2.022}
+  m_SizeDelta: {x: 452.0348, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6469371950574256516
 CanvasRenderer:

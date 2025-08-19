@@ -38,7 +38,7 @@ MonoBehaviour:
       targetedStat: SPD
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 10
+      baseValue: 15
       isPercentage: 1
       isRng: 0
       auraRngChance: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
       targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 20
+      baseValue: 15
       isPercentage: 1
       isRng: 0
       auraRngChance: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Espalha conhecimento
     attackName: 
-    turnsToSpecial: 6
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

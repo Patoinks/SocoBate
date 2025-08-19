@@ -15,11 +15,11 @@ MonoBehaviour:
   unitName: Chico
   unitSprite: {fileID: 0}
   splashImage: {fileID: 0}
-  maxHp: 100
-  baseHp: 100
-  mDef: 20
-  pDef: 20
-  baseSpeed: 80
+  maxHp: 400
+  baseHp: 400
+  mDef: 40
+  pDef: 40
+  baseSpeed: 60
   baseStr: 50
   baseInt: 100
   baseEvasion: 0
@@ -37,15 +37,15 @@ MonoBehaviour:
       targetType: 4
       targetedStat: MDEF
       scalingAttribute: INT
-      scalingPercent: 60
-      baseValue: 15
+      scalingPercent: 50
+      baseValue: 10
       isPercentage: 0
       isRng: 0
       auraRngChance: 0
       statusEffect:
         ccType: 6
         duration: 2
-        tickDamage: 0
+        tickDamage: 10
         scalingAttribute: 
         scalingPercent: 0
         isPercentage: 1
@@ -61,12 +61,12 @@ MonoBehaviour:
     turnsToSpecial: 0
   passiveAbility:
     effects:
-    - effectType: 4
-      targetType: 2
-      targetedStat: Aura
+    - effectType: 1
+      targetType: 0
+      targetedStat: HP
       scalingAttribute: 
       scalingPercent: 0
-      baseValue: 100
+      baseValue: 25
       isPercentage: 1
       isRng: 0
       auraRngChance: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
         summonUnit: {fileID: 0}
     description: Depending on Aura will Summon a Rat
     attackName: Summon Rat
-    turnsToSpecial: 6
+    turnsToSpecial: 99
   isStunned: 0
   isTaunting: 0
   isRooted: 0

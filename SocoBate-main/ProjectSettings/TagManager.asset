@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hex
+  - Punit
+  - vfx
+  - Undefined
+  - PlacedUnit
+  - PlayerHex
   layers:
   - Default
   - TransparentFX
@@ -53,4 +58,7 @@ TagManager:
     locked: 0
   - name: TOP
     uniqueID: 2878727975
+    locked: 0
+  - name: VFX
+    uniqueID: 569442227
     locked: 0

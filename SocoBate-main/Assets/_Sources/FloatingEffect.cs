@@ -1,39 +1,53 @@
-using System.Collections;
+// FloatingEffect.cs (Definitive, with Rotation Counteraction)
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Models;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using System.Linq;
 using TMPro;
 
 public class FloatingEffect : MonoBehaviour
 {
-    public TMP_Text text;
-    public float floatSpeed = 1.5f; // How fast it floats upwards
-    public float fadeSpeed = 1f; // How fast it fades
+    [SerializeField] private TMP_Text text;
+    [SerializeField] private float travelDistance = 2.0f; 
+    [SerializeField] private float lifetime = 1.5f;
 
-    private float timer = 0f;
+    public UnitFacade Owner { get; set; }
+
+    private float timeElapsed = 0f;
+    private Color startColor;
+    private Vector3 startLocalPosition;
 
     public void Setup(string message, Color color)
     {
+        if (text == null) text = GetComponentInChildren<TMP_Text>();
         text.text = message;
         text.color = color;
-
-        // Start the floating and fading animation
-        StartCoroutine(FloatingTextEffect());
+        startColor = color;
+        startLocalPosition = transform.localPosition;
     }
 
-    private IEnumerator FloatingTextEffect()
+    void Update()
     {
-        while (timer < 1f)
-        {
-            timer += Time.deltaTime * floatSpeed;
-            text.color = new Color(text.color.r, text.color.g, text.color.b, Mathf.Lerp(1f, 0f, timer)); // Fade out
-            transform.position += Vector3.up * Time.deltaTime * 0.5f; // Move upwards
-            yield return null;
-        }
+        if (text == null) return;
+        timeElapsed += Time.deltaTime;
+        float progress = Mathf.Clamp01(timeElapsed / lifetime);
+        transform.localPosition = Vector3.Lerp(startLocalPosition, startLocalPosition + new Vector3(0, travelDistance, 0), progress);
+        float alpha = 1.0f - progress;
+        text.color = new Color(startColor.r, startColor.g, startColor.b, alpha);
+        if (timeElapsed >= lifetime) Destroy(gameObject);
+    }
 
-        Destroy(gameObject); // Destroy the object after the effect is complete
+    /// <summary>
+    // This is the definitive fix for the rotation problem.
+    // It runs after the parent has rotated and forces this object's rotation back to zero.
+    /// </summary>
+    void LateUpdate()
+    {
+        transform.rotation = Quaternion.identity;
+    }
+
+    void OnDestroy()
+    {
+        if (FloatingTextQueue.Instance != null)
+        {
+            FloatingTextQueue.Instance.NotifyTextDestroyed(this);
+        }
     }
 }
